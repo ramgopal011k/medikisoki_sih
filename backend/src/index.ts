@@ -57,7 +57,7 @@ app.use(
 app.use(express.json({ limit: '50mb' }));
 
 app.get('/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok', service: 'medikisoki-backend', timestamp: new Date().toISOString(), db: 'supabase' });
+  res.json({ status: 'ok', service: 'medikisoki-sih-backend', timestamp: new Date().toISOString(), db: 'supabase' });
 });
 
 app.get('/', (_req: Request, res: Response) => {
