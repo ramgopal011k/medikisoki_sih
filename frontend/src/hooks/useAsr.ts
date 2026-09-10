@@ -185,10 +185,16 @@ export function useAsr() {
               formData.append('language', requestedLang);
 
               const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`;
+              
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 15000);
+
               const response = await fetch(`${API_URL}/api/sarvam/asr`, {
                 method: 'POST',
                 body: formData,
+                signal: controller.signal,
               });
+              clearTimeout(timeoutId);
 
               if (response.ok) {
                 const data = await response.json();

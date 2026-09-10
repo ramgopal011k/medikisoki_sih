@@ -165,7 +165,7 @@ export default function AyushFlow() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   const { speak, isPlaying } = useAudio();
-  const { isListening, transcript, error, startListening, stopListening } = useAsr();
+  const { isListening, transcript, startListening, stopListening } = useAsr();
 
   const flushOfflineQueue = useCallback(async () => {
     const queue: AyushAssessment[] | undefined = await get(OFFLINE_QUEUE_KEY);
@@ -391,11 +391,6 @@ export default function AyushFlow() {
                 <p className="text-xs text-muted">Speak your answer to select</p>
               </div>
             </div>
-            {error && (
-              <p className="mt-2 text-xs font-medium text-danger bg-danger/10 px-3 py-1 rounded-full text-center max-w-sm">
-                {error}
-              </p>
-            )}
             {transcript && (
               <p className="mt-2 text-xs font-medium text-terracotta bg-terracotta/10 px-3 py-1 rounded-full">
                 "{transcript}"
