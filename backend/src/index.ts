@@ -767,8 +767,8 @@ app.post('/api/sarvam/asr', upload.single('file'), async (req: Request, res: Res
     try {
       const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
       const rawMime = (req.file.mimetype || 'audio/webm').split(';')[0].trim();
-      // Gemini supports: audio/wav, audio/mp3, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm
-      const supportedMimes = ['audio/wav','audio/mp3','audio/mpeg','audio/aiff','audio/aac','audio/ogg','audio/flac','audio/webm'];
+      // Gemini supports: audio/wav, audio/mp3, audio/mpeg, audio/mp4, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm, video/mp4
+      const supportedMimes = ['audio/wav','audio/mp3','audio/mpeg','audio/mp4','audio/aiff','audio/aac','audio/ogg','audio/flac','audio/webm','video/mp4'];
       const mimeType = supportedMimes.includes(rawMime) ? rawMime : 'audio/webm';
       const base64Audio = req.file.buffer.toString('base64');
       const langHint = langCode === 'hi-IN' ? 'in Hindi (or English if mixed)' : 'in English or Hindi';
