@@ -68,8 +68,12 @@ export function useAsr() {
 
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try {
+        if (mediaRecorderRef.current.state === 'recording') {
+          mediaRecorderRef.current.requestData(); // Force flush chunks
+        }
         mediaRecorderRef.current.stop();
-      } catch {
+      } catch (err) {
+        console.warn('Failed to stop MediaRecorder cleanly:', err);
         cleanupMedia();
         setIsListening(false);
         setStatus('idle');
@@ -198,18 +202,26 @@ export function useAsr() {
                 }
               } else {
                 console.warn('Backend ASR returned non-200 status:', response.status);
-                  // Fallback to Web Speech on non-200
-                  const existingText = finalTranscriptRef.current.trim();
-                  if (existingText.length > 0) {
-                    if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
-                  }
+                // Fallback to Web Speech on non-200
+                const existingText = finalTranscriptRef.current.trim();
+                if (existingText.length > 0) {
+                  if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
+                  setStatus('idle');
+                } else {
+                  setError('Backend transcription failed. Please try again or type your answer.');
+                  setStatus('error');
                 }
+              }
             } catch (postErr) {
               console.warn('Failed to send audio to backend ASR:', postErr);
               // Fallback to Web Speech on network error
               const existingText = finalTranscriptRef.current.trim();
               if (existingText.length > 0) {
                 if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
+                setStatus('idle');
+              } else {
+                setError('Transcription failed. Please try again or type your answer.');
+                setStatus('error');
               }
             } finally {
               setIsProcessing(false);
@@ -217,10 +229,13 @@ export function useAsr() {
             }
           } else {
             // No audio chunks captured, fallback to Web Speech
-            setStatus('idle');
             const existingText = finalTranscriptRef.current.trim();
             if (existingText.length > 0) {
               if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
+              setStatus('idle');
+            } else {
+              setError('No audio captured. Please check your microphone permissions or speak louder.');
+              setStatus('error');
             }
           }
 
@@ -230,7 +245,7 @@ export function useAsr() {
           }
         };
 
-        recorder.start(); // do not use timeslice (250) as it breaks iOS Safari MediaRecorder
+        recorder.start(1000); // Flush chunks every second for robust cross-platform capture
       } catch (recErr) {
         console.warn('MediaRecorder setup error:', recErr);
       }

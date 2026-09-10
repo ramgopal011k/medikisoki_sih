@@ -41,7 +41,7 @@ export default function DocumentUploadFlow() {
   const [step, setStep] = useState<'upload' | 'processing' | 'correction' | 'success'>('upload');
 
   const { speak, isPlaying } = useAudio();
-  const { isListening, transcript, startListening, stopListening } = useAsr();
+  const { isListening, transcript, error, startListening, stopListening } = useAsr();
 
   useEffect(() => {
     if (!session) {
@@ -360,6 +360,11 @@ export default function DocumentUploadFlow() {
                   <p className="text-xs text-muted">Say "Camera", "Upload", or "Skip"</p>
                 </div>
               </div>
+              {error && (
+                <p className="mt-2 text-xs font-medium text-danger bg-danger/10 px-3 py-1 rounded-full text-center max-w-sm">
+                  {error}
+                </p>
+              )}
               {transcript && (
                 <p className="mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                   "{transcript}"

@@ -31,7 +31,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   onAnswer,
   language = 'en'
 }) => {
-  const { isListening, isProcessing, transcript, status, startListening, stopListening, setTranscript } = useAsr();
+  const { isListening, isProcessing, transcript, status, error, startListening, stopListening, setTranscript } = useAsr();
   const [textInput, setTextInput] = useState('');
   const [selectedMulti, setSelectedMulti] = useState<string[]>([]);
   const pendingMatchRef = useRef<{ value: string; label: string } | null>(null);
@@ -258,7 +258,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           />
           {status === 'error' && (
             <p className="mt-2 text-danger text-sm font-body text-center max-w-sm">
-              {language === 'hi' ? 'माइक्रोफ़ोन त्रुटि या अनुमति अस्वीकृत। आप सीधे विकल्प चुन सकते हैं।' : 'Microphone error or permission denied. You can tap an option directly.'}
+              {error || (language === 'hi' ? 'माइक्रोफ़ोन त्रुटि या अनुमति अस्वीकृत। आप सीधे विकल्प चुन सकते हैं।' : 'Microphone error or permission denied. You can tap an option directly.')}
             </p>
           )}
           {status === 'unsupported' && (

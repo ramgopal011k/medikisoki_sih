@@ -22,7 +22,7 @@ export default function ChiefComplaint() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { speak, isPlaying } = useAudio();
-  const { isListening, isProcessing, transcript, startListening, stopListening } = useAsr();
+  const { isListening, isProcessing, transcript, error, startListening, stopListening } = useAsr();
 
   const handleVoiceInput = () => {
     if (isListening) {
@@ -165,6 +165,11 @@ export default function ChiefComplaint() {
                 <p className="text-xs text-muted mt-2">
                   {isProcessing ? 'Processing audio...' : isListening ? 'Listening (tap to finish)...' : 'Tap to speak'}
                 </p>
+                {error && (
+                  <p className="mt-2 text-danger text-sm font-body text-center max-w-sm">
+                    {error}
+                  </p>
+                )}
                 {transcript && (
                   <p className="mt-2 text-primary font-semibold italic text-base">
                     "{transcript}"

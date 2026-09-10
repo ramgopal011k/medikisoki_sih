@@ -50,7 +50,7 @@ export default function MedicalHistoryFlow() {
   const [rosSymptoms, setRosSymptoms] = useState<string[]>([]);
 
   const { speak, isPlaying } = useAudio();
-  const { isListening, transcript, startListening, stopListening } = useAsr();
+  const { isListening, transcript, error, startListening, stopListening } = useAsr();
 
   const baseMedicationsRef = useRef('');
   const baseSurgeriesRef = useRef('');
@@ -552,6 +552,11 @@ export default function MedicalHistoryFlow() {
                 <p className="text-xs text-muted">{getStepHint()}</p>
               </div>
             </div>
+            {error && (
+              <p className="mt-2 text-xs font-medium text-danger bg-danger/10 px-3 py-1 rounded-full text-center max-w-sm">
+                {error}
+              </p>
+            )}
             {transcript && (
               <p className="mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                 "{transcript}"

@@ -37,7 +37,7 @@ export default function ConsentFlow() {
   const [pastVisits, setPastVisits] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  const { isListening, isProcessing, transcript, startListening, stopListening } = useAsr();
+  const { isListening, isProcessing, transcript, error, startListening, stopListening } = useAsr();
 
   const baseAbhaIdRef = useRef('');
 
@@ -326,6 +326,11 @@ export default function ConsentFlow() {
           <p className="text-xs text-muted">{hint}</p>
         </div>
       </div>
+      {error && (
+        <p className="mt-2 text-xs font-medium text-danger bg-danger/10 px-3 py-1 rounded-full text-center max-w-sm">
+          {error}
+        </p>
+      )}
       {transcript && (
         <p className="mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
           "{transcript}"
