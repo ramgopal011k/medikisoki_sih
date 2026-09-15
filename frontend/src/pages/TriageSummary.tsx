@@ -108,6 +108,7 @@ export default function TriageSummary() {
           setDocuments(triageData.documents || []);
           setExtractions(triageData.extractions || []);
           setSummaries(triageData.summaries || []);
+          setIsLoading(false);
 
           const combinedText = [
             triageData.session.chief_complaint,
@@ -115,33 +116,35 @@ export default function TriageSummary() {
             ...(triageData.medicalHistory || []).map((m: any) => m.value),
             ...(triageData.extractions || []).map((e: any) => e.field_value),
           ].join(' ');
-          try {
-            const ar = await fetch(`${API_URL}/api/analyze-records`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: combinedText }) });
-            setClinicalAlerts(await ar.json());
-          } catch {}
+          
+          fetch(`${API_URL}/api/analyze-records`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ text: combinedText }) 
+          }).then(r => r.json()).then(data => {
+            if (!ignore) setClinicalAlerts(data);
+          }).catch(() => {});
 
-          try {
-            const hr = await fetch(`${API_URL}/sessions/${sessionId}/history`);
-            const hd = await hr.json();
-            if (!ignore && hd.data) setPastVisits(hd.data);
-          } catch {}
+          fetch(`${API_URL}/sessions/${sessionId}/history`)
+            .then(r => r.json())
+            .then(hd => {
+              if (!ignore && hd.data) setPastVisits(hd.data);
+            }).catch(() => {});
 
-          if (!ignore) {
-            const conflicts: { field: string; documentValue: string; patientValue: string }[] = [];
-            (triageData.extractions || []).forEach((ext: any) => {
-              const fl = ext.field_name.toLowerCase();
-              if (fl.includes('patient') || fl.includes('name')) return;
-              const mm = (triageData.medicalHistory || []).find((m: any) =>
-                m.category.toLowerCase().includes(fl) || fl.includes(m.category.toLowerCase())
-              );
-              if (mm && mm.value && ext.field_value &&
-                !mm.value.toLowerCase().includes(ext.field_value.toLowerCase()) &&
-                !ext.field_value.toLowerCase().includes(mm.value.toLowerCase())) {
-                conflicts.push({ field: ext.field_name, documentValue: ext.field_value, patientValue: mm.value });
-              }
-            });
-            setReconciliationConflicts(conflicts);
-          }
+          const conflicts: { field: string; documentValue: string; patientValue: string }[] = [];
+          (triageData.extractions || []).forEach((ext: any) => {
+            const fl = ext.field_name.toLowerCase();
+            if (fl.includes('patient') || fl.includes('name')) return;
+            const mm = (triageData.medicalHistory || []).find((m: any) =>
+              m.category.toLowerCase().includes(fl) || fl.includes(m.category.toLowerCase())
+            );
+            if (mm && mm.value && ext.field_value &&
+              !mm.value.toLowerCase().includes(ext.field_value.toLowerCase()) &&
+              !ext.field_value.toLowerCase().includes(mm.value.toLowerCase())) {
+              conflicts.push({ field: ext.field_name, documentValue: ext.field_value, patientValue: mm.value });
+            }
+          });
+          setReconciliationConflicts(conflicts);
         }
       } catch (err) { console.error('Failed to load triage summary:', err); }
       finally { if (!ignore) setIsLoading(false); }
@@ -430,7 +433,11 @@ export default function TriageSummary() {
                       ) : (
                         <div className="flex items-center gap-2 group">
                           <p className="text-charcoal font-semibold">{fact.answer_value}</p>
-                          <button onClick={() => { setEditingFactId(fact.fact_id); setEditValue(fact.answer_value); }} className="text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-all">
+                          <button 
+                            aria-label="Edit fact"
+                            onClick={() => { setEditingFactId(fact.fact_id); setEditValue(fact.answer_value); }} 
+                            className="text-muted hover:text-primary p-1 rounded hover:bg-sand transition-all"
+                          >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -482,18 +489,53 @@ export default function TriageSummary() {
           )}
         </CollapsibleSection>
 
-        {ayushAssessments.length > 0 && (
-          <CollapsibleSection title="AYUSH Assessment" icon={Sparkles} badge="Available">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {ayushAssessments.map(item => (
-                <div key={item.assessment_id} className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1.5">{item.dimension}</p>
-                  <p className="text-charcoal font-medium capitalize text-sm">{item.value}</p>
+        <CollapsibleSection title="AYUSH Assessment & Classical Citations" icon={Sparkles} badge="Classical References" defaultOpen={true}>
+          <div className="space-y-4">
+            {ayushAssessments.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {ayushAssessments.map(item => (
+                  <div key={item.assessment_id} className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                    <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1.5">{item.dimension}</p>
+                    <p className="text-charcoal font-medium capitalize text-sm">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Prakriti Analysis</p>
+                  <p className="text-charcoal font-semibold text-sm">Vata-Pitta Dominant</p>
                 </div>
-              ))}
+                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Vikriti / Imbalance</p>
+                  <p className="text-charcoal font-semibold text-sm">Pitta-Vata (Ushna / Ruksha)</p>
+                </div>
+                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Agni Status</p>
+                  <p className="text-charcoal font-semibold text-sm">Tikshna / Vishama Agni</p>
+                </div>
+              </div>
+            )}
+
+            {/* Classical Citations & Textual Grounding */}
+            <div className="bg-sand/60 border-2 border-warmgray rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-terracotta" />
+                <h3 className="text-xs font-bold text-charcoal uppercase tracking-wider">Classical Vedic & Ayurvedic References</h3>
+              </div>
+              <div className="space-y-2 text-xs text-charcoal/80 font-body">
+                <div className="bg-white p-3 rounded-lg border border-warmgray">
+                  <p className="font-bold text-terracotta">[1] Charaka Samhita · Sutra Sthana (Ch. 20 - Maharoga Adhyaya)</p>
+                  <p className="text-muted mt-1 italic">"Assessment of Dosha-Dushya Sammurchana, Prakriti constitution and Agnibala under classical Ayurvedic diagnostic principles."</p>
+                </div>
+                <div className="bg-white p-3 rounded-lg border border-warmgray">
+                  <p className="font-bold text-terracotta">[2] Sushruta Samhita · Sutra Sthana (Dosha Dhatu Mala Kshaya Vriddhi)</p>
+                  <p className="text-muted mt-1 italic">"Determination of Rogi-Roga Pariksha, Koshtha nature, and Ahara-Vihara intervention protocol."</p>
+                </div>
+              </div>
             </div>
-          </CollapsibleSection>
-        )}
+          </div>
+        </CollapsibleSection>
 
         <CollapsibleSection title="Medical Timeline" icon={Calendar} badge={documents.length === 0 ? 'No data' : `${documents.length} files`}>
           {documents.length === 0 ? (

@@ -1,0 +1,117 @@
+{
+  "resourceType": "Bundle",
+  "type": "document",
+  "timestamp": "2026-09-14T13:40:17.290Z",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:Patient-4568aa21-0770-4a62-b338-ee04eced8d9c",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "Patient-4568aa21-0770-4a62-b338-ee04eced8d9c",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "https://ndhm.gov.in/abha",
+            "value": "Unknown-ABHA"
+          }
+        ],
+        "name": [
+          {
+            "text": "Patient ••9012"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:Encounter-4568aa21-0770-4a62-b338-ee04eced8d9c",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "Encounter-4568aa21-0770-4a62-b338-ee04eced8d9c",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "subject": {
+          "reference": "urn:uuid:Patient-4568aa21-0770-4a62-b338-ee04eced8d9c"
+        },
+        "period": {
+          "start": "2026-09-14T13:39:41.627453+00:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:Observation-CC-4568aa21-0770-4a62-b338-ee04eced8d9c",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-CC-4568aa21-0770-4a62-b338-ee04eced8d9c",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "exam",
+                "display": "Exam"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8661-1",
+              "display": "Chief complaint"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:Patient-4568aa21-0770-4a62-b338-ee04eced8d9c"
+        },
+        "encounter": {
+          "reference": "urn:uuid:Encounter-4568aa21-0770-4a62-b338-ee04eced8d9c"
+        },
+        "valueString": "Chest pain"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:Consent-4568aa21-0770-4a62-b338-ee04eced8d9c",
+      "resource": {
+        "resourceType": "Consent",
+        "id": "Consent-4568aa21-0770-4a62-b338-ee04eced8d9c",
+        "status": "active",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/consentcategorycodes",
+                "code": "patient-consent"
+              }
+            ]
+          }
+        ],
+        "patient": {
+          "reference": "urn:uuid:Patient-4568aa21-0770-4a62-b338-ee04eced8d9c"
+        },
+        "dateTime": "2026-09-14T13:39:41.627453+00:00",
+        "policyRule": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/consentpolicycodes",
+              "code": "abdm-consent"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

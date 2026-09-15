@@ -1,0 +1,2368 @@
+{
+  "viewport": "1920x1080",
+  "routes": [
+    {
+      "path": "/",
+      "screenshot": "visual-tests/screenshots/desktop/landing.png",
+      "loadTimeMs": 2088,
+      "buttons": [
+        {
+          "text": "Doctor Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-1.png"
+        },
+        {
+          "text": "Doctor Login →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-2.png"
+        },
+        {
+          "text": "Patient Kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-3.png"
+        },
+        {
+          "text": "Patient Portal",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-4.png"
+        },
+        {
+          "text": "Register Hospital",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-5.png"
+        },
+        {
+          "text": "Global Doctor Login",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-6.png"
+        },
+        {
+          "text": "All Facilities (7)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-7.png"
+        },
+        {
+          "text": "General (3)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-8.png"
+        },
+        {
+          "text": "AYUSH (4)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-9.png"
+        },
+        {
+          "text": "Refresh",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-10.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-11.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/11111111-1111-1111-1111-111111111111/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-12.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-13.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/11111111-1111-1111-1111-111111111111/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-14.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-15.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-16.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-17.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-18.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-19.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-20.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/215878a1-b7ab-482d-af0d-a2d23f839312/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-21.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-22.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/215878a1-b7ab-482d-af0d-a2d23f839312/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-23.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-24.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-25.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-26.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-27.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-28.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-29.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-31.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/2f7bc79b-56f8-4bf1-881c-b06cdc8661a5/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-32.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-33.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-34.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-35.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-36.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-37.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-38.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/23c8c873-8886-4334-ae51-9d4e56551310/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-39.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-40.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/23c8c873-8886-4334-ae51-9d4e56551310/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-41.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-42.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-43.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-44.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-45.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-46.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-47.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/3ecab497-7542-4247-a088-2a1f92144b40/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-48.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-49.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/3ecab497-7542-4247-a088-2a1f92144b40/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-50.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-51.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-52.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-53.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-54.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-55.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-56.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5dbe052f-23f5-42f6-93e8-bd41a8c23569/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-57.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-58.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5dbe052f-23f5-42f6-93e8-bd41a8c23569/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-59.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-60.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-61.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-62.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-63.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-64.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-65.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5d9d8358-6a56-486a-ae4a-d895c777ad67/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-66.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-67.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5d9d8358-6a56-486a-ae4a-d895c777ad67/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-68.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-69.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-70.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-71.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-72.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-73.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-74.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/landing-btn-75.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/doctor/login",
+      "screenshot": "visual-tests/screenshots/desktop/_doctor_login.png",
+      "loadTimeMs": 2105,
+      "buttons": [
+        {
+          "text": "Sign In",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-1.png"
+        },
+        {
+          "text": "Create Account",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-2.png"
+        },
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-3.png"
+        },
+        {
+          "text": "Sign In",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-4.png"
+        },
+        {
+          "text": "DEMO CREDENTIALS",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-5.png"
+        },
+        {
+          "text": "Quick Dev Bypass",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-6.png"
+        },
+        {
+          "text": "Hospital Admin Portal →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-7.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-8.png"
+        },
+        {
+          "text": "-",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_login-btn-9.png"
+        }
+      ],
+      "consoleErrors": [],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/patient/login",
+      "screenshot": "visual-tests/screenshots/desktop/_patient_login.png",
+      "loadTimeMs": 2311,
+      "buttons": [
+        {
+          "text": "Login",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_patient_login-btn-1.png"
+        },
+        {
+          "text": "Don't have an account? Register here",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_patient_login-btn-2.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_patient_login-btn-3.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_patient_login-btn-4.png"
+        }
+      ],
+      "consoleErrors": [],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/admin/hospitals",
+      "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals.png",
+      "loadTimeMs": 2455,
+      "buttons": [
+        {
+          "text": "Doctor Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-1.png"
+        },
+        {
+          "text": "Doctor Login →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-2.png"
+        },
+        {
+          "text": "Patient Kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-3.png"
+        },
+        {
+          "text": "Patient Portal",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-4.png"
+        },
+        {
+          "text": "Register Hospital",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-5.png"
+        },
+        {
+          "text": "Global Doctor Login",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-6.png"
+        },
+        {
+          "text": "All Facilities (7)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-7.png"
+        },
+        {
+          "text": "General (3)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-8.png"
+        },
+        {
+          "text": "AYUSH (4)",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-9.png"
+        },
+        {
+          "text": "Refresh",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-10.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-11.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/11111111-1111-1111-1111-111111111111/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-12.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-13.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/11111111-1111-1111-1111-111111111111/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-14.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-15.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-16.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-17.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-18.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-19.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-20.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/215878a1-b7ab-482d-af0d-a2d23f839312/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-21.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-22.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/215878a1-b7ab-482d-af0d-a2d23f839312/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-23.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-24.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-25.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-26.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-27.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-28.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-29.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/2f7bc79b-56f8-4bf1-881c-b06cdc8661a5/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-30.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-31.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/2f7bc79b-56f8-4bf1-881c-b06cdc8661a5/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-32.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-33.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-34.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-35.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-36.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-37.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-38.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/23c8c873-8886-4334-ae51-9d4e56551310/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-39.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-40.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/23c8c873-8886-4334-ae51-9d4e56551310/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-41.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-42.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-43.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-44.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-45.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-46.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-47.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/3ecab497-7542-4247-a088-2a1f92144b40/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-48.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-49.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/3ecab497-7542-4247-a088-2a1f92144b40/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-50.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-51.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-52.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-53.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-54.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-55.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-56.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5dbe052f-23f5-42f6-93e8-bd41a8c23569/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-57.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-58.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5dbe052f-23f5-42f6-93e8-bd41a8c23569/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-59.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-60.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-61.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-62.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-63.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-64.png"
+        },
+        {
+          "text": "Copy",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-65.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5d9d8358-6a56-486a-ae4a-d895c777ad67/kiosk",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-66.png"
+        },
+        {
+          "text": "Copy Kiosk URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-67.png"
+        },
+        {
+          "text": "http://localhost:5173/hospital/5d9d8358-6a56-486a-ae4a-d895c777ad67/doctor",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-68.png"
+        },
+        {
+          "text": "Copy Doctor URL",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-69.png"
+        },
+        {
+          "text": "Launch Kiosk →",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-70.png"
+        },
+        {
+          "text": "View Triage Queue",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-71.png"
+        },
+        {
+          "text": "Edit Details",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-72.png"
+        },
+        {
+          "text": "Remove Facility",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-73.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-74.png"
+        },
+        {
+          "text": "-",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_admin_hospitals-btn-75.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        },
+        {
+          "text": "Failed to execute 'writeText' on 'Clipboard': Write permission denied.",
+          "location": "pageerror"
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/hospital/demo/kiosk",
+      "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk.png",
+      "loadTimeMs": 2450,
+      "buttons": [
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-1.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-2.png"
+        },
+        {
+          "text": "हिंदी में शुरू करें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-3.png"
+        },
+        {
+          "text": "Start in English",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-4.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-5.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_hospital_demo_kiosk-btn-6.png"
+        }
+      ],
+      "consoleErrors": [],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/consent",
+      "screenshot": "visual-tests/screenshots/desktop/_consent.png",
+      "loadTimeMs": 2064,
+      "buttons": [
+        {
+          "text": "I have read and understood this notice",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_consent-btn-1.png"
+        },
+        {
+          "text": "हिंदी",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_consent-btn-2.png"
+        },
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_consent-btn-3.png"
+        }
+      ],
+      "consoleErrors": [],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/interview",
+      "screenshot": "visual-tests/screenshots/desktop/_interview.png",
+      "loadTimeMs": 2138,
+      "buttons": [
+        {
+          "text": "छाती के बीच में",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-1.png"
+        },
+        {
+          "text": "मेरे जबड़े या गर्दन तक",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-2.png"
+        },
+        {
+          "text": "दाईं ओर",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-3.png"
+        },
+        {
+          "text": "कुछ खास नहीं",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-4.png"
+        },
+        {
+          "text": "उत्तर बोलने के लिए टैप करें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-5.png"
+        },
+        {
+          "text": "इस प्रश्न को छोड़ें",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-6.png"
+        },
+        {
+          "text": "इस प्रश्न को छोड़ें",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_interview-btn-7.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/red-flags",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/history-facts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/medical-history",
+      "screenshot": "visual-tests/screenshots/desktop/_medical-history.png",
+      "loadTimeMs": 2017,
+      "buttons": [
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-1.png"
+        },
+        {
+          "text": "Penicillin",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-2.png"
+        },
+        {
+          "text": "Sulfa drugs",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-3.png"
+        },
+        {
+          "text": "Peanuts",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-4.png"
+        },
+        {
+          "text": "Dust/Pollen",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-5.png"
+        },
+        {
+          "text": "None",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-6.png"
+        },
+        {
+          "text": "Other",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-7.png"
+        },
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-8.png"
+        },
+        {
+          "text": "जारी रखें",
+          "disabled": true,
+          "clickWorked": false,
+          "screenshot": ""
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-10.png"
+        },
+        {
+          "text": "-",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_medical-history-btn-11.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/api/sarvam/tts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/ayush-assessment",
+      "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment.png",
+      "loadTimeMs": 2486,
+      "buttons": [
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-1.png"
+        },
+        {
+          "text": "रूखी त्वचा, ठंड बर्दाश्त न होना, पतला शरीर",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-2.png"
+        },
+        {
+          "text": "गर्म शरीर, अधिक पसीना आना, मध्यम शरीर",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-3.png"
+        },
+        {
+          "text": "तैलीय त्वचा, शांत स्वभाव, भारी शरीर",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-4.png"
+        },
+        {
+          "text": "उपरोक्त का मिश्रण",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-5.png"
+        },
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-6.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-7.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_ayush-assessment-btn-8.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/api/sarvam/tts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/upload",
+      "screenshot": "visual-tests/screenshots/desktop/_upload.png",
+      "loadTimeMs": 2197,
+      "buttons": [
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": false,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-1.png"
+        },
+        {
+          "text": "Open Camera",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-2.png"
+        },
+        {
+          "text": "दस्तावेज़ चुनें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-3.png"
+        },
+        {
+          "text": "Icon Button",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-4.png"
+        },
+        {
+          "text": "इस चरण को छोड़ें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-5.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-6.png"
+        },
+        {
+          "text": "-",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_upload-btn-7.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "location": {
+            "url": "http://localhost:3001/api/sarvam/tts",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/preview",
+      "screenshot": "visual-tests/screenshots/desktop/_preview.png",
+      "loadTimeMs": 2142,
+      "buttons": [
+        {
+          "text": "डॉक्टर को भेजें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-1.png"
+        },
+        {
+          "text": "मरीज की जानकारी  Anonymous Patient • General Consultation  सत्यापित",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-2.png"
+        },
+        {
+          "text": "विवरण संपादित करें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-3.png"
+        },
+        {
+          "text": "लक्षण एवं प्रश्नावली के उत्तर  0 उत्तर रिकॉर्ड किए गए  0 उत्तर",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-4.png"
+        },
+        {
+          "text": "पूर्व चिकित्सा इतिहास  कोई पूर्व स्थिति दर्ज नहीं  None",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-5.png"
+        },
+        {
+          "text": "अपलोड किए गए दस्तावेज़  कोई दस्तावेज़ संलग्न नहीं  0 दस्तावेज़",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-6.png"
+        },
+        {
+          "text": "← फिर से शुरू करें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-7.png"
+        },
+        {
+          "text": "डॉक्टर को सबमिट करें",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-8.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-9.png"
+        },
+        {
+          "text": "+",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_preview-btn-10.png"
+        }
+      ],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://localhost:3001/sessions/12345-12345-12345/triage",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "broken": false,
+      "status": 200
+    },
+    {
+      "path": "/doctor/dashboard",
+      "screenshot": "visual-tests/screenshots/desktop/_doctor_dashboard.png",
+      "loadTimeMs": 2205,
+      "buttons": [
+        {
+          "text": "Admin",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_dashboard-btn-1.png"
+        },
+        {
+          "text": "Logout",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_dashboard-btn-2.png"
+        },
+        {
+          "text": "Toggle High Contrast",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_dashboard-btn-3.png"
+        },
+        {
+          "text": "-",
+          "disabled": false,
+          "clickWorked": true,
+          "screenshot": "visual-tests/screenshots/desktop/_doctor_dashboard-btn-4.png"
+        }
+      ],
+      "consoleErrors": [],
+      "broken": false,
+      "status": 200
+    }
+  ]
+}

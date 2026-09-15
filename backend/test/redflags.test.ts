@@ -21,6 +21,11 @@ jest.mock('../src/supabase', () => ({
           update: updateMock
         };
       }
+      if (table === 'red_flags') {
+        return {
+          insert: jest.fn().mockResolvedValue({ data: null, error: null })
+        };
+      }
       return {};
     }
   }

@@ -33,8 +33,8 @@ export default function InterviewFlow() {
 
   // Initialize session from localStorage lazily to avoid setState-in-effect
   const [session] = useState<SessionState | null>(() => {
-    const sessionId = localStorage.getItem('patient_session');
-    const complaint = localStorage.getItem('patient_complaint') || 'Chest pain';
+    const sessionId = localStorage.getItem('patient_session') || localStorage.getItem('session_id');
+    const complaint = localStorage.getItem('patient_complaint') || localStorage.getItem('chief_complaint') || 'Chest pain';
     const lang = localStorage.getItem('patient_language') || 'en';
     if (!sessionId) return null;
     return { id: sessionId, complaint, language: lang };

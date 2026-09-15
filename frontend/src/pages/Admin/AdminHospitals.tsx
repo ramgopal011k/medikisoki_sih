@@ -255,6 +255,14 @@ export default function AdminHospitals() {
               Doctor Queue
             </Button>
             <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs font-semibold text-muted hover:text-charcoal"
+              onClick={() => navigate('/doctor/login')}
+            >
+              Doctor Login →
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               className="border-warmgray rounded-xl h-10 px-3.5 gap-2 text-xs font-semibold text-charcoal hover:bg-sand"
@@ -518,6 +526,7 @@ export default function AdminHospitals() {
                           onClick={() => handleCopyId(`${window.location.origin}/hospital/${hospitalId}/kiosk`)}
                           className="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1 p-1 hover:bg-blue-100 rounded-lg transition"
                           title="Copy Kiosk URL"
+                          aria-label="Copy Kiosk URL"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
@@ -540,6 +549,7 @@ export default function AdminHospitals() {
                           onClick={() => handleCopyId(`${window.location.origin}/hospital/${hospitalId}/doctor`)}
                           className="text-xs font-semibold text-terracotta hover:text-terracotta/80 flex items-center gap-1 p-1 hover:bg-terracotta/10 rounded-lg transition"
                           title="Copy Doctor URL"
+                          aria-label="Copy Doctor URL"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
@@ -549,6 +559,13 @@ export default function AdminHospitals() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2 pt-2 border-t border-warmgray/40">
+                    <Button
+                      style={{ backgroundColor: '#1B5E4A', minHeight: '64px' }}
+                      className="w-full text-white hover:opacity-90 rounded-xl text-lg font-bold gap-2 transition-opacity"
+                      onClick={() => navigate(`/hospital/${hospitalId}/kiosk`)}
+                    >
+                      Launch Kiosk →
+                    </Button>
                     <Button
                       variant="outline"
                       className="w-full border-primary text-primary hover:bg-primary hover:text-white rounded-xl h-10 text-xs font-bold gap-2 transition-colors"
@@ -573,6 +590,7 @@ export default function AdminHospitals() {
                         className="border-danger/30 text-danger hover:bg-danger/10 hover:border-danger rounded-xl h-10 px-3 text-xs font-semibold"
                         onClick={() => handleOpenDelete(h)}
                         title="Remove Facility"
+                        aria-label="Remove Facility"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
@@ -604,6 +622,7 @@ export default function AdminHospitals() {
               <button 
                 onClick={() => setIsAddModalOpen(false)}
                 className="text-muted hover:text-charcoal p-1.5 rounded-xl hover:bg-sand"
+                aria-label="Close Add Modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -723,6 +742,7 @@ export default function AdminHospitals() {
               <button 
                 onClick={() => setIsEditModalOpen(false)}
                 className="text-muted hover:text-charcoal p-1.5 rounded-xl hover:bg-sand"
+                aria-label="Close Edit Modal"
               >
                 <X className="w-5 h-5" />
               </button>

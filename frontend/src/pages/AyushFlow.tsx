@@ -7,6 +7,7 @@ import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
 import { get, set } from 'idb-keyval';
 import { API_URL } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 const OFFLINE_QUEUE_KEY = 'medikiosk_offline_ayush';
 
@@ -27,13 +28,13 @@ const steps: AyushStep[] = ['prakriti', 'vikriti', 'agni', 'koshtha', 'ahara_vih
 const stepContent: Record<AyushStep, { en: string; hi: string; title: string; options: { id: string; en: string; hi: string }[] }> = {
   prakriti: {
     title: '1. Prakriti Pariksha (Body Constitution)',
-    en: 'How would you describe your natural physical constitution (Prakriti)?',
-    hi: 'आप अपनी प्राकृतिक शारीरिक प्रकृति का वर्णन कैसे करेंगे?',
+    en: 'Which of these physical traits best describes you?',
+    hi: 'इनमें से कौन सा शारीरिक गुण आपका सबसे अच्छा वर्णन करता है?',
     options: [
-      { id: 'vata', en: 'Vata (Light, thin, active, sensitive to cold)', hi: 'वात (हल्का, पतला, फुर्तीला, ठंड के प्रति संवेदनशील)' },
-      { id: 'pitta', en: 'Pitta (Medium build, sharp appetite, sensitive to heat)', hi: 'पित्त (मध्यम शरीर, तीव्र भूख, गर्मी के प्रति संवेदनशील)' },
-      { id: 'kapha', en: 'Kapha (Broad build, calm, slow digestion, heavy)', hi: 'कफ (मजबूत/भारी शरीर, शांत, धीमी पाचन)' },
-      { id: 'dwandvaja', en: 'Mixed Dosha (Combination of two doshas)', hi: 'द्वंद्वज (दो प्रकृतियों का मिश्रण)' }
+      { id: 'vata', en: 'Dry skin, cold intolerance, thin build', hi: 'रूखी त्वचा, ठंड बर्दाश्त न होना, पतला शरीर' },
+      { id: 'pitta', en: 'Warm body, excessive sweating, medium build', hi: 'गर्म शरीर, अधिक पसीना आना, मध्यम शरीर' },
+      { id: 'kapha', en: 'Oily skin, calm nature, broad build', hi: 'तैलीय त्वचा, शांत स्वभाव, भारी शरीर' },
+      { id: 'dwandvaja', en: 'A mix of the above', hi: 'उपरोक्त का मिश्रण' }
     ]
   },
   vikriti: {
@@ -41,11 +42,10 @@ const stepContent: Record<AyushStep, { en: string; hi: string; title: string; op
     en: 'What is your primary ongoing discomfort or health concern?',
     hi: 'वर्तमान में आपकी मुख्य स्वास्थ्य असुविधा क्या है?',
     options: [
-      { id: 'digestive', en: 'Digestive Issues (Gas, acidity, bloating)', hi: 'पाचन समस्याएं (गैस, एसिडिटी, भारीपन)' },
-      { id: 'joint', en: 'Joint & Body Pain (Stiffness, muscle aches)', hi: 'जोड़ों व शरीर का दर्द (जकड़न, वात शूल)' },
-      { id: 'skin', en: 'Skin & Heat Issues (Rashes, inflammation)', hi: 'त्वचा विकार व पित्त प्रकोप (दाने, जलन)' },
-      { id: 'fatigue', en: 'Fatigue & Lethargy (Low energy, heaviness)', hi: 'थकान व सुस्ती (ऊर्जा की कमी, कफ भारीपन)' },
-      { id: 'sleep', en: 'Sleep & Stress Disturbances', hi: 'नींद न आना व मानसिक तनाव' }
+      { id: 'vata', en: 'Joint Pain & Dryness (Gas, stiffness, variable digestion)', hi: 'जोड़ों का दर्द और सूखापन (गैस, जकड़न)' },
+      { id: 'pitta', en: 'Heat & Inflammation (Acidity, rashes, burning sensation)', hi: 'गर्मी और सूजन (एसिडिटी, दाने, जलन)' },
+      { id: 'kapha', en: 'Heaviness & Congestion (Lethargy, slow digestion)', hi: 'भारीपन और कफ (सुस्ती, धीमी पाचन)' },
+      { id: 'tridoshic', en: 'Multiple complex symptoms', hi: 'कई जटिल लक्षण' }
     ]
   },
   agni: {
@@ -166,6 +166,7 @@ export default function AyushFlow() {
 
   const { speak, isPlaying } = useAudio();
   const { isListening, transcript, startListening, stopListening } = useAsr();
+  const { t } = useTranslation();
 
   const flushOfflineQueue = useCallback(async () => {
     const queue: AyushAssessment[] | undefined = await get(OFFLINE_QUEUE_KEY);
@@ -301,12 +302,10 @@ export default function AyushFlow() {
             <Flower2 className="w-8 h-8" />
           </div>
           <h1 className="font-display text-4xl text-terracotta mb-3">
-            {session.language === 'hi' ? 'आयुष मूल्यांकन पूर्ण' : 'AYUSH Assessment Complete'}
+            {t('ayush.title')}
           </h1>
           <p className="font-body text-lg text-muted mb-8">
-            {session.language === 'hi'
-              ? 'आपका 6-आयामी समग्र आयुष मूल्यांकन सफलतापूर्वक दर्ज कर लिया गया है।'
-              : 'Your 6-dimension AYUSH holistic assessment has been recorded.'}
+            {t('ayush.sub')}
           </p>
           <button
             onClick={() => navigate('/records-upload')}
@@ -351,6 +350,7 @@ export default function AyushFlow() {
               onClick={() => speak(questionText, session.language === 'hi' ? 'hi-IN' : 'en-US')}
               className="w-11 h-11 rounded-full bg-terracotta/10 hover:bg-terracotta/20 text-terracotta flex items-center justify-center transition-colors shrink-0"
               title="Listen to question"
+              aria-label={isPlaying ? 'Stop audio' : 'Listen to question'}
             >
               {isPlaying ? <VolumeX className="w-5 h-5 animate-pulse" /> : <Volume2 className="w-5 h-5" />}
             </button>
@@ -383,6 +383,7 @@ export default function AyushFlow() {
                     : 'bg-terracotta text-white hover:bg-terracotta/90'
                 }`}
                 title="Speak your answer"
+                aria-label={isListening ? 'Stop listening' : 'Speak your answer'}
               >
                 <Mic className="w-5 h-5" />
               </button>

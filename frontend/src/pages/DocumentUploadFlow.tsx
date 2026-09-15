@@ -7,6 +7,7 @@ import { QuestionCard } from '../components/QuestionCard';
 import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 interface ExtractedField {
   field_name: string;
@@ -29,6 +30,7 @@ export default function DocumentUploadFlow() {
   const [documentId, setDocumentId] = useState<string | null>(null);
   const [_isProcessing, setIsProcessing] = useState(false);
   const [uploadError, setUploadError] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
   const [rawText, setRawText] = useState('');
@@ -42,6 +44,7 @@ export default function DocumentUploadFlow() {
 
   const { speak, isPlaying } = useAudio();
   const { isListening, transcript, startListening, stopListening } = useAsr();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!session) {
@@ -70,8 +73,20 @@ export default function DocumentUploadFlow() {
   }, [transcript, step, navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValidationError(null);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      if (file.size > 5 * 1024 * 1024) {
+        setValidationError('File size exceeds 5MB limit.');
+        return;
+      }
+      
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        setValidationError('Invalid file type. Please upload an image or PDF.');
+        return;
+      }
+
       setSelectedFile(file);
       startProcessing(file);
     }
@@ -162,70 +177,97 @@ export default function DocumentUploadFlow() {
 
       setRawText(text);
 
-      // Extract basic fields
-      const lines = text.split('\n').filter(l => l.trim().length > 0);
-      let nameVal = '';
-      let diagVal = '';
-      let medsVal = '';
-      let procVal = '';
-      let docType = 'Unknown Document';
-      
-      const fullTextLower = text.toLowerCase();
-      if (fullTextLower.includes('discharge') || fullTextLower.includes('summary')) docType = 'Discharge Summary';
-      else if (fullTextLower.includes('lab') || fullTextLower.includes('report') || fullTextLower.includes('pathology')) docType = 'Lab Report';
-      else if (fullTextLower.includes('rx') || fullTextLower.includes('prescription') || fullTextLower.includes('clinic')) docType = 'Prescription';
+      // Try AI Extraction via Gemini
+      try {
+        const geminiRes = await fetch(`${API_URL}/api/gemini/extract-entities`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
 
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const lowerLine = line.toLowerCase().trim();
+        if (geminiRes.ok) {
+          const aiData = await geminiRes.json();
+          const docType = aiData.document_type || 'Unknown Document';
+          const nameVal = aiData.patient_name || '';
+          const diagVal = (aiData.diagnoses || []).join(', ');
+          const procVal = (aiData.procedures || []).join(', ');
+          
+          let medsVal = '';
+          if (aiData.medications && Array.isArray(aiData.medications)) {
+            medsVal = aiData.medications.map((m: any) => `${m.name} ${m.dosage || ''} ${m.frequency || ''}`.trim()).join(', ');
+          }
+
+          let labsVal = '';
+          if (aiData.lab_results && Array.isArray(aiData.lab_results)) {
+            labsVal = aiData.lab_results.map((l: any) => `${l.test_name}: ${l.value} (${l.reference_range || ''})`.trim()).join(', ');
+          }
+
+          setExtractions([
+            { field_name: 'Document Type', field_value: docType, raw_text: text, confidence: docType !== 'Unknown Document' ? 0.95 : 0.4 },
+            { field_name: 'Patient Name', field_value: nameVal, raw_text: text, confidence: nameVal ? 0.95 : 0 },
+            { field_name: 'Diagnosis', field_value: diagVal, raw_text: text, confidence: diagVal ? 0.95 : 0 },
+            { field_name: 'Procedures', field_value: procVal, raw_text: text, confidence: procVal ? 0.95 : 0 },
+            { field_name: 'Medications', field_value: medsVal, raw_text: text, confidence: medsVal ? 0.95 : 0 },
+            ...(labsVal ? [{ field_name: 'Lab Results', field_value: labsVal, raw_text: text, confidence: 0.95 }] : [])
+          ]);
+        } else {
+          throw new Error('Gemini API returned error');
+        }
+      } catch (geminiErr) {
+        console.warn('Gemini extraction failed, falling back to regex', geminiErr);
         
-        // Patient Name Parsing
-        if (lowerLine.includes('patient:') || lowerLine.includes('name:')) {
-          nameVal = line.split(/[:]/)[1]?.trim() || line;
-        } else if (lowerLine === 'patient' || lowerLine === 'name') {
-          if (i + 1 < lines.length) {
-            // Remove common artifacts like 'DATE' that appear on the same line in OCR
-            nameVal = lines[i + 1].replace(/DATE/ig, '').trim();
+        // Fallback: basic regex extraction
+        const lines = text.split('\n').filter(l => l.trim().length > 0);
+        let nameVal = '';
+        let diagVal = '';
+        let medsVal = '';
+        let procVal = '';
+        let docType = 'Unknown Document';
+        
+        const fullTextLower = text.toLowerCase();
+        if (fullTextLower.includes('discharge') || fullTextLower.includes('summary')) docType = 'Discharge Summary';
+        else if (fullTextLower.includes('lab') || fullTextLower.includes('report') || fullTextLower.includes('pathology')) docType = 'Lab Report';
+        else if (fullTextLower.includes('rx') || fullTextLower.includes('prescription') || fullTextLower.includes('clinic')) docType = 'Prescription';
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const lowerLine = line.toLowerCase().trim();
+          
+          if (lowerLine.includes('patient:') || lowerLine.includes('name:')) {
+            nameVal = line.split(/[:]/)[1]?.trim() || line;
+          } else if (lowerLine === 'patient' || lowerLine === 'name') {
+            if (i + 1 < lines.length) nameVal = lines[i + 1].replace(/DATE/ig, '').trim();
+          }
+
+          if (lowerLine.includes('diagnosis:') || lowerLine.includes('dx:')) {
+            diagVal = line.split(/[:]/)[1]?.trim() || line;
+          } else if (lowerLine === 'diagnosis' || lowerLine === 'dx') {
+            if (i + 1 < lines.length) diagVal = lines[i + 1].trim();
+          }
+
+          if (lowerLine.includes('procedure:') || lowerLine.includes('surgery:') || lowerLine.includes('operation:')) {
+            procVal += (procVal ? ', ' : '') + (line.split(/[:]/)[1]?.trim() || '');
+          }
+
+          if (
+            lowerLine.includes('rx:') || lowerLine.includes('tab') || lowerLine.includes('cap') || 
+            lowerLine.includes('mg') || lowerLine.includes('ml') || lowerLine.includes('syrup')
+          ) {
+            if (!lowerLine.includes('drug dosage') && !lowerLine.includes('medications')) {
+              medsVal += (medsVal ? ', ' : '') + line.trim();
+            }
           }
         }
 
-        // Diagnosis Parsing
-        if (lowerLine.includes('diagnosis:') || lowerLine.includes('dx:')) {
-          diagVal = line.split(/[:]/)[1]?.trim() || line;
-        } else if (lowerLine === 'diagnosis' || lowerLine === 'dx') {
-          if (i + 1 < lines.length) {
-            diagVal = lines[i + 1].trim();
-          }
-        }
-
-        // Procedure Parsing (Feature 10)
-        if (lowerLine.includes('procedure:') || lowerLine.includes('surgery:') || lowerLine.includes('operation:')) {
-          procVal += (procVal ? ', ' : '') + (line.split(/[:]/)[1]?.trim() || '');
-        }
-
-        // Medications Parsing
-        if (
-          lowerLine.includes('rx:') || 
-          lowerLine.includes('tab') || 
-          lowerLine.includes('cap') || 
-          lowerLine.includes('mg') || 
-          lowerLine.includes('ml') || 
-          lowerLine.includes('syrup')
-        ) {
-          // Ignore table headers
-          if (!lowerLine.includes('drug dosage') && !lowerLine.includes('medications')) {
-            medsVal += (medsVal ? ', ' : '') + line.trim();
-          }
-        }
+        setExtractions([
+          { field_name: 'Document Type', field_value: docType, raw_text: text, confidence: docType !== 'Unknown Document' ? 0.9 : 0.4 },
+          { field_name: 'Patient Name', field_value: nameVal || '', raw_text: text, confidence: nameVal ? 0.8 : 0 },
+          { field_name: 'Diagnosis', field_value: diagVal || '', raw_text: text, confidence: diagVal ? 0.7 : 0 },
+          { field_name: 'Procedures', field_value: procVal || '', raw_text: text, confidence: procVal ? 0.75 : 0 },
+          { field_name: 'Medications', field_value: medsVal || '', raw_text: text, confidence: medsVal ? 0.75 : 0 }
+        ]);
       }
 
-      setExtractions([
-        { field_name: 'Document Type', field_value: docType, raw_text: text, confidence: docType !== 'Unknown Document' ? 0.9 : 0.4 },
-        { field_name: 'Patient Name', field_value: nameVal || '', raw_text: text, confidence: nameVal ? 0.8 : 0 },
-        { field_name: 'Diagnosis', field_value: diagVal || '', raw_text: text, confidence: diagVal ? 0.7 : 0 },
-        { field_name: 'Procedures', field_value: procVal || '', raw_text: text, confidence: procVal ? 0.75 : 0 },
-        { field_name: 'Medications', field_value: medsVal || '', raw_text: text, confidence: medsVal ? 0.75 : 0 }
-      ]);
 
       setStep('correction');
     } catch (err) {
@@ -268,7 +310,7 @@ export default function DocumentUploadFlow() {
 
   if (!session) return null;
 
-  const headerTitle = session.language === 'hi' ? 'पुराने रिकॉर्ड अपलोड करें' : 'Upload Past Medical Records';
+  // headerTitle removed – was unused
 
   return (
     <div className="min-h-screen bg-sand flex flex-col p-6 relative overflow-hidden font-body text-charcoal">
@@ -279,11 +321,16 @@ export default function DocumentUploadFlow() {
         {step === 'upload' && (
           <QuestionCard className="text-center p-8 sm:p-12">
             <div className="flex justify-between items-start mb-4">
-              <h1 className="font-display text-3xl sm:text-4xl text-charcoal text-left">
-                {headerTitle}
-              </h1>
+              <div className="mb-8 text-left">
+                <h1 className="font-display text-3xl sm:text-4xl text-charcoal mb-2">
+                  {t('upload.title')}
+                </h1>
+                <p className="text-muted text-sm sm:text-base">
+                  {t('upload.subtitle')}
+                </p>
+              </div>
               <button
-                onClick={() => speak(headerTitle, session.language === 'hi' ? 'hi-IN' : 'en-US')}
+                onClick={() => speak(t('upload.title') + '. ' + t('upload.subtitle'), session.language === 'hi' ? 'hi-IN' : 'en-US')}
                 className="w-11 h-11 rounded-full bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center shrink-0"
                 title="Listen to instruction"
               >
@@ -291,11 +338,12 @@ export default function DocumentUploadFlow() {
               </button>
             </div>
 
-            <p className="text-muted text-base sm:text-lg mb-8 text-left">
-              {session.language === 'hi' 
-                ? 'बेहतर निदान के लिए अपनी पुरानी प्रिस्क्रिप्शन या रिपोर्ट की तस्वीर लें।' 
-                : 'Take a picture of your previous prescriptions or reports for an enhanced AI diagnostic review.'}
-            </p>
+            {validationError && (
+              <div className="bg-danger/10 text-danger p-4 rounded-xl mb-6 flex flex-col items-center border border-danger/20">
+                <AlertTriangle className="w-6 h-6 mb-2" />
+                <p className="font-bold">{validationError}</p>
+              </div>
+            )}
 
             {uploadError && (
               <div className="bg-danger/10 text-danger p-6 rounded-2xl mb-8 flex flex-col items-center border border-danger/20">
@@ -327,13 +375,13 @@ export default function DocumentUploadFlow() {
                 className="w-full sm:w-64 min-h-[140px] rounded-[16px] bg-white hover:bg-sand border-2 border-warmgray flex flex-col items-center justify-center transition-colors shadow-xs"
               >
                 <UploadCloud className="w-10 h-10 text-muted mb-3" />
-                <span className="text-lg font-bold text-charcoal">Upload File</span>
+                <span className="text-lg font-bold text-charcoal">{t('upload.button')}</span>
               </button>
             </div>
             
             <input 
               type="file" 
-              accept="image/*" 
+              accept="image/*,application/pdf" 
               capture="environment" 
               className="hidden" 
               ref={fileInputRef}
@@ -372,7 +420,7 @@ export default function DocumentUploadFlow() {
                 onClick={() => navigate('/medical-history')}
                 className="text-muted hover:text-charcoal underline underline-offset-4 text-sm"
               >
-                Skip this step
+                {t('upload.skip')}
               </button>
             </div>
           </QuestionCard>
@@ -381,7 +429,7 @@ export default function DocumentUploadFlow() {
         {step === 'processing' && (
           <QuestionCard className="text-center p-16">
              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
-             <h2 className="font-display text-3xl text-charcoal mb-4">Scanning Document (Sarvam & Tesseract OCR)...</h2>
+             <h2 className="font-display text-3xl text-charcoal mb-4">{t('upload.processing')}</h2>
              <div className="w-full max-w-md mx-auto bg-warmgray rounded-full h-4 mb-4 overflow-hidden">
                <div className="bg-primary h-4 transition-all duration-300" style={{ width: `${progress}%` }}></div>
              </div>
@@ -391,8 +439,8 @@ export default function DocumentUploadFlow() {
 
         {step === 'correction' && (
           <QuestionCard className="p-8">
-            <h2 className="font-display text-3xl text-charcoal mb-2">Review Extracted Info</h2>
-            <p className="text-muted mb-6">Please check the fields below and correct any mistakes.</p>
+            <h2 className="font-display text-3xl text-charcoal mb-2">{t('upload.correction')}</h2>
+            <p className="text-muted mb-6">{t('upload.correction_sub')}</p>
 
             {extractions.every(e => !e.field_value) && (
               <div className="bg-terracotta/10 text-terracotta p-4 rounded-xl mb-8 flex flex-col items-center text-center border border-terracotta/20">

@@ -68,12 +68,8 @@ export function useAsr() {
 
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try {
-        if (mediaRecorderRef.current.state === 'recording') {
-          mediaRecorderRef.current.requestData(); // Force flush chunks
-        }
         mediaRecorderRef.current.stop();
-      } catch (err) {
-        console.warn('Failed to stop MediaRecorder cleanly:', err);
+      } catch {
         cleanupMedia();
         setIsListening(false);
         setStatus('idle');
@@ -139,124 +135,7 @@ export function useAsr() {
       setIsListening(true);
       setStatus('listening');
 
-      // 2. Setup MediaRecorder for robust backend AI transcription
-      let recorder: MediaRecorder | null = null;
-      try {
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus'
-          : MediaRecorder.isTypeSupported('audio/webm')
-          ? 'audio/webm'
-          : '';
-
-        recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-        mediaRecorderRef.current = recorder;
-
-        recorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0) {
-            audioChunksRef.current.push(event.data);
-          }
-        };
-
-        recorder.onstop = async () => {
-          setIsListening(false);
-
-          // We will send recorded audio chunks to Sarvam AI / Gemini backend first
-          // and only fallback to Web Speech API if it fails.
-
-          // Otherwise, send recorded audio chunks to Sarvam AI / Gemini backend
-          if (audioChunksRef.current.length > 0) {
-            setIsProcessing(true);
-            setStatus('processing');
-
-            try {
-              const mimeType = recorder?.mimeType || 'audio/webm';
-              const cleanMimeType = mimeType.split(';')[0];
-              
-              let fileExt = 'webm';
-              if (cleanMimeType.includes('mp4') || cleanMimeType.includes('mp4a')) fileExt = 'mp4';
-              else if (cleanMimeType.includes('ogg')) fileExt = 'ogg';
-
-              const audioBlob = new Blob(audioChunksRef.current, {
-                type: cleanMimeType,
-              });
-
-              const formData = new FormData();
-              formData.append('file', audioBlob, `speech.${fileExt}`);
-              formData.append('language', requestedLang);
-
-              const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`;
-              
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-              const response = await fetch(`${API_URL}/api/sarvam/asr`, {
-                method: 'POST',
-                body: formData,
-                signal: controller.signal,
-              });
-              clearTimeout(timeoutId);
-
-              if (response.ok) {
-                const data = await response.json();
-                if (data && data.transcript) {
-                  const cleaned = data.transcript.trim();
-                  setTranscript(cleaned);
-                  finalTranscriptRef.current = cleaned;
-                  if (onResultCallbackRef.current) {
-                    onResultCallbackRef.current(cleaned);
-                  }
-                }
-              } else {
-                console.warn('Backend ASR returned non-200 status:', response.status);
-                // Fallback to Web Speech on non-200
-                const existingText = finalTranscriptRef.current.trim();
-                if (existingText.length > 0) {
-                  if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
-                  setStatus('idle');
-                } else {
-                  setError('Backend transcription failed. Please try again or type your answer.');
-                  setStatus('error');
-                }
-              }
-            } catch (postErr) {
-              console.warn('Failed to send audio to backend ASR:', postErr);
-              // Fallback to Web Speech on network error
-              const existingText = finalTranscriptRef.current.trim();
-              if (existingText.length > 0) {
-                if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
-                setStatus('idle');
-              } else {
-                setError('Transcription failed. Please try again or type your answer.');
-                setStatus('error');
-              }
-            } finally {
-              setIsProcessing(false);
-              setStatus('idle');
-            }
-          } else {
-            // No audio chunks captured, fallback to Web Speech
-            const existingText = finalTranscriptRef.current.trim();
-            if (existingText.length > 0) {
-              if (onResultCallbackRef.current) onResultCallbackRef.current(existingText);
-              setStatus('idle');
-            } else {
-              setError('No audio captured. Please check your microphone permissions or speak louder.');
-              setStatus('error');
-            }
-          }
-
-          cleanupMedia();
-          if (onEndCallbackRef.current) {
-            onEndCallbackRef.current();
-          }
-        };
-
-        recorder.start(1000); // Flush chunks every second for robust cross-platform capture
-      } catch (recErr) {
-        console.warn('MediaRecorder setup error:', recErr);
-      }
-
-      // 3. Start WebSpeech API in parallel for instant client-side interim feedback
+      // Start WebSpeech API
       const SpeechRecognition =
         typeof window !== 'undefined'
           ? window.SpeechRecognition || window.webkitSpeechRecognition
@@ -286,16 +165,30 @@ export function useAsr() {
             if (currentText) {
               setTranscript(currentText);
               finalTranscriptRef.current = (final || currentText).trim();
-              // Removed instant onResultCallbackRef to prevent preempting Sarvam ASR
+              if (final && onResultCallbackRef.current) {
+                 onResultCallbackRef.current(finalTranscriptRef.current);
+              }
             }
           };
 
           recognition.onerror = (e: any) => {
-            console.warn('WebSpeech interim error (will rely on MediaRecorder/Sarvam):', e.error);
+            console.warn('WebSpeech error:', e.error);
+            if (e.error === 'not-allowed') {
+              setError('Microphone access denied.');
+              setStatus('error');
+            }
           };
 
           recognition.onend = () => {
-            // WebSpeech ended; MediaRecorder continues until user or timer stops it
+            setIsListening(false);
+            setStatus('idle');
+            const existingText = finalTranscriptRef.current.trim();
+            if (existingText.length > 0 && onResultCallbackRef.current) {
+               onResultCallbackRef.current(existingText);
+            }
+            if (onEndCallbackRef.current) {
+              onEndCallbackRef.current();
+            }
           };
 
           recognitionRef.current = recognition;
@@ -303,6 +196,11 @@ export function useAsr() {
         } catch (speechErr) {
           console.warn('WebSpeech start error:', speechErr);
         }
+      } else {
+        setStatus('unsupported');
+        setError('Voice input is not supported in this browser.');
+        setIsListening(false);
+        return;
       }
 
       // 4. Auto-stop timer (default 8 seconds or custom maxDuration)

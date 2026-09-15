@@ -60,6 +60,18 @@ export default function PatientDashboard() {
     navigate('/patient/login');
   };
 
+  const handleRevokeConsent = async (sessionId: string) => {
+    if (!window.confirm('Are you sure you want to revoke consent? This will permanently anonymize this visit record.')) return;
+    try {
+      const res = await fetch(`${API_URL}/api/patient/visits/${sessionId}/revoke`, { method: 'POST' });
+      if (res.ok) {
+        setVisits(visits.filter(v => v.id !== sessionId));
+      }
+    } catch (err) {
+      console.error('Failed to revoke consent:', err);
+    }
+  };
+
   const handleDownloadFHIR = (sessionId: string) => {
     window.open(`${API_URL}/api/fhir/${sessionId}`, '_blank');
   };
@@ -112,12 +124,21 @@ export default function PatientDashboard() {
                         Chief Complaint: <span className="font-body text-terracotta">{visit.chief_complaint || 'N/A'}</span>
                       </h3>
                     </div>
-                    <Button 
-                      onClick={() => handleDownloadFHIR(visit.id)}
-                      className="bg-charcoal hover:bg-charcoal/90 text-white rounded-[12px]"
-                    >
-                      <FileJson className="w-4 h-4 mr-2" /> View FHIR Bundle
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button 
+                        onClick={() => handleRevokeConsent(visit.id)}
+                        variant="outline"
+                        className="border-danger text-danger hover:bg-danger hover:text-white rounded-[12px]"
+                      >
+                        Revoke Consent
+                      </Button>
+                      <Button 
+                        onClick={() => handleDownloadFHIR(visit.id)}
+                        className="bg-charcoal hover:bg-charcoal/90 text-white rounded-[12px]"
+                      >
+                        <FileJson className="w-4 h-4 mr-2" /> View FHIR Bundle
+                      </Button>
+                    </div>
                   </div>
 
                   {summary ? (

@@ -1,0 +1,2833 @@
+{
+ "wer": 93.26696242376421,
+ "fuzzy_wer": 55.778300910582836,
+ "cer": 92.99237445808589,
+ "samples": [
+  {
+   "ref": "చిన్న ద్వీపాలలో చాలా వరకు స్వతంత్ర దేశాలు లేదా ఫ్రాన్స్ తో సంబంధం కలిగి ఉన్నాయి ఇంకా వీటిని లగ్జరీ బీచ్ రిసార్ట్ స్ అని పిలుస్తారు",
+   "hyp": "چینندwé pala lo cháala vrku svatantar deshá lo lehda france ho samadnam kali ke munnai Ṭhinkavitini lakjari beach resort no any pillu staru",
+   "wer": 0.9692307692307692,
+   "cer": 0.9692307692307692
+  },
+  {
+   "ref": "కొన్ని క్రియలు ఆబ్జెక్టుల మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "hyp": "konni kree lo object lo madhya teida lo gurtin chadanaki ide o ka mukhyamainam argam",
+   "wer": 0.9733333333333334,
+   "cer": 0.9733333333333334
+  },
+  {
+   "ref": "మీరు మీ స్వంతం ఆలోచనలతో కాకుండా ప్రభుత్వాల సలహా కూడా తీసుకోవాలని అనుకోవచ్చు అయితే వారి సలహా వారి పౌరుల కోసం రూపొందించబడింది",
+   "hyp": "میرு میسфنتم آلوچنالتو کا کننا پریبتوال سالحا کورتیز کوالانے انکو وچو. آیتے واری سالحا دواری پورولا کوسم روپا دنچا بڑنچا بڑنگ دی.",
+   "wer": 0.967479674796748,
+   "cer": 0.967479674796748
+  },
+  {
+   "ref": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "hyp": "ki dhrusya luk pirmidla pirda sincha bada thaayi mariu vaira pirmidla lo velikincha bada aayi.",
+   "wer": 0.9736842105263158,
+   "cer": 0.9736842105263158
+  },
+  {
+   "ref": "పరికరాన్ని గాల్లో కదిలించడం ద్వారా వీడియో గేమ్స్లో యాక్షన్లు మరియు కదలికలను నియంత్రించడానికి ఇది ఆటగాళ్లకు వీలు కల్పిస్తుంది",
+   "hyp": "Parikarani Galla Kadelingshadam Dwarra vido games lho action lho mario Kadelikalano nyanthrinjadani ki idi artagavlaku viyulu kalbis tundi.",
+   "wer": 0.9758064516129032,
+   "cer": 0.9758064516129032
+  },
+  {
+   "ref": "కాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "hyp": "gail shia potasya mati moolakala mo loo halu ga parikanis taru vindi bhangaram mati loo halu koda unnai.",
+   "wer": 0.9560439560439561,
+   "cer": 0.9560439560439561
+  },
+  {
+   "ref": "ఆ విధంగా పెన్సిల్ బయటకు వచ్చినప్పుడు చాలా మందికి మంచి స్నేహితుడు",
+   "hyp": "a vidanga penthul biteg vatchin appur chala mandi ki manchisne hithudu",
+   "wer": 0.953125,
+   "cer": 0.953125
+  },
+  {
+   "ref": "\"అతని పని అటువంటి గుర్తింపు పొందిన నాణ్యత మరియు వివరాలతో కూడినది అతను ఫిలాటెలిస్టులలో చాలా తక్కువ \"కుటుంబసభ్యుని లాంటి\" వాళ్ళల్లో ఒకడు. అతని పనులను సేకరించడంలో మాత్రమే కొందరు ప్రత్యేకత కలిగి ఉన్నారు.",
+   "hyp": "اتھنு پانی اٹھو ہணٹی گுர்திம் پுற்று நான் என்றால் மறியும் வேவராத்தாக குடினாரி. اتھنும் பேலாம் தேஷ்டில்லாத் தில்லோ, چாலா, தக்கு, கொடும்ப சப்பினிலாண்டி வாலல்லவாக் கடு. اتھنும் பண்ளுணும் சேக்கரிஞ்சினம்லும் மாத்ரமே கொண்டுரு பரத்தியக்கத் தகலையும் வண்ணார்.",
+   "wer": 0.9798994974874372,
+   "cer": 0.9798994974874372
+  },
+  {
+   "ref": "ఐరోపా సాపేక్షంగా చిన్నదే కాని అనేక స్వతంత్ర దేశాలతో కూడిన ఖండం సాధారణ పరిస్థితుల్లో అనేక దేశాల్లో ప్రయాణించడం అంటే వీసా అప్లికేషన్ లు మరియు పాస్ పోర్ట్ నియంత్రణ ద్వారా అనేకసార్లు వెళ్లాల్సి ఉంటుంది",
+   "hyp": "Ayropa Saapekshanga Chinna Dekani, Anayaka Swatantra Desaalatva Kudina Kandam Saadharana Paristhitulho, Anayaka Desaalho, Pryani Chadamanthe, Visa Application Loo, Maruyo Passport, Niyantranadwara, Anayaka Sar Loo, Vellalshi Vendhi",
+   "wer": 0.9898477157360406,
+   "cer": 0.9898477157360406
+  },
+  {
+   "ref": "దాని 78 సిఫార్సుల్లో మొదటిది శత్రు దేశాల జోక్యానికి వ్యతిరేకంగా ఇరాక్ సరిహద్దులను సురక్షితంచేయడానికి మరియు దాని పొరుగుదేశాలతో దౌత్య సంబంధాలను తిరిగి నెలకొల్పడానికి ఈ ఏడాది చివరిలో గా ఒక కొత్త దౌత్య పరమైన చొరవ తీసుకోవాలి",
+   "hyp": "Dhani, Deppai NMD sifasurallu modati ji shetru deja lajo kyanig viddir ekanga, irakhari hadlana shriksitam jiye dhan ke mari yudhani purugu deja lato, dhaud ke samandhalan tirgi nelkol padan ki yeyad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad, yeyadad,",
+   "wer": 0.9726027397260274,
+   "cer": 0.9726027397260274
+  },
+  {
+   "ref": "బుధవారం జరిగిన ఈవెంట్కు ముందు carpanedo ఛాంపియన్షిప్లో రెండు వ్యక్తిగత రేసులలో పాల్గొన్నారు",
+   "hyp": "Badawaram Jarekana event kumundu, karpaniyadu, champion shiplu, krandu vekti kahtar esu lalo palgun naru.",
+   "wer": 0.989010989010989,
+   "cer": 0.989010989010989
+  },
+  {
+   "ref": "పట్టాలను నిలబెట్టడానికి క్రాస్ టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాక్ లు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "hyp": "پتالم لیلہ بٹڑھڑا نکی کراستیلوں چالہ مندگانے پر بہتہ بڑھای آئی تھی پائی بہا گم لو انپا کنیجم انٹی اٹراکل مرنت سمردہ وانتگا انٹا یانی کرمگا گرہیم چارو",
+   "wer": 0.9483870967741935,
+   "cer": 0.9483870967741935
+  },
+  {
+   "ref": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే 802.11a 802.11b మరియు 802.11gతో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "hyp": "b",
+   "wer": 0.009523809523809525,
+   "cer": 0.009523809523809525
+  },
+  {
+   "ref": "గ్రీన్ ల్యాండ్ తక్కువ జనాభాతో ఉండేది నోర్స్ సగాస్ లో రిక్ ది రెడ్ హత్య చేసిననందు వల్ల ఐస్లాండ్ నుండి బహిష్కరించబడినట్లు చెబుతారు ఇంక తరువాత పశ్చిమంగా ప్రయాణిస్తున్నప్పుడు గ్రీన్ లాండ్ ను కనుగొని దానికి గ్రీన్ ల్యాండ్ అని పేరు పెట్టాడు",
+   "hyp": "Greenland takhua janabata vunde di Nors sakaaslo rik dired hathye chayasinandu valla Iceland nondi baheshkarin cha badi natu chaeputaru ndi nka tanuvatha pastimanga pranas tanapu do Greenlandu kanugani dani greenlandani peripetta do",
+   "wer": 0.9700854700854701,
+   "cer": 0.9700854700854701
+  },
+  {
+   "ref": "ఆదివారం అర్ధరాత్రి అమెరికా అధ్యక్షుడు డొనాల్డ్ ట్రంప్ పత్రికా కార్యదర్శి ద్వారా విడుదల చేసిన ఒక ప్రకటనలో అమెరికా దళాలు సిరియా నుంచి వైదొలుగుతున్నట్లు ప్రకటించారు",
+   "hyp": "Aadikaramaadaraatri, Amerika Adyakshoro, Dornalchrom, Patrika Kariyadarshithwar, Bilidara Chaisenu Kaprakatanalau, Amerika Dhalalu, Siria Nanci, Weidalu Vithurnatlu, Prakatin Cheru.",
+   "wer": 0.9751552795031055,
+   "cer": 0.9751552795031055
+  },
+  {
+   "ref": "బాగా గుండ్రంగా ఉండే అథ్లెట్ పులి ఎక్కగలదు బాగా లేకపోయినా ఈదడం ఎక్కువ దూరం దూకడం మరియు బలమైన మనిషి యొక్క శక్తితో ఐదు రెట్లు లాగడం",
+   "hyp": "باگا گுندرஙگا ہندے آتلٹ, پلی اککہ گلدو باگا لکپائینا,یذیدم,یکو و دورم دو کڑم,مریو بلمائینا منیشی اکا سکتی تو آیدھو رکھڑھا گڑھا",
+   "wer": 0.9765625,
+   "cer": 0.9765625
+  },
+  {
+   "ref": "ప్రధాన విషయానికి అత్యంత ప్రభావవంతమైన ప్రదేశం రేఖల ఖండన వద్ద చిత్రాన్ని నిలువుగా మరియు అడ్డంగా మూడవ వంతుగా విభజిస్తుంది ఉదాహరణ చూడండి",
+   "hyp": "پرادھانا வیشے یانی کی اتھینت پر بہاں وانتا بہنا پر دیشم ریکلا کنڈانا آندہ چترا لنیلوگہ مریو اڑنگہ مدو وانتے تھا ویبچیستنگی۔ وضاہرنا چوراً۔",
+   "wer": 0.9924242424242424,
+   "cer": 0.9924242424242424
+  },
+  {
+   "ref": "అతన్ని తర్వాత కేంబ్రిడ్జిలోని అడెన్ బ్రూక్స్ హాస్పిటల్ కు తరలించారు",
+   "hyp": "bhatani, tarawata kein bhi jiloni, aden brooks hospital ko talin chayaru",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "మా సంస్థ యొక్క ధృవీకరణను ఉపసంహరించుకోడం కంటే మా క్రీడాకారులు మరియు క్లబ్ల ఆసక్తులు మరియు వారి క్రీడ ముందుకు సాగే విధంగా మా సంస్థలో అర్థవంతమైన మార్పులు చేయడం మంచిదని usoc వారు ఇచ్చిన ప్రకటనతో మేము అంగీకరిస్తున్నాము",
+   "hyp": "mga samsthyokka druvi karanananu uppisapu । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । ।",
+   "wer": 0.8873239436619719,
+   "cer": 0.8873239436619719
+  },
+  {
+   "ref": "ఈ ప్రమాదం ఎత్తుగా ఉన్న పర్వత భూభాగంలో జరిగిందని ఇంకా శత్రువులు రాజేసిన అగ్ని ఫలితంగా జరిగిందని నమ్ముతారు",
+   "hyp": "i pramuatham et tu qawana parwata bho baagam lo jarigin nani, ing ka setru luraja es na agni falitangga jarigin nani namutaru.",
+   "wer": 0.9615384615384616,
+   "cer": 0.9615384615384616
+  },
+  {
+   "ref": "కొంతమంది అతను చెప్పేది సరైనదని అనుకున్నారు కాని చాలా మంది ప్రజలు దీనికి విరుద్ధంగా సౌర వ్యవస్థ సూర్యుడితో సహా భూమి చుట్టూ తిరుగుతాయి మరియు ఇతర నక్షత్రాలు కూడా అని విశ్వసించారు",
+   "hyp": "கொنت மந்தி அடன் செப்பேதி சரையன் தனி அனக்குண்ணாரு, காணிசாலாமந்தி பரசலு, தேன்னுக்கு விருத்தங்கள, சாவரவியா வாஸ்தா, சோரிழுத்தோ சாہ போமி சுட்டு திருக்குத்தாய், மரியும் எடுத்தில் நக்ஷத்திராலுக்குடா, அனை விஷ்வசிங்சாரு.",
+   "wer": 0.9771428571428571,
+   "cer": 0.9771428571428571
+  },
+  {
+   "ref": "వివాహమై ఇద్దరు పెద్ద పిల్లలున్న దువల్ ఈ కథకు సంబంధించిన మిల్లర్పై పెద్ద ముద్ర వేయలేదు",
+   "hyp": "viva hamai idduru petha pillu luna doval hikadoku sambhaddhenchana millar pai petha mudra vayelaiyuru",
+   "wer": 0.9882352941176471,
+   "cer": 0.9882352941176471
+  },
+  {
+   "ref": "ఇరాక్ పట్ల కార్యనిర్వాహక వర్గం యొక్క ప్రస్తుత విధానం యొక్క దాదాపు ప్రతి అంశాన్ని ఈ నివేదిక తీవ్రంగా విమర్శిస్తుంది మరియు ఇది తక్షణం దిశను మార్చాలని కోరుకుంది",
+   "hyp": "irakpatla, karyanirva haka vardam yakta prasthota vidanam yakka dada puprati amsaani, ii nivya dika tevranga vemar sestun di mariu, ii di taksanam di sanumat chalaan kaur kundi.",
+   "wer": 0.9617834394904459,
+   "cer": 0.9617834394904459
+  },
+  {
+   "ref": "మధ్యప్రాచ్యం యొక్క వెచ్చని వాతావరణంలో ఇల్లు అంత ముఖ్యమైనది కాదు",
+   "hyp": "बद्द्द व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व़ व",
+   "wer": 0.9682539682539683,
+   "cer": 0.9682539682539683
+  },
+  {
+   "ref": "ఇది తెలివైనదిగా అనిపిస్తుంది ఎందుకంటే భూమి కదులుతున్నట్లుగా అనిపించదు కదా",
+   "hyp": "tiliwainadika anipis tundi, ndi kante bhoomi kad hulapun natilu ganapin chadu kata",
+   "wer": 0.9863013698630136,
+   "cer": 0.9863013698630136
+  },
+  {
+   "ref": "ప్రాంతీయ మరియు కాలానుగుణ తీవ్రమైన వాతావరణ దృగ్విషయాలలో మంచు తుఫానులు మరియు దుమ్ము తుఫానులు ఉన్నాయి",
+   "hyp": "پرانتیயہ مریو کالانگுنہ تیبرمہینہ واتا ہرنا ڈرکوشیاللو منچتو فانلو مریو دومتو فانلو انہی",
+   "wer": 0.8673469387755102,
+   "cer": 0.8673469387755102
+  },
+  {
+   "ref": "పరారుణ స్పెక్ట్రోస్కోపీ ftir తో సరిపోల్చినప్పుడు ప్రభావిత పెంపుడు జంతువుల మూత్రంలో కనిపించే ఈ స్ఫటికాల మిశ్రమాలు సరిపోలాయి",
+   "hyp": "Paraaara na Spectroscopy, FTI Artha, Saripolji na Pulao, Prabhavita Pemphoda, Jentuva na Muhtram na Kannipinca, East Patika na Mramanu, Saripolahi.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "చుట్టుపక్కల ద్వీపాలలో క్రెడిట్ కార్డులను అంగీకరించరు అయినప్పటికీ బ్రిటిష్ మరియు యునైటెడ్ స్టేట్స్ కరెన్సీని వారు స్వీకరించే అవకాశం ఉంది అక్కడి యజమానులను ఎటువంటి చెల్లింపు పద్ధతి ఉపయోగిస్తున్నారో అడిగి ముందుగానే తెలుసుకోండి",
+   "hyp": "چھٹு پکھلہ دویپாலہ لگھڑڑٹ کھڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑڑ",
+   "wer": 0.6441441441441441,
+   "cer": 0.6441441441441441
+  },
+  {
+   "ref": "కేవలం 2 వారాలలో అమెరికన్లు మరియు ఫ్రీ ఫ్రెంచ్ ఫోర్సెస్ దక్షిణ ఫ్రాన్స్కు విముక్తి కల్పించి జర్మనీ వైపు తిరుగు ప్రయాణమయ్యారు",
+   "hyp": "KLM 2 VARALALA, AMERICANALA, MADUFRI, FRENCH, FORCE, STACTION, FRANSCUR, VUMUKTI, KALPINCHE, JERMANI, VEGUT, IRU, PRAYAN, PRAYAN, AMAYARU.",
+   "wer": 0.943089430894309,
+   "cer": 0.943089430894309
+  },
+  {
+   "ref": "అగ్నిమాపక సిబ్బంది చివరికి రాత్రి 11:35 గంటల సమయంలో మంటలను అదుపు చేశారు",
+   "hyp": "Agni mabakasibbanthi chivari ke rathri 10 kundu gantala muppai dhu gantala samayamloh mantalamu vadapu chaisaru",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "రెండు సమ్మేళనాలు ఒకదానితో ఒకటి చర్య జరిపి మూత్రపిండాల పనితీరును అడ్డగించే స్ఫటికాలను ఏర్పరుస్తాయని విశ్వవిద్యాలయ పరిశోధకులు తెలిపారు",
+   "hyp": "みたいな生命のために、おかしい椎子を取り除き、 椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き、椎子を取り除き",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "జనాల గుంపు చుట్టూ చేరి అరుస్తూ మరియు రాజు మరియు రాణిని బెదిరిస్తుండగా వాళ్ళు ఒక గుర్రపు బండిలో పారిస్కు తిరిగి ప్రయాణమయ్యారు",
+   "hyp": "جانالا گمپچھٹھو چیری آرستھو, مریو راجو, مریو رانے نے بیدری سکھنڑا, والوگگورپ بندلو پیرسکتیری پریانا میار",
+   "wer": 0.8306451612903226,
+   "cer": 0.8306451612903226
+  },
+  {
+   "ref": "క్రిముల-రేఖకణాలలో ఉత్పరివర్తనాలు మాత్రమే పిల్లలకు చేరగలవు ఇతర చోట్ల ఉత్పరివర్తనాలు కణ-మరణం లేదా క్యాన్సర్ కు కారణం కావచ్చు",
+   "hyp": "கریمولو ریکھا کنالا لو اُتپری ورطناالوں معترمیں پلل لکو چیرگلوگو ایتر اچھوٹلہ اُتپری ورطناالوں کنمرنام لے گا کانسرکوں کارنامکا ہوتچو",
+   "wer": 0.9754098360655737,
+   "cer": 0.9754098360655737
+  },
+  {
+   "ref": "\"గత వారం అదనంగా 34 వేడెక్కిన సంఘటనల గురించి apple తమకు తెలియజేసినట్లు meti ప్రకటించింది దీనిని కంపెనీ \"నాన్-సీరియస్\" గా చెప్తున్నారు.",
+   "hyp": "Ngatavaram, Aadhananga, Mukpai Nalogu, Veedekin, Sanvatarana, Guruji, Apple, Thamukutiliya, Jaisanakulu, METI, Prakattin, Dheera, Kampani, Non-Serieska, Chaptar Naro.",
+   "wer": 0.9924812030075187,
+   "cer": 0.9924812030075187
+  },
+  {
+   "ref": "మనుషులు పీల్చే ఆక్సిజన్ను మొక్కలు తయారు చేస్తాయి మరియు మనషులు వదిలే కార్బన్-డయాక్సైడ్ను మొక్కలు తీసుకుంటాయి అంటే ఊపిరి బయటికి వదలడం",
+   "hyp": "Manushulu peel cha aksijanu mokkala thayar chais thai. Mariyo Manushulu vadala karbandai aksainu mokkala this kuntai. Ante vupiri bayte ki vadala dom.",
+   "wer": 0.9694656488549618,
+   "cer": 0.9694656488549618
+  },
+  {
+   "ref": "ఫలితంగా 2 చేప జాతులు అంతరించిపోయాయి మరో 2 చేప జాతులు హంప్బ్యాక్ చబ్తో సహా అంతరించిపోతున్నాయి",
+   "hyp": "Palitanga 2 chaipa jatulu antharinchu poya yai marau 2 chaipa jatulu hampe back chaptu saha antharinchu pohtunna yai",
+   "wer": 0.9782608695652174,
+   "cer": 0.9782608695652174
+  },
+  {
+   "ref": "ఇటాలియన్ భాష కూడా రాష్ట్రంలో పనిచేసే వారిలో ఎక్కువ మంది ఉపయోగించే రోజువారీ భాష అయితే లాటిన్ ను తరచుగా మతపరమైన సంబరాల్లో ఉపయోగిస్తారు",
+   "hyp": "Pitalian Bhaj koda Rashtam Lopanjase vahalo equomandu peyaginca roju vahari Bhajah ۔ Aithelatinu tarjuga matapara meinasambhara hulao peyo gistaru.",
+   "wer": 0.9696969696969697,
+   "cer": 0.9696969696969697
+  },
+  {
+   "ref": "ఆకులు మరియు గింజలలో లభించే ప్రోటీన్లు మనకు అత్యంత సులభంగా లభించే మొక్కల వనరులు కానీ ఇవి మనవంటి వారికి వండనిదే జీర్ణించుకోవడం కష్టం",
+   "hyp": "अगलो पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर पूर",
+   "wer": 0.9846153846153847,
+   "cer": 0.9846153846153847
+  },
+  {
+   "ref": "ఏది ఏమయినప్పటికీ రాత్రికి రాత్రే పథకాన్ని అమలు చేసి సోవియట్ యూనియన్ రెడ్ ఆర్మీకి చెందిన 800,000 మంది సైనికులు రిగా శాంతి ఒప్పందం సోవియట్-పోలిష్ నాన్-అగ్రెషన్ ఒప్పందం మరియు ఇతర అంతర్జాతీయ ఒప్పందాలు ద్వైపాక్షిక మరియు బహుపాక్షిక ఒప్పందాలను ఉల్లంఘిస్తూ పోలాండ్ యొక్క తూర్పు ప్రాంతాలపై దాడి చేసిన తరువాత బెలరషియన్ మరియు ఉక్రేనియన్ ఫ్రంట్లు సృష్టించారు",
+   "hyp": "ADIM AINAPAD ki Rathrikiratre padakano AMALU CHASI SOVYAT UNION RIDAR MIKICCHINDANAN NEMIDIL AXILAMAN DISIGNIKUL URIGASHAANDI UPPANDAM SOVYAT POLIST NON-EGRESSION UPPANDAM MRIU ITARA ANTAR JATYA UPPANDALO ZWAYPAKSIKA MRIU BHAHOPAKSIKA UPPANDALO ULANGISTO POLAN YIKATURPUPRAANDA LAPAI DAD CHASAN TARWATA BELLARASIAN MRIU UKRAINIAN FRIENDS SUSTRINCHARU",
+   "wer": 0.9913294797687862,
+   "cer": 0.9913294797687862
+  },
+  {
+   "ref": "కాల్షియం పొటాషియం వంటి మూలకాలను లోహాలుగా పరిగణిస్తారు వెండి బంగారం వంటి లోహాలు కూడా ఉన్నాయి",
+   "hyp": "1 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個",
+   "wer": 0.9340659340659341,
+   "cer": 0.9340659340659341
+  },
+  {
+   "ref": "ప్రజలు ఇప్పుడు కంప్యూటర్ స్క్రీన్లలో మెసేజ్లు రాస్తునారు ఎప్పుడూ కూడా పదునుపెట్టే షార్ప్నర్ దగ్గరికి రాలేదు",
+   "hyp": "Prasjali, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur, Ṭhapur",
+   "wer": 0.9626168224299065,
+   "cer": 0.9626168224299065
+  },
+  {
+   "ref": "అదే దృక్పథంతో పాటు పురుషులు మోకాళ్ళను కప్పి ఉంచే ప్యాంటును ధరించాలి",
+   "hyp": "½ tsp puruśla llaul",
+   "wer": 0.26865671641791045,
+   "cer": 0.26865671641791045
+  },
+  {
+   "ref": "2002లో గోమా పట్టణం యొక్క చాలా వీధులను ముఖ్యంగా పట్టణ కేంద్రం పూడ్చిపెట్టిన నైరాగోంగో అగ్నిపర్వతం నుండి లావా ద్వారా నాశనం చేయబడింది",
+   "hyp": "2 個 nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9230769230769231,
+   "cer": 0.9230769230769231
+  },
+  {
+   "ref": "మహిళల సిట్టింగ్ గ్రూపులోని నలుగురు స్కీయర్స్ వారి పరుగులు పూర్తి చేయడంలో విఫలమయ్యారు మరియు జెయింట్ స్లాలోమ్ లోని మొత్తం 117 స్కీయర్స్ లో 45 మంది రేసులో ర్యాంక్ సాధించలేక విఫలమయ్యారు",
+   "hyp": "Mahila sitting groupu loun in alguru, skiers war parulu puti chaedam lo vi phala mayyaru malu jains law loom loon i mutham 117 skiers loom nalba aidu mandi race loom rank saajin cele ka vi phala mayyaru",
+   "wer": 0.9779005524861878,
+   "cer": 0.9779005524861878
+  },
+  {
+   "ref": "springboks తమ 5 వరుస ఓటమిల పరంపరకు ఈ విజయంతో ముగింపు పలికింది",
+   "hyp": "Spring box tamma aayu du varsava vautamila paramparaka evijimtua mungimpupal kindi",
+   "wer": 0.8852459016393442,
+   "cer": 0.8852459016393442
+  },
+  {
+   "ref": "రిప్ ప్రవాహాలు అనేవి బీచ్ నుండి విడిపోయే అలల నుండి వచ్చే ప్రవాహం తరచుగా ఒక రీఫ్ లేదా సారూప్యత కలిగి ఉంటాయి",
+   "hyp": "Rip Pravaha Loan Airi Beach Nundi Viri Poe ala Lundi Vachai Pravaha Taro Chuga Oka Riff Leda Saru Pya Tka Lige Untahi",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "గోమా కొంచెం సురక్షితమే అయితే ఉత్తర కివు ప్రావిన్స్లో కొనసాగుతున్న గొడవల పరిస్థితిని అర్థం చేసుకోవడానికి గోమా బయట ఎవరైనా వెళ్ళివచ్చిన వారిని అడిగి తెలుసుకోవాలి",
+   "hyp": "goma quncho syrkshutamaithe uttara qu pravinslo konasa kutanna godavalu parithithi niyarthan cheskoda niki goma baita yavaraina milli vittinavaraini niki tilskodavali",
+   "wer": 0.9746835443037974,
+   "cer": 0.9746835443037974
+  },
+  {
+   "ref": "నాగరికత' అనే పదం లాటిన్ సివిలీస్ నుండి వచ్చింది ఇది లాటిన్ సివిలకు సంబంధించినది దీనికి అర్థం పౌరుడు మరియు సివిటస్ అంటే నగరం లేదా నగర-రాష్ట్రం మరియు ఇది సమాజం యొక్క సైజును కూడా కొంతవరకు నిర్వచించవచ్చు",
+   "hyp": "ناظگری تک ناظگری قتانے پدم لاتن سیبیل اس لو ننڈی وچن دی. ژیلاتن سیبیلکو سموندنچن دی. دینی کے اردم پوروڑوں مریو سیوٹیس انٹے نگرم لیدہ نگرہ راسترم مریو ایدی سماجم یکہ سائزوں کودہ کنتا برکوں ایر وچنچا وچچو.",
+   "wer": 0.9798994974874372,
+   "cer": 0.9798994974874372
+  },
+  {
+   "ref": "falkland అధికారిక కరెన్సీ falkland pound fkp దీని విలువ ఒక బ్రిటిష్ పౌండ్ gbpకు సమానం",
+   "hyp": "FALCLEAN DADICARIC CURRENCY FALCLEAN POUND FKP DINI GILOV A CABILITY SPOND GB PIKU TAMANO",
+   "wer": 0.9294117647058824,
+   "cer": 0.9294117647058824
+  },
+  {
+   "ref": "హాజరైన వారి సంఖ్య ఎంత ఎక్కువంటే st. peter's స్క్వేర్లో జరిగిన అంత్యక్రియలను చూడడానికి అందరికీ సాధ్యపడలేదు",
+   "hyp": "hatharena warisankhe enthe ekko antesain pita sqeed lojerin antakrieran churranan ke andarikhi sadhe padalidhu",
+   "wer": 0.9904761904761905,
+   "cer": 0.9904761904761905
+  },
+  {
+   "ref": "అలాగే ఉత్తరదిక్కున ప్రప౦చవ్యాప్త౦గా ప్రఖ్యాతిగా౦చబడిన మారియన్ అప్రిసియోన్స్ స్థలమైన అవర్ లేడీ ఆఫ్ ఫాతిమా ప్రార్థనా స్థల౦ ను స౦దర్శి౦చ౦డి",
+   "hyp": "चला गी वूतर तिकुन पर पचचाव पचाव परक्या तिक बप़़ लगानच बप़ लगानच वारिन परीवाण परीवान वार लोग ये आब परादन अस नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान नवान �",
+   "wer": 0.9779411764705882,
+   "cer": 0.9779411764705882
+  },
+  {
+   "ref": "అర్జెంటీనా థియేటర్ లో అధ్యక్ష పదవికి పోటీ చేయాలని శ్రీమతి కిర్చ్నర్ తన ఉద్దేశాన్ని ప్రకటించారు ఆమె 2005లో సెనేట్ కు తన ప్రచార కార్యక్రమాన్ని ప్రారంభించినప్పుడు బ్యూనస్ ఎయిర్స్ ప్రావిన్స్ ప్రతినిధి బృందంలో సభ్యురాలిగా కలదు",
+   "hyp": "Argyantina, thiya, tarlo, aadhek, shapadvi ki poti, chiya,ra ni, sri, mathi, kisya, tanah, udheshan, prikatin, siya,ra. Aam, ai, rannu, aidu, lo, seni, it, tanah, prasya,ra, karikraman, ne, prahram, min, jinnapuru, muyonas, airs, pravins, pratin, ne, brannam, lo, sabbir ala, ka,la,du.",
+   "wer": 0.9683257918552036,
+   "cer": 0.9683257918552036
+  },
+  {
+   "ref": "సోషలైజేషన్ యొక్క ప్రాముఖ్యతను వివరించడానికి ఉపయోగించే అత్యంత సాధారణ విధానాల్లో ఒకటి పిల్లలు పెద్దవారు పెరుగుతున్నప్పుడు నిర్లక్ష్యం దురదృష్టం లేదా దుర్బలమైన వేధింపుల ద్వారా వారు సామాజికీకరించబడని దురదృష్టకరమైన దురదృష్టకరమైన వేధింపుల ద్వారా వారి యొక్క దురదృష్టకరమైన కేసులను గీయడం",
+   "hyp": "sosalajasyasyan vikka pramuketanu yurincharan kyupayagin chaathindra sadaaran vidanal lookati pillal lo petdavaro pagyutul napur nilakshandurajashtam reedha dhurbala mana viedhimpula dwaravaru samaji karin chabadin nai dhurujashta karama ina dhurujashta karama ina viedhimpula dwaravari yukka dhurujashta karama ina keethu lana keetheulana keetheulana giyadam",
+   "wer": 0.9892086330935251,
+   "cer": 0.9892086330935251
+  },
+  {
+   "ref": "అందువల్ల కేవలం లేబుల్ వలే నోటేషన్ జోడించబడి ఉండవచ్చు",
+   "hyp": "அந்த வல்லா, கேவலம் Lable, Valle, Notation, Jordan, Chavad, Vachu",
+   "wer": 0.9807692307692307,
+   "cer": 0.9807692307692307
+  },
+  {
+   "ref": "మెదడు ప్యాథాలజి మరియు ప్రవర్తన మధ్య పరస్పర సంబంధం శాస్త్రవేత్తల పరిశోధనకు మద్దతు ఇస్తుంది",
+   "hyp": "میدر پیاتالو جی مریو پر اوارتن مدی پر اصپر سمن دم شاстрہ بیتل پریشو دن اکو مددتو اصطن دی",
+   "wer": 0.9325842696629213,
+   "cer": 0.9325842696629213
+  },
+  {
+   "ref": "హైడ్రోజన్ అయాన్లు అనేవి ఎలక్ట్రాన్లు తీసివేయబడిన ప్రోటాన్లు హైడ్రోజన్ అణువులలో 1 ప్రోటాన్ మరియు 1 ఎలక్ట్రాన్ ఉంటాయి కాబట్టి",
+   "hyp": "hdrghtn",
+   "wer": 0.056910569105691054,
+   "cer": 0.056910569105691054
+  },
+  {
+   "ref": "అక్కడి వాతావరణ పరిస్థితుల కారణంగా వారు పర్యటించే ప్రాంతం ప్రభావితం కావచ్చు తద్వారా వారి ప్రయాణ ప్రణాళికలు కూడా ప్రభావితం అవ్వవచ్చు అని ప్రయాణికులకు సూచిస్తున్నారు",
+   "hyp": "அکڑے وہاں تھا வாட்ட வாட்ட வாட்ட வரணு பریس்துத்தில் காரணம்கள் வாருப்பரியட்டின் செய்ப் பிராந்தம் பிரவாவித்தம் காவைத்து தத்தாரா வரு பரயான பரயான கல்கோடா பிரவாவித்தம் அவவைத்துவானி பரயானிடில் கூறிஷ்து தொன்னாரு.",
+   "wer": 0.9814814814814815,
+   "cer": 0.9814814814814815
+  },
+  {
+   "ref": "రాస్బీ నెంబర్ ఎంత చిన్నగా ఉంటే మ్యాగ్నెటిక్ రివర్సల్స్కు సంబంధించి నక్షత్రం అంత తక్కువ చురుకుగా ఉంటుంది",
+   "hyp": "Rasmian number 1.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.5.",
+   "wer": 0.9611650485436893,
+   "cer": 0.9611650485436893
+  },
+  {
+   "ref": "ఉత్తరాన ఉన్న పెద్ద పెద్ద ప్రా౦తాలలో చాలా తక్కువ జనాభా ఉ౦ది కొన్ని దాదాపు జనావాసాలు లేని అరణ్య౦లో ఉ౦టాయి",
+   "hyp": "اُطرا نا اُننا اُدھ بِدھ بِدھ بِدھ بِدھ بِرانتا را لو چالا تقو جنابا ہندی کنی دادا پو جنو آساللینی ارنیم لو ہندائی",
+   "wer": 0.9514563106796117,
+   "cer": 0.9514563106796117
+  },
+  {
+   "ref": "పులి గర్జన సింహం గొంతు తో నిండిన గర్జనలా కాదు ఆ గొంతు తోకూడిన వాక్యంలా గట్టిగా అరుస్తుంది",
+   "hyp": "پولی گتجنسیمھم گنتتوں نے نننہ گتجنالہ کا دو, آگنتتوں کوڑینا وکیملا قتگہ روستندی",
+   "wer": 0.8651685393258427,
+   "cer": 0.8651685393258427
+  },
+  {
+   "ref": "గాయపడిన వారిలో పందొమ్మిది మంది పోలీసు అధికారులు గలరని గవర్నర్ కార్యాలయం పేర్కొంది",
+   "hyp": "Gai Padi na Valla, Pantham Dhimandhi, Police Adhikar Lagarani, Governor Kariyaala, M. Peeer Kondhi.",
+   "wer": 0.9629629629629629,
+   "cer": 0.9629629629629629
+  },
+  {
+   "ref": "ఈ ఫార్మాట్ యొక్క కారక నిష్పత్తి సరళమైన పూర్ణాంక నిష్పత్తిని పొందడానికి పన్నెండుతో భాగించడం కాబట్టి 3 2 గా చెప్పబడింది",
+   "hyp": "4 nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9487179487179487,
+   "cer": 0.9487179487179487
+  },
+  {
+   "ref": "ఇవి కొన్నిసార్లు కుటుంబాలతో రద్దీగా ఉండే బీచ్లు తీరం వెంబడి మంచి దుకాణాలతో ఉంటాయి ఈదడం అనేది సురక్షితమైనది",
+   "hyp": "කැමට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට කැට",
+   "wer": 0.9528301886792453,
+   "cer": 0.9528301886792453
+  },
+  {
+   "ref": "మేకలు ఇరాన్ లోని జాగ్రోస్ పర్వతాలలో సుమారు 10,000 సంవత్సరాల క్రితం మొదటిసారిగా పెంపుడు జంతువులుగా ఉన్నట్లు తెలుస్తోంది",
+   "hyp": "میکہ لویران لونی جگرس پر آتا مگلو نا سمار پاڑیر ساوٹر لکے تا مادہ تیسارگے پیم پر جنٹر لگا نکل دیلستندی",
+   "wer": 0.847457627118644,
+   "cer": 0.847457627118644
+  },
+  {
+   "ref": "ఈ దృశ్యాలు పిరమిడ్లపై ప్రదర్శించబడతాయి మరియు వేరే పిరమిడ్లను వెలిగించబడ్డాయి",
+   "hyp": "ایدرشیالو پیرمیدل پائی پردرسینچا پڑھا آیے, ماریو ویرے پیرمیدلنو ویلگنچا پڑھا آیے",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "అంతేకాకుండా ప్రతి రాజవంశానికి చెందిన ప్రాంతాలు కొన్ని సంవత్సరాలుగా విభజించబడి ఉన్నాయి ఈ కాలాలలో బాగా తెలిసినది హాన్ మరియు జిన్ రాజవంశం మధ్య 60 సంవత్సరాల పాటు జరుగుతున్న మూడు రాజ్యాల శకము",
+   "hyp": "Antekakunda Prati Rajavamshaan Ki Chandina Pranta Alkon Sanvacharaloga Vibhajn Chabadi Unnai. E Kaalaalalaaloh Bhaga Telisinadi Han Mariyu Jin Rajavamsham. Madhya Arawai Sanvacharal Partujergutunna Muru Rajyaalashakamu.",
+   "wer": 0.967741935483871,
+   "cer": 0.967741935483871
+  },
+  {
+   "ref": "మెదడు ప్యాథాలజి మరియు ప్రవర్తన మధ్య పరస్పర సంబంధం శాస్త్రవేత్తల పరిశోధనకు మద్దతు ఇస్తుంది",
+   "hyp": "میدرு پیاتا வலجی مریب پرورٹھا نا مدیا پرسپر سمدم سیستر بیتل پرسوڑانا کم مدد تو استندی",
+   "wer": 0.9325842696629213,
+   "cer": 0.9325842696629213
+  },
+  {
+   "ref": "గవర్నర్ జనరల్ కార్యాలయం వెలుపల 1 బాంబు పేలింది",
+   "hyp": "Gavarner General Karyalayam Villu Kalla vaka Pampu Pelt",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ప్రమాదం జరిగిన తరువాత గిబ్సన్ ఆసుపత్రికి తీసుకెళ్లబడ్డాడు కానీ కొంతసేపటికి తరువాత మరణించాడు",
+   "hyp": "Pramadam Jeri na Patarwata Gipsen Auspatri ki teiskella baaddaadu kaanikuntase pati ki tarwata maranin chaadu.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "మధ్యప్రాచ్యం యొక్క వెచ్చని వాతావరణంలో ఇల్లు అంత ముఖ్యమైనది కాదు",
+   "hyp": "پاکھیں پر آکیم یک که veچھیں نہیں آتا گرنامگلے یلوان تھا مکھیمہ نکادہ",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "దక్షిణ ఆఫ్రికాలోని కొన్ని పార్కులకు లేదా అన్ని దక్షిణ ఆఫ్రికా నేషనల్ పార్కులకు ప్రవేశం కలిగించే ఒక వైల్డ్ కార్డును కొనుగోలు చేయడం లాభదాయకం",
+   "hyp": "Daxi na Afrika luvni koni paru kula kulaidha, ani daxi na Afrika na National Paru plak prevésam kelegin cev hukavwail kaadnu konugoli sheram labda'ikam.",
+   "wer": 0.9710144927536232,
+   "cer": 0.9710144927536232
+  },
+  {
+   "ref": "హాంగ్ కాంగ్ ద్వీపం తన పేరు గల భూభాగాన్ని ఇస్తుంది ఇంకా అనేక మంది పర్యాటకులు ప్రధాన కేంద్రంగా భావించే భూభాగం",
+   "hyp": "hankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga ni istundi. Ṭhankang vippam tanapairagala bubaga",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఈ ఏడాది ప్రారంభంలో 53 ఏళ్ల కుమో తన గవర్నర్ పదవిని పొంది స్వలింగ వివాహాలను చట్టబద్ధం చేస్తూ గత నెలలో ఒక బిల్లుపై సంతకం చేశారు",
+   "hyp": "i eda di praram bham lo piyabai moor illa kumo tanagavarnar padvi ni pundi swallinga viwa hala no chatta baadam chayestu gata nelau oka billu pai santakam chayestu",
+   "wer": 0.9758064516129032,
+   "cer": 0.9758064516129032
+  },
+  {
+   "ref": "ఇది దక్షిణాఫ్రికా ప్రధాన ఆకర్షణలలో ఒకటి మరియు ఇది దక్షిణాఫ్రికా జాతీయ ఉద్యానవనాలు sanparks ప్రధానమైనదిగా పరిగణించబడుతుంది",
+   "hyp": "இது دکشن آفிர کا πரدانا اکشےر நلالوں, اکتک مریου, இது دکشن آفிர کا جاتیے, اگو دیای وانالوں, سان پر اکس, πரدانا مائنا گا پریگنے جبارتون دیکھ",
+   "wer": 0.9669421487603306,
+   "cer": 0.9669421487603306
+  },
+  {
+   "ref": "అక్కడి వాతావరణ పరిస్థితుల కారణంగా వారు పర్యటించే ప్రాంతం ప్రభావితం కావచ్చు తద్వారా వారి ప్రయాణ ప్రణాళికలు కూడా ప్రభావితం అవ్వవచ్చు అని ప్రయాణికులకు సూచిస్తున్నారు",
+   "hyp": "Akkadi vatavar na prasidhul karananga varu parerinche prantam pravavithan kavachu. Tadvara vari prayana pranalikalukoda pravavitham avavachu ani prayanikaluku sucinsi tunnaru.",
+   "wer": 0.9814814814814815,
+   "cer": 0.9814814814814815
+  },
+  {
+   "ref": "అయితే అది నిజం కాదు పత్రం వెనుక ఏదో రాసి ఉన్నా అది నిధి పటం కాదు",
+   "hyp": "..الدنیجم کاظу پتراپنے کییدر آسی پرنا آدینیدی پتنگ کاظу",
+   "wer": 0.8125,
+   "cer": 0.8125
+  },
+  {
+   "ref": "దాని పొడవైన దవడలు 70 కంటే ఎక్కువ రేజర్ వంటి పదునైన దంతాలతో దాని నోటి పైభాగంలో అదనపు సెట్ తోపాటు అమర్చబడి ఉన్నాయి దాని మార్గం గుండా వెళ్లినప్పుడు తప్పించుకునే అవకాశం ఉండదు",
+   "hyp": "dhbknti ekko razervanti padanayana dhanthalatho dhani noti paybagamlao adhanap setto pato amachabadi unnaye dhani margamgunna vellinapu to tappin chukunna hoka samunadhu",
+   "wer": 0.9882352941176471,
+   "cer": 0.9882352941176471
+  },
+  {
+   "ref": "రెండు పొడి పొడిలను కలిపి తరువాత శుభ్రమైన తడి చేతులతో వాటిని ఒక బంతిలో నొక్కండి",
+   "hyp": "2 コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロ",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "\"అతను పుకార్లను \"రాజకీయ కబుర్లు మరియు పిచ్చి వాగుడు\" అని పేర్కొన్నాడు.",
+   "hyp": "Athana Pukar Lanno, Rajakiyakabur Lanno, Mariyo, Pichy Vagu Lanno, Ani Pairkon Lanno",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "సాధారణంగా మీరు ఎల్లప్పుడూ పర్యాటకుల మరియు విక్రేతల శబ్దం వింటారు . ధ్వని మరియు కాంతి యొక్క కథ అనేది ఒక కథ పుస్తకం లాంటిది",
+   "hyp": "Saadarananga meraalapu du faryatakula maru vikrethala septam vintaru. Dhani maru kantiya kakka kada aneithi o kada pustam nante.",
+   "wer": 0.9834710743801653,
+   "cer": 0.9834710743801653
+  },
+  {
+   "ref": "వన్యప్రాణుల విషయానికి వస్తే మదగాస్కర్ ఇప్పటివరకు దానికదే అతి పెద్ద ఖండంగా ఉంది",
+   "hyp": "1 ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ",
+   "wer": 0.9743589743589743,
+   "cer": 0.9743589743589743
+  },
+  {
+   "ref": "పశ్చిమ ఐరోపా ప్రజలు మధ్య యుగాల చివరిలో వారి సొంత శైలిని అభివృద్ధి చేసుకోవడం ప్రారంభించారు మతపరమైన యుద్ధాల ఫలితంగా ఆ సమయంలో సంభవించిన అతిపెద్ద అభివృద్ధిలో ఒకటి ప్రజలు బట్టలు వేసుకోవడానికి బటన్లను ఉపయోగించడం ప్రారంభించారు",
+   "hyp": "Pashima aeropak Prajallu, Madhi Yoga Lachhevaru, Vari Sontasairu, Nabiuridi, Chasekoda, Praaramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin, Praramin",
+   "wer": 0.9726027397260274,
+   "cer": 0.9726027397260274
+  },
+  {
+   "ref": "ఎక్కువగా కార్లను కలిగి ఉండడం వలన రహదారులపై అధిక ప్రమాదాలకు కారణం అవుతుంది ఇది ఆరోగ్య రక్షణలో గాయపడిన శరీరాలను బాగు చేయడంలో వైద్యరంగంలో నూతన సంస్కరణలకు దారి తీస్తుంది",
+   "hyp": "8 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個",
+   "wer": 0.9636363636363636,
+   "cer": 0.9636363636363636
+  },
+  {
+   "ref": "రద్దు విధానాలు మారవచ్చు కానీ మార్చి చివరి నాటికి చాలా కరోనావైరస్ ఆధారిత రద్దు విధానాలు ఒలింపిక్స్ షెడ్యూల్ చేయబడిన జూలై 2020 వరకు పొడిగించబడలేదు",
+   "hyp": "Radyu Vidhanalu, Mahravachukani, Mahatchitivarayi na Ataki Chalakarana, Vaires, Adhari, Thar Radyu Vidhanalu, Ulampik, Sheddulcheye, Vadana, Jullai, Ronduweil, Iravai, Varakup, Padaginchabadale, Edhu.",
+   "wer": 0.9791666666666666,
+   "cer": 0.9791666666666666
+  },
+  {
+   "ref": "గ్రీకు పరిజ్ఞానం క్షీణించడంతో పాశ్చాత్యులు తమ గ్రీకు తాత్విక శాస్త్రీయ మూలాల నుండి వేరుపడ్డారు",
+   "hyp": "Greeku pariknanam kshinningchadamto paschiyatchilu tamaggriku tathvikak saasrihyamolalanundi veeru paddaru.",
+   "wer": 0.9893617021276596,
+   "cer": 0.9893617021276596
+  },
+  {
+   "ref": "ఒత్తిడి ఎంత తక్కువగా ఉంటే జీవితంలో సానుకూల జీవన శక్తి అంత ఎక్కువగా ఉంటుంది ప్రతి వ్యక్తికీ పూర్తి శాంతి మరియు సంతృప్తి కనుగొనే సామర్ధ్యం ఉంది",
+   "hyp": "پوٹھیرینٹ تطکوگہ ہونٹہ جیوٹنوں نے ساہمکالی جیوٹنی سکٹی انٹیک گوگہ ہونٹنی. پوٹھیشنٹی مریسانٹرٹھکہ روکہ نیف ساہمہٹھی ہونٹنی.",
+   "wer": 0.8581560283687943,
+   "cer": 0.8581560283687943
+  },
+  {
+   "ref": "అలాగే ఉత్తరదిక్కున ప్రప౦చవ్యాప్త౦గా ప్రఖ్యాతిగా౦చబడిన మారియన్ అప్రిసియోన్స్ స్థలమైన అవర్ లేడీ ఆఫ్ ఫాతిమా ప్రార్థనా స్థల౦ ను స౦దర్శి౦చ౦డి",
+   "hyp": "आलाग वूतर तिकुना प्रपन जब प्वदन्प्व प्रेक्यात प्रेना प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्रेशियर प्र",
+   "wer": 0.9705882352941176,
+   "cer": 0.9705882352941176
+  },
+  {
+   "ref": "mosasaurus అనేది తన కాలంలోని అతిపెద్ద పరాన్నజీవి ఇది తన తోటి mosasaurలకు తప్పితే మిగతా వేటికీ భయపడదు",
+   "hyp": "Saarus aneidi tanakalamlo ati pethaparyan gb. ndi tanatota mozharasla ko tappithe migitaye beitikhi bayepadu.",
+   "wer": 0.99,
+   "cer": 0.99
+  },
+  {
+   "ref": "దక్షిణ ఆఫ్రికాలోని కొన్ని పార్కులకు లేదా అన్ని దక్షిణ ఆఫ్రికా నేషనల్ పార్కులకు ప్రవేశం కలిగించే ఒక వైల్డ్ కార్డును కొనుగోలు చేయడం లాభదాయకం",
+   "hyp": "Daxi na Afrika loni koni parkela kuleda, ani daxi na Afrika National Parkela kupravesam keleginjaya vahil kaadnu konu mole ceidam labda ekam.",
+   "wer": 0.9710144927536232,
+   "cer": 0.9710144927536232
+  },
+  {
+   "ref": "మొరాకో అంతటిలో షాపింగ్ చేయడానికి అత్యంత తక్కువ ఆసక్తికర ప్రదేశాలలో casablanca ఒకటి",
+   "hyp": "முரاکہ ان்தாٹில் ھاپین்செய்டான் கிஷ்ணத் தக்குவா ஆசைத்திக்கார் பிரதேசால்லாம் கேஷாப்பில்லாங்க வகட்டியே.",
+   "wer": 0.975609756097561,
+   "cer": 0.975609756097561
+  },
+  {
+   "ref": "మాకు ఖచ్చితంగా తెలియదు కానీ అది ఒక ఫోర్క్ నాలుక కలిగి ఉండవచ్చు దాని ఆహారంలో తాబేళ్లు పెద్ద చేపలు ఇతర మొసాసర్లు కూడా ఉన్నాయి మరియు అది ఒక కానిబల్ కూడా అయి ఉండవచ్చు",
+   "hyp": "کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ دنگا چیدھا کچھ د",
+   "wer": 0.9691358024691358,
+   "cer": 0.9691358024691358
+  },
+  {
+   "ref": "పైన ఉన్న స్పష్టమైన అందమైన ఆకాశం అలాగే చుట్టుపక్కల ఉన్న అనేక పర్వతాలు తప్ప మరేమీ కనిపించవు గుహ లోపల నుండి బయటి ప్రదేశం చాలా తక్కువగా కనిపిస్తుంది శబ్దాలు చాలా తక్కువగా వినపడతాయి",
+   "hyp": "پائے نمுண்ணா சپஷٹھا மہینہ, அந்த மہینہ آکہ சம் அலاغے چٹھٹھپکھلு ஒன்றا அனையைக் கபரவத்தாலு தவ்ப மரیمே கண்பின்சவு. گுஞலோ பலனுண்டு பயிட்டிப் பிரதேசம் چாலா Thakoga கண்பிஞ்சு சுந்து, சப்தாலு چாலா Thakoga வின்பட்டாய்.",
+   "wer": 0.9545454545454546,
+   "cer": 0.9545454545454546
+  },
+  {
+   "ref": "అండర్ వాటర్ టోపాలజీ వల్ల రిటర్న్ ఫ్లో కొన్ని లోతైన సెక్షన్ ల వద్ద కేంద్రీకృతమై ఉంటుంది మరియు వేగంగా ప్రవహించే ప్రవాహం నుంచి లోతైన నీరు అక్కడ ఏర్పడుతుంది",
+   "hyp": "அண்டரவாடும் தோப்பாளைத்து வல்லா, Ritten Flop, Korni Lotha, Sx, Kendri Kuthamai, Kundhundhi. மரியும் வேங்க பிறவாஸ்மத்து, Lotha, Niwakadai, ARPAD Thundhi.",
+   "wer": 0.9473684210526315,
+   "cer": 0.9473684210526315
+  },
+  {
+   "ref": "ఒక ట్రిప్ పుస్సీని ప్రతిబింబించడానికి మరియు అనుభవాలను భవిష్యత్తు క్లాసులతో పంచుకోవడానికి కూడా ఒక ఫీల్డ్ ట్రిప్ ని వాస్తవంగా పంచుకోవడం అనేది ఒక గొప్ప మార్గం",
+   "hyp": "1. ھکھٹریپ پسیی نے پریتبیم میں چڑانے کی مریوان بھاوالانوں بھاویشتتو کلاسلتو پنچکوڑان کی کڑا 1. ھکھھپیل ٹریپنو آستوانگا پنچکوڑا مانیدے ایک ایک گپا مارگم",
+   "wer": 0.9483870967741935,
+   "cer": 0.9483870967741935
+  },
+  {
+   "ref": "మనుషులు పీల్చే ఆక్సిజన్ను మొక్కలు తయారు చేస్తాయి మరియు మనషులు వదిలే కార్బన్-డయాక్సైడ్ను మొక్కలు తీసుకుంటాయి అంటే ఊపిరి బయటికి వదలడం",
+   "hyp": "மணشورு پیلسے آکسیجنு مکھلے تیارچہ سیسٹھای، மریو منشورுவதے لیکن کاربணٹی آکسیرنு مکھل تیسکنٹھای، انٹے اوپیر بیٹکے ویگرٹن",
+   "wer": 0.8931297709923665,
+   "cer": 0.8931297709923665
+  },
+  {
+   "ref": "కేవలం 2 వారాలలో అమెరికన్లు మరియు ఫ్రీ ఫ్రెంచ్ ఫోర్సెస్ దక్షిణ ఫ్రాన్స్కు విముక్తి కల్పించి జర్మనీ వైపు తిరుగు ప్రయాణమయ్యారు",
+   "hyp": "Kavala bnndu vaharalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalal",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "శీతాకాలంలో ఉత్తర బాల్టిక్ ను దాటి వెళితే క్యాబిన్ లొకేషన్ ని తనిఖీ చేయండి ఎందుకంటే మంచు గుండా వెళ్లడం వల్ల అత్యంత ప్రభావితమైన వారికి చాలా భయంకరమైన చప్పుడు వస్తుంది",
+   "hyp": "Sita Kalamala Uttara Balteinu Dhaati Veli Tha Khaabhin Locationi Thanikhi Chendi Indu Kante Manjugundaya Valadam Valla Atyantha Pravavietamai Navaarikhi Chhala Bhainkar Nini Chappu Dgaustundi",
+   "wer": 0.9938650306748467,
+   "cer": 0.9938650306748467
+  },
+  {
+   "ref": "పట్టాలను నిలబెట్టడానికి క్రాస్ టీలు చాలా ముందుగానే ప్రవేశపెట్టబడ్డాయి అయితే పైభాగంలో ఇనుప ఖనిజం ఉంటే ట్రాక్ లు మరింత సమర్థవంతంగా ఉంటాయని క్రమంగా గ్రహించారు",
+   "hyp": "پٹھالاں نیلہ بہٹڈڈاں کی,کراؤسٹیلوں, چالہ مندگانے, پرہویسہ پٹھہ بڑھائی. آیتے پائی باگہمیلوں انبکانیجہ مندے,ٹراکلوں مارنتہ سمردہ وانتگہ ہونٹاں یانی, کرمگہ کریں چیارل.",
+   "wer": 0.9612903225806452,
+   "cer": 0.9612903225806452
+  },
+  {
+   "ref": "మేము మా ఇళ్ళు మొక్కలతోనే నిర్మిస్తాము మరియు మొక్కల నుండే బట్టలు తయారు చేస్తాము మేము తినే ఆహారం చాలా వరకు మొక్కలే మొక్కలు లేకుండా జంతువులు మనుగడ సాగించలేవు",
+   "hyp": "میکنی ممائیلی مقلتوانی نیرویستم مریو مقلنون کے بطل ایتایرویستم میکنی تیری آہرم چالا برکو مقلی مقلی مقلی لیکن دن جن دول مارگر ساجن چلے گو",
+   "wer": 0.8441558441558441,
+   "cer": 0.8441558441558441
+  },
+  {
+   "ref": "కొన్ని మార్గాల్లో పెద్ద కంపెనీలు తమ స్వంత విమానాలను కలిగి ఉన్నాయి కానీ ఇతర మార్గాలు చిన్న సంస్థలకు ఒక సమస్య కలదు",
+   "hyp": "Kunde margaalau petha kambaniilu tamasvanta vimana halanu kaligi vannai, kani hetara margaalu channa samasthalaka hukasamasthi kaaladu.",
+   "wer": 0.9821428571428571,
+   "cer": 0.9821428571428571
+  },
+  {
+   "ref": "పిల్లల కోసం పిరమిడ్ సౌండ్ మరియు లైట్ షో ఈ ప్రాంతంలో అత్యంత ఆసక్తికరమైన విషయాల్లో ఒకటిగా ఉంది",
+   "hyp": "illala ko sam piramid sound mario light shoe ,ip rantam lo archantha asektikaramayana visi alalo okatika unni",
+   "wer": 0.967391304347826,
+   "cer": 0.967391304347826
+  },
+  {
+   "ref": "ఫలితంగా ఒక అడ్డంకిని అధిగమించడానికి కలిసి పనిచేసే సంస్థ ప్రక్రియ వినియోగదారుని యొక్క అవసరానికి సేవలందించే కొత్త సృజనాత్మక ప్రక్రియకు దారితీస్తుంది",
+   "hyp": "Fali dunga vakaatangini idaagaminjalanaki keli si panjasi samstha, prakriya vinyagadharan yok ka aosarani ke saivalandinche kotha, srujnaathmakaprakriya nuk dharitisindhi.",
+   "wer": 0.9726027397260274,
+   "cer": 0.9726027397260274
+  },
+  {
+   "ref": "ఉపగ్రహాన్ని రాకెట్ ద్వారా అంతరిక్షంలోకి పంపారు శాస్త్రవేత్తలు అంతరిక్షంలో టెలిస్కోపులను ఉపయోగిస్తున్నారు ఎందుకంటే భూమి వాతావరణం మన కాంతి వీక్షణను వక్రీకరిస్తుంది",
+   "hyp": "Uppagraha ni Raghad Vara antrakshamla ki pampistaru ۔ Saasra vethalo antrakshamla telis ko pannu opiyagistunar indikanti ۔ Bumi vata varnam Manakanti vixanana vakri karistunme.",
+   "wer": 0.9875776397515528,
+   "cer": 0.9875776397515528
+  },
+  {
+   "ref": "ఇంటర్నెట్లో hostile environment course' కోసం వెతికితే ఆ శిక్షణ అందించే స్థానిక కంపెనీ చిరునామా దొరుకుతుంది",
+   "hyp": "internet lo hostel environment course velikitte azikshuna andin testanik ke company chirunama darukutu",
+   "wer": 0.9056603773584906,
+   "cer": 0.9056603773584906
+  },
+  {
+   "ref": "1960ల అంతటా బ్రెజిన్స్కీ జాన్ f కెన్నెడీ కి తన సలహాదారుగా మరియు ఆ తరువాత లిండన్ b జాన్సన్ పరిపాలనలో పనిచేశాడు",
+   "hyp": "15.0.0.0.0.0.0.0.0.0.0.0.0.0.0.00.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "wer": 0.9724770642201835,
+   "cer": 0.9724770642201835
+  },
+  {
+   "ref": "ఇప్పటికీ ఉనికిలో ఉన్న 25 డంలాప్ బ్రాడ్ సైడ్లు ఈ పత్రం యొక్క పురాతన మనుగడ ప్రతులు అసలు చేతిరాత కాపీ బతికి బట్టకట్టలేదు",
+   "hyp": "つまり れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば れば",
+   "wer": 0.9487179487179487,
+   "cer": 0.9487179487179487
+  },
+  {
+   "ref": "అవి పొలుసులు పంజాలతో పాదాలు కలిగి గుడ్లు పెడతాయి అవి ఒక టి-రెక్స్ వంటి వాటి రెండు వెనుక కాళ్ళపై నడుస్తాయి",
+   "hyp": "ان்னிப் புளுஷுள் பஞஞஞல் தோ பாதாலுக்கலுக்கு گுட்டு பெட்டதாய் அவி உக்க்டிரேக்ச் வாட்டிருந்துவேன் கால் பை நடுத்தாய்கி.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "మక్కాకు ఉత్తరాన ఉన్న పర్వతాలలో 1 దానిపై ఉన్న ఈ గుహ ప్రపంచంలోని ఇతర ప్రాంతాల నుండి పూర్తిగా వేరుచేయబడింది",
+   "hyp": "مققى قوترانٌ نا پرواتاللو, اوکتی دانیپے ان ایگوحا پر پنچم لونی ایتر پرامتالا نمی پورتگا ویر چیبا لندی",
+   "wer": 0.9326923076923077,
+   "cer": 0.9326923076923077
+  },
+  {
+   "ref": "యుద్ధం ముగిసి రెండు సంవత్సరాలు గడిచేసరికి పూర్వపు మిత్రపక్షాలు ఇప్పుడు శత్రువులు అయ్యాయి మరియు ప్రచ్ఛన్న యుద్ధం మొదలైంది",
+   "hyp": "7-7 Ṭhbhagyat",
+   "wer": 0.10833333333333334,
+   "cer": 0.10833333333333334
+  },
+  {
+   "ref": "ఫెరల్ పిల్లలు విడిచిపెట్టడానికి లేదా పారిపోవడానికి ముందు తీవ్రమైన పిల్లల వేధింపులకు లేదా గాయపడి ఉండవచ్చు",
+   "hyp": "fel pillal viddu chi petrdaan ghi le da paripavdaan ghi mundu tevrum aina pillal viedu mpilaku le da gai padi vunda vachu",
+   "wer": 0.9903846153846154,
+   "cer": 0.9903846153846154
+  },
+  {
+   "ref": "వంతెన కింద ఉన్న వర్టికల్ క్లియరెన్స్ 15 మీటర్లు నిర్మాణం ఆగస్టు 2011 లో పూర్తయింది ఇది మార్చి 2017 వరకు ట్రాఫిక్కు తెరవలేదు",
+   "hyp": "1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-",
+   "wer": 0.9186991869918699,
+   "cer": 0.9186991869918699
+  },
+  {
+   "ref": "ఆదివారం అర్ధరాత్రి అమెరికా అధ్యక్షుడు డొనాల్డ్ ట్రంప్ పత్రికా కార్యదర్శి ద్వారా విడుదల చేసిన ఒక ప్రకటనలో అమెరికా దళాలు సిరియా నుంచి వైదొలుగుతున్నట్లు ప్రకటించారు",
+   "hyp": "Adivara Madharaatri, Amerika, Jakeshu Donald Trump, Patrika, Karidar Chidwara, Vidodala, Chaisnauko, Prakatanaloo, Amerika, Dhalaalu, Surya, Nunche, Vahidul, Guhtun, Nathlu, Prakatin, Chayaroo.",
+   "wer": 0.9875776397515528,
+   "cer": 0.9875776397515528
+  },
+  {
+   "ref": "\"\"\"సాంకేతిక నిర్ణయవాదం యొక్క చాలా వ్యాఖ్యానాలు రెండు సాధారణ భావాలను పంచుకుంటాయి: సాంకేతిక పరిజ్ఞానం అభివృద్ధి అనేది సాంస్కృతిక లేదా రాజకీయ ప్రభావానికి అతీతంగా ఒక మార్గాన్ని అనుసరిస్తుంది  సాంకేతిక పరిజ్ఞానం సాంఘికంగా కండిషన్ చేయబడిన సమాజాలపై ప్రభావాలను కలిగి ఉంటుంది.",
+   "hyp": "さんけいちかねえとはやっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱり、やっぱ",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "అదే విధంగా షెంగెన్ వీసా ఉంటే మీరు షెంగెన్లో ఉండే ప్రతి దేశానికి వేరుగా వీసాను అప్లై చేయనవసరం లేదు దీని వలన సమయం డబ్బు మరియు కాగితాలను ఆదా చేయవచ్చు",
+   "hyp": "अदेविविदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्विदन्वि",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "లోహమిశ్రమాలు ప్రాథమికంగా రెండు లేదా అంతకంటే ఎక్కువ లోహాల మిశ్రమం ఆవర్తన పట్టికలో చాలా అంశాలు ఉన్నాయని మర్చిపోవద్దు",
+   "hyp": "mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu mithu m",
+   "wer": 0.9736842105263158,
+   "cer": 0.9736842105263158
+  },
+  {
+   "ref": "హాంగ్ కాంగ్ యొక్క ఉత్తమ వీక్షణలు పొందడానికి ద్వీపం వదిలి మరియు ఎదురుగా ఉన్న కౌలూన్ జలఫ్రంట్ కు తల",
+   "hyp": "ہونکاஙگی کو اُدتما بیچشنڈوں کو پندرانکی دویپا مدلی مریو اِدرگا ہونا کولن جلا فرنکو تلا",
+   "wer": 0.845360824742268,
+   "cer": 0.845360824742268
+  },
+  {
+   "ref": "స్పెక్ట్రం యొక్క మరో చివర ఒక వ్యక్తి గుర్తించలేని వ్యక్తిగా మారతాడు అతడు లేదా ఆమె టీమ్ చేస్తున్న ప్రతిదానిని మార్చాలని మరియు దానిని తమ స్వంతం చేసుకోవాలని భావిస్తారు",
+   "hyp": "SPECTRUM Yooka Maru Chivara Oka Vicky Gurdhinchale Ne Vickyga Maru Tadu Atadu Leeda Amitim Chess Nuna Pratidhan Ne Ne Mahachal Ne Maryudhan Neeth Suttan Tarasfantam Chessu Koval Ne Bhadis Tadu",
+   "wer": 0.9878048780487805,
+   "cer": 0.9878048780487805
+  },
+  {
+   "ref": "గత 2 శతాబ్దాలలో ఈ ఆటంకం అనేక అంతర్జాతీయ ఒప్పందాల చేత క్రోడీకరించబడిన సాధారణంగా ఆమోదించబడే అంతర్జాతీయ చట్టాన్ని ఉల్లంఘించినప్పటికీ కీలకమైన సైనిక మరియు పౌర సరఫరాలను తగ్గించి వ్యూహం సమర్థవంతంగా ఉందని నిరూపించబడింది",
+   "hyp": "4 ndaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqaqa",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "పా అంబ్ ఒలి అనేది ప్రత్యేకంగా వేసవి కాలంలో వండుకునే ప్రముఖ వంటకం ఆలివ్ ఆయిల్ చల్లిన బ్రెడ్ టమోటా మరియు అందుబాటులో ఉండే చీజ్ ట్యూనా చేప మొదలగు పదార్థాలు",
+   "hyp": "Paa, ҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚҚ",
+   "wer": 0.8675496688741722,
+   "cer": 0.8675496688741722
+  },
+  {
+   "ref": "గత అక్టోబర్ నుండి వెల్లువెత్తిన పరిపాలనా వ్యతిరేక నిరసనలకు స్పందనగా martelly ఏర్పరచినదే ఈ కమీషన్",
+   "hyp": "अगटावार नवी विलु वितिन परिपालाना वितिरेगा नेरा सनलकुस पनदन्दना वार्तरली घर्परिन्चन जिन नदे अपार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्पार्�",
+   "wer": 0.9895833333333334,
+   "cer": 0.9895833333333334
+  },
+  {
+   "ref": "వారి క్రమశిక్షణతో కూడిన డిఫెన్స్ బంతి నిర్వహణ నైపుణ్యాలు మరియు అద్భుతమైన టీం వర్క్ వారిని నిలబెట్టాయి మరియు ఓడించే జట్టు ఇదేనని స్పష్టమైంది",
+   "hyp": "vrkrma sikshanatha koolanat defn sbantin nirva hanava ipunyalu mario abhutamainat team work mario nalve tayi mario vodin cha jattu ida nane pashta maini",
+   "wer": 0.9712230215827338,
+   "cer": 0.9712230215827338
+  },
+  {
+   "ref": "భూమి మీద ఉన్న నదుల నుండి మహాసముద్రాలలోకి పోయే 20 శాతం నీరు అమెజాన్ నుండి వస్తుంది",
+   "hyp": "بھومیمیدہ بھنا ندرنண்டی مہاں سمدرنலہنی کی پہئے, ایرے بیشہتاமی نیو عمیسان نண்டی گاستانتے",
+   "wer": 0.9876543209876543,
+   "cer": 0.9876543209876543
+  },
+  {
+   "ref": "ప్రస్తుత సెనేటర్ మరియు అర్జెంటీనా ప్రథమ మహిళ క్రిస్టినా ఫెర్నాండెజ్ డి కిర్చ్నర్ నిన్న సాయంత్రం బ్యూనస్ ఎయిర్స్ నుండి 50 కిలోమీటర్ల 31 మైళ్ళు దూరంలో ఉన్న లా ప్లాటాలో తన అధ్యక్ష అభ్యర్థిత్వాన్ని ప్రకటించారు",
+   "hyp": "پرستு தسینیٹر مریو اجنٹینہ پر دمہ مہلا, ڈی کریشنر اینہ سائن پرم, بیونہ سائر سنوڑی, یا بے کلو میٹر لہ مپائے کمائیلو دورم لوگ ہنا, لہا پلات اللہ, تنہا آدیقشہ, آبیر دیت پانی پر کٹیم شیارو",
+   "wer": 0.8682926829268293,
+   "cer": 0.8682926829268293
+  },
+  {
+   "ref": "gizaలో ఉన్న great pyramid నేటికీ ఏడు వింతలలో ఒకటిగా ఉంది",
+   "hyp": "gizalurna greatera metanetikkiyudu vintalururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururururur",
+   "wer": 0.9285714285714286,
+   "cer": 0.9285714285714286
+  },
+  {
+   "ref": "మార్టెల్లీ నిన్నటి రోజు 9 మంది సభ్యులతో ఏర్పడిన కొత్త ప్రోవిషనల్ ఎలెక్టోరల్ కౌన్సిల్ cepకు ప్రమాణస్వీకారం చేశారు",
+   "hyp": "mithil neetini roj tambai mithi mandhi sabhi allathe erpadi na kotha provisional electoral council cbku pramana suikaram chaisar",
+   "wer": 0.9732142857142857,
+   "cer": 0.9732142857142857
+  },
+  {
+   "ref": "సింగపూర్ ఉప ప్రధాని వాంగ్ కాన్ సెంగ్ తో ఆయనకు స్వాగతం పలికి సింగపూర్ ప్రధాని లీ హ్సీన్ లూంగ్ తో వాణిజ్యం ఉగ్రవాద అంశాలపై చర్చించారు",
+   "hyp": "singapur upa pradani vang can't sing to aayin kus vahagatampaliki singapur pradani lixin lung to vani jyem gureva dhamshala pei chit chin chayaru",
+   "wer": 0.9618320610687023,
+   "cer": 0.9618320610687023
+  },
+  {
+   "ref": "బ్లాగింగ్ అనేది సహకారాన్ని ప్రేరేపించే సాధనం మరియు సాంప్రదాయ పాఠశాల రోజు కంటే ఎక్కువగా నేర్చుకోవడానికి విద్యార్థులను ప్రోత్సహిస్తుంది",
+   "hyp": "Blogging & hrithi saakara ni Praeri pinche saadhanam mari u sampradha ya pata shala roju kante ekuga ni chuko vadhan ki vidya dulanu prochahis tundi.",
+   "wer": 0.9699248120300752,
+   "cer": 0.9699248120300752
+  },
+  {
+   "ref": "బాగా గుండ్రంగా ఉండే అథ్లెట్ పులి ఎక్కగలదు బాగా లేకపోయినా ఈదడం ఎక్కువ దూరం దూకడం మరియు బలమైన మనిషి యొక్క శక్తితో ఐదు రెట్లు లాగడం",
+   "hyp": "Baha Gundranga vunde atalit puli ekakaladu baabal ekapuina, eedadam ekko dooram do karam mariyu balamayana manishi yokka shekthi to ayduratu lagadam.",
+   "wer": 0.9609375,
+   "cer": 0.9609375
+  },
+  {
+   "ref": "\"\"\"అయితే వారు తమ అభివృద్ధి దశ బాధ్యత సామర్థ్యాలను దాటి వెళ్ళే బాధ్యతలను స్వీకరించమని కోరకూడదు\" అని కూడా ఆయన అన్నారు.\"\"",
+   "hyp": "Aithi, varu, tama avivruddhi dasha, baajat saamartriya alana dhati velle baajat alana svekarinchamani, koarakodadu, ani koda aayin annaaru.",
+   "wer": 0.9830508474576272,
+   "cer": 0.9830508474576272
+  },
+  {
+   "ref": "ఆఫ్రికాలోని కొన్ని చౌకైన మౌంటెన్ గొరిల్లా ట్రాకింగ్ తో పాటు నైరాగోంగో అగ్నిపర్వతాన్ని అధిరోహించడానికి ఈ నగరం స్థావరంగా ఉంది",
+   "hyp": "افیقال اونک کنی چاوکہ میں مونٹین گوریلا ٹریکنک تو پاتو نیرا گومگو اگ بی پروطان یادر او ہنچڑانکی ای نگرم استاؤرانگا ہندی",
+   "wer": 0.926829268292683,
+   "cer": 0.926829268292683
+  },
+  {
+   "ref": "1990 లో ఎడారి ఇసుక ముప్పు కారణంగా ప్రమాదంలో ఉన్న ప్రపంచ వారసత్వ ప్రదేశాల జాబితాలో ఇది కూడా చేర్చబడింది",
+   "hyp": "Pantamnivandala Thambayi Lohi yadari isuka mupukar nanga Pramadam Lohi na Prapancha Vara Satva Pradeshala Jaivitalo, iDukodha Chachabandhi.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఈ సంప్రదాయానికి క్రైస్తవ వేదాంత వివరణలు ఉన్నాయి కాని ఇది పూర్వ క్రైస్తవ స్ప్రింగు మరియు ప్రజనన శక్తి మతాచారం కావచ్చు",
+   "hyp": "i ṃṃṭhāyāna ki kresta vāveedam tāvivarana luna Ṭhāyī kāni Ṭhīpuru kresta vāspringu marīupra jnānav shiṭhi samatās cahram kāvacchu",
+   "wer": 0.9827586206896551,
+   "cer": 0.9827586206896551
+  },
+  {
+   "ref": "విప్లవం తరువాత అన్ని పురుష దరఖాస్తుదారుల కోసం వృత్తులు తెరిచి ఉంచిన తరువాత అత్యంత ప్రతిష్టాత్మకమైన మరియు విజయవంతం కావడానికి వీలు కల్పిస్తుంది",
+   "hyp": "vipulavan taruwata, anni purusha dharakas tu dharu la kosam urutulu teri chi gunchi na taruwata, akchenta prathishtatma kamaina, marie vijayvantham kaavdaan ki viyulu kalpisthundi.",
+   "wer": 0.9858156028368794,
+   "cer": 0.9858156028368794
+  },
+  {
+   "ref": "టెలివిజన్ నివేదికలు మొక్క నుండి తెల్లటి పొగ వస్తున్నట్లు చూపుతాయి",
+   "hyp": "தெلیویسر نیویدے کلو مکرنوں نے تلدے پگا وسترناتی چکتای",
+   "wer": 0.8,
+   "cer": 0.8
+  },
+  {
+   "ref": "\"\"\"రాత్రి 150 నుంచి 200 కాపీలు తయారు చేయబడ్డాయి ఇప్పుడు \"\"\"dunlap broadsides\"\"\" అని పిలవబడింది.\"\"",
+   "hyp": "Rathrin Nudayabayamuninche Ronda 1.5 Lakh Koppilu Thair Chaya Baddai, nd prudu Dalla Brot Sets Ani Pillowadindi.",
+   "wer": 0.9484536082474226,
+   "cer": 0.9484536082474226
+  },
+  {
+   "ref": "మీరు షిప్ బోర్డ్ విహారాలను ఉపయోగించి విదేశాలకి వెళ్తే మాత్రమే మీకు ప్రత్యేక వీసా 2009 నాటికి అవసరం ఉండదు",
+   "hyp": "mero shibbode vihar alano gupiya ginshi vidai salakumya lehte maatharamayi neku pratyakavisa randuvala thumidinat ki aosaram moondadu",
+   "wer": 0.9711538461538461,
+   "cer": 0.9711538461538461
+  },
+  {
+   "ref": "గోమా చుట్టూ భ్రమించడానికి బోడా-బోడాను మోటార్ సైకిల్ టాక్సీ ఉపయోగించవచ్చు. సాధారణ స్థానిక వెల ~500 కాంగో ఫ్రాంక్స్ షార్ట్ రైడ్ కొరకు",
+   "hyp": "Goma, Chutu, Brahminshad, Boda, Boda, Motorcycle Taxi, Uboya Ginshavacchu Sadharanastani ka Villa, Aidovondala, Congo, France, short ride, Koraku",
+   "wer": 0.9312977099236641,
+   "cer": 0.9312977099236641
+  },
+  {
+   "ref": "లోహమిశ్రమాలు ప్రాథమికంగా రెండు లేదా అంతకంటే ఎక్కువ లోహాల మిశ్రమం ఆవర్తన పట్టికలో చాలా అంశాలు ఉన్నాయని మర్చిపోవద్దు",
+   "hyp": "Loha misramalu pradamikanga 2 Leda Antakantai Ekko Loha Loha misramam. Avarthana Patikalo chalaam saluunna yani marcipovatu.",
+   "wer": 0.9824561403508771,
+   "cer": 0.9824561403508771
+  },
+  {
+   "ref": "mosasaurus అనేది తన కాలంలోని అతిపెద్ద పరాన్నజీవి ఇది తన తోటి mosasaurలకు తప్పితే మిగతా వేటికీ భయపడదు",
+   "hyp": "mosa sauras aneithi tanakalamlom na atipetta paranna jevi.",
+   "wer": 0.52,
+   "cer": 0.52
+  },
+  {
+   "ref": "మీ దేశం మీ ప్రజలను మరియు వస్తువులను తరలించే సామర్థ్యాన్ని కలిగి ఉందని అదే సమయంలో తన ప్రజలను మరియు వస్తువులను తరలించడానికి మీ శత్రువు యొక్క సామర్థ్యానికి అంతరాయం కలిగిస్తూ నౌకాదళాల యొక్క పని",
+   "hyp": "Mi prajalanu, mariwaastu wana nu tarlinche, sahamartiyani kaalidwanda ni, adei sahmiyamu na dana prajalanu, mariwaastu wana nu tarlinche naaniki, mi setru yop pisahamartiyani ki antraayel kaalidhistu naukha dalalai doktapani.",
+   "wer": 0.9629629629629629,
+   "cer": 0.9629629629629629
+  },
+  {
+   "ref": "బస్సులు రోజంతా అంతర్-జిల్లా బస్ స్టేషన్  నది వెంబడినుంచి  బయలుదేరుతాయి అయితే చాలా వరకు ముఖ్యంగా తూర్పు  మరియు  జాకర్/బుమ్తాంగ్ వైపు వెళ్ళేవి  06:30 మరియు 07:30 మధ్య బయలుదేరతాయి",
+   "hyp": "Bassu Luroujanta Amtarjalla Bastation Naadivyam Brehnunju Balidirtai Aithi Chhalavaru Kumukhyamga Turpumaryu Jakaar Muumta Ngwaipe Vellevi Arugantala Mukbhai Maryu Yerugantala Mukhenimshala Mandhe Baludirtai",
+   "wer": 0.9886363636363636,
+   "cer": 0.9886363636363636
+  },
+  {
+   "ref": "మొరాకో సుల్తాన్ ఈ నగరాన్ని దారు ల్-బదియాగా పునర్నిర్మించాడు అక్కడ వర్తక స్థావరాలను స్థాపించిన స్పానిష్ వర్తకులచే కాసాబ్లాంకా అనే పేరు పెట్టబడింది",
+   "hyp": "முரா کو سול்டன் இன்னாக நிதாருள் பதியாக புனர் நின் மிஷயடு அக்கர வர்த கஷ் தாவராலானம் சாப்பிஞ்சன சپனிஷ வர்த குளைத்து காஷாப்பில்லாங்கானே பேர் பெட்டப்படிந்தி.",
+   "wer": 0.9655172413793104,
+   "cer": 0.9655172413793104
+  },
+  {
+   "ref": "ఈ నగరం దేశంలోని ఇతర నగరాలకు పూర్తిగా విరుద్ధమైనది ఎందుకంటే అది ఎక్కువగా ఆఫ్రికన్ శైలి కంటే అరబిక్ శైలి కలిగి ఉంటుంది",
+   "hyp": "نگرم نگرم نگرہ لگرہ لگر ہوا پوتھ گا ویدھا گا یہ دو کنتہ ادھی کون آپیکان سائلے کنت آربیک سائلے کلی ہون پندہ",
+   "wer": 0.8793103448275862,
+   "cer": 0.8793103448275862
+  },
+  {
+   "ref": "లగ్జరీ యొక్క కేంద్రంగా పేరుగాంచిన దాని పేరు సుమారు 400 ఏ.డి లో ప్రారంభమైంది మరియు సుమారు 1100 ఏ.డి వరకు కొనసాగింది",
+   "hyp": "Laksuriya kakakayanaranga peru ganchanadhan peru, sumaru nalagamandala yadilho praramamendhi, mario sumaru padakundagandala yadilho arpu panasagindhi.",
+   "wer": 0.9736842105263158,
+   "cer": 0.9736842105263158
+  },
+  {
+   "ref": "ఎత్తైన అక్షాంశాల వద్ద లేదా పర్వత మార్గాలలో ప్రయాణించే ఎవరైనా హిమపాతము మంచు లేదా గడ్డకట్టించే ఉష్ణోగ్రత గురించి అలోచించి తమ ప్రయాణానాలను ప్లాన్ చేసుకోవాలి",
+   "hyp": "आब पातामु मचुब ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ ग़ �",
+   "wer": 0.9477124183006536,
+   "cer": 0.9477124183006536
+  },
+  {
+   "ref": "ఇటాలియన్ భాష కూడా రాష్ట్రంలో పనిచేసే వారిలో ఎక్కువ మంది ఉపయోగించే రోజువారీ భాష అయితే లాటిన్ ను తరచుగా మతపరమైన సంబరాల్లో ఉపయోగిస్తారు",
+   "hyp": "İtalyan Basha Koda Rashtram Lov Panichase Varilov, Ekko Mandi Upyoginchev, Roju Varipasha, Aide, Latinu Taruchuga, Mataparamayana Sambaral Lov Upyogistaru,",
+   "wer": 0.9772727272727273,
+   "cer": 0.9848484848484849
+  },
+  {
+   "ref": "ఇప్పటికీ ఉనికిలో ఉన్న 25 డంలాప్ బ్రాడ్ సైడ్లు ఈ పత్రం యొక్క పురాతన మనుగడ ప్రతులు అసలు చేతిరాత కాపీ బతికి బట్టకట్టలేదు",
+   "hyp": "இப்பட்டுக்கு உண்ணுக்கில் ஒன்று இரவے துட்டம்லாம் பிராத்தானம் மனுகடப் பரத்துலுக்கு அசல் சேத்திராதுக்காப் பாத்துக்கு பட்டாக் கட்டாலே",
+   "wer": 0.9572649572649573,
+   "cer": 0.9572649572649573
+  },
+  {
+   "ref": "ఆసుపత్రి సంక్రామ్యత నియంత్రణ కొరకు ప్రోటోకాల్ పాటించింది దీనిలో ఇతరులకు సంభావ్య సంక్రామ్యత లు రాకుండా నిరోధించడం కొరకు రోగిని ఇతరుల నుంచి వేరు చేయడం ఉంది",
+   "hyp": "ASU Padri, Sankram Yatams Niyantra na koraku protokal patińchendhi. Dheenilho, Italilho, Sambhavya, Sankram Yatallu, Trakunda, Niravadhinchadam koraku, Rhoge ni Iturallu nunchi veeru chayadam hundi.",
+   "wer": 0.9869281045751634,
+   "cer": 0.9869281045751634
+  },
+  {
+   "ref": "కోతల కోసం ఆయన ఒక సంఖ్యను అనుకోలేదు అవి చైనా ఆర్ధిక ఉత్పత్తి ఆధారంగా తయారు చేయబడతాయి",
+   "hyp": "koatala kozum aynam vaka sanjinu anukul edu. avi caina aardi ke vutpat diyadar nanga, ce, tear cey vadu tayi.",
+   "wer": 0.963855421686747,
+   "cer": 0.963855421686747
+  },
+  {
+   "ref": "ఎమ్ఎస్ కేంద్ర నాడీ వ్యవస్థపై ప్రభావం చూపించే ఒక వ్యాధి ఇది మెదడు వెన్నముక మరియు ఆప్టిక్ నరంతో తయారవుతుంది",
+   "hyp": "yam s kendranadi vea vasthapai prabawam jupinja vaka viyadi.",
+   "wer": 0.5619047619047619,
+   "cer": 0.5619047619047619
+  },
+  {
+   "ref": "బస్సులు రోజంతా అంతర్-జిల్లా బస్ స్టేషన్  నది వెంబడినుంచి  బయలుదేరుతాయి అయితే చాలా వరకు ముఖ్యంగా తూర్పు  మరియు  జాకర్/బుమ్తాంగ్ వైపు వెళ్ళేవి  06:30 మరియు 07:30 మధ్య బయలుదేరతాయి",
+   "hyp": "10 ھو ھو جانتا انتر جلا بسٹیشن ندیوام بڑی ننچی بیلڈیر تھا ہے ھای تیچالا ورکوں مکیں گا تورپوں مریو جا کر بمتان وائپے گلے گی آروں مپای مریو یادوں مپای مدیو بیلڈیر تھا ہے",
+   "wer": 0.9147727272727273,
+   "cer": 0.9147727272727273
+  },
+  {
+   "ref": "ఇంతకు ముందు ఖర్చు-పొదుపు ఇంకా కార్యాచరణ కారకాల కోసం ప్రపంచ వ్యాప్తంగా ప్రారంభించిన asus eee pc 2007 taipei it నెలలో హాట్ టాపిక్గా మారింది",
+   "hyp": "Únta kumundu karchu, pudapu, Ṭhakaariya jan rakāra kāla kusam, Ṭhapanchavayabtanga prāram minchena ASUS EEEPC, frondueila Eru Taipayi IT nelalo hot topica maarindi.",
+   "wer": 0.9635036496350365,
+   "cer": 0.9635036496350365
+  },
+  {
+   "ref": "బార్సిలోనా అధికారిక భాషలు కాటలాన్ స్పానిష్ దాదాపు సగం మంది కేటలాన్ మాట్లాడడానికి ఇష్టపడతారు అధిక సంఖ్యాకులు దానిని అర్థం చేసుకుంటారు దాదాపు ప్రతి ఒక్కరికీ స్పానిష్ తెలుసు",
+   "hyp": "Barsilu na Adhika Raq Bhajilu Kartalan Spanish Dada Pusaga Mandi Ketalan Matraddani ki Ista Padtaaru. Adhika Sankya Kulu Dhani Dham Chais Kuntaru Dada Pu Prati Ukar Ki Spanish Telusu.",
+   "wer": 0.9705882352941176,
+   "cer": 0.9705882352941176
+  },
+  {
+   "ref": "1976 నాటికి మ్యాచు పిచ్చులో ముప్పై శాతం పునరుద్ధరించబడింది నేటి వరకు పునరుద్ధరణ కొనసాగింది",
+   "hyp": "10 min. vrnautaki, machopichu, 3 pts. pwnarithar, nauti vrkpwnarudhara na konasaginthi.",
+   "wer": 0.9444444444444444,
+   "cer": 0.9444444444444444
+  },
+  {
+   "ref": "పిల్లలు ఇంకా వృద్ధులతో సహా 6 మంది బందీలను filipino ఫోటోగ్రాఫర్ల లాగా విడుదల చేశారు",
+   "hyp": "Pillalu vinka vrudhu lahto saha aurumandhi bandhi lanu philippi no fotograffallalaga vidhu lahto chaisaru",
+   "wer": 0.9634146341463414,
+   "cer": 0.9634146341463414
+  },
+  {
+   "ref": "డిస్‌ప్లేలో ఐదు నిమిషాలు ఒక గాలి గుండ్రంగా తిరగడం మొదలవుతుంది ఒక నిమిషం తరువాత గాలి 70 km/h చేరుకుంటుంది...అప్పుడు వర్షం పడుతుంది కానీ చాలా గట్టిగా మరియు పెద్దదిగా మీ చర్మాన్ని సూది లాగా పొడిచేలా పడుతుంది అప్పుడు ఆకాశం నుండి వడగళ్ళు పడతాయి ప్రజలు భయపడటం మరియు అరుస్తూ ఇంకా ఒకరితో ఒకరు పరుగెడతారు",
+   "hyp": "10-15 %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %, %,",
+   "wer": 0.8508474576271187,
+   "cer": 0.8508474576271187
+  },
+  {
+   "ref": "చుట్టుపక్కల ద్వీపాలలో క్రెడిట్ కార్డులను అంగీకరించరు అయినప్పటికీ బ్రిటిష్ మరియు యునైటెడ్ స్టేట్స్ కరెన్సీని వారు స్వీకరించే అవకాశం ఉంది అక్కడి యజమానులను ఎటువంటి చెల్లింపు పద్ధతి ఉపయోగిస్తున్నారో అడిగి ముందుగానే తెలుసుకోండి",
+   "hyp": "குٹ்டு பக்கத்து விப்பால்லாம் குழைத் காட்டில்லாம் அங்கே கரின்சரு. இன்னப் பட்டுக்கு? பரிடிஷ் மரியும். இணைத்துடைய கரின்சினி வாரு. நிரவா. சவிக்கரின்சாவாகக்காசை முந்தி. அக்கட் யாஞஞான் உல்லாம். இடவணிட்ட செல்லியம்பு பத்தத்தியுப் பயிக்துத் திருந்தாரு அடுகிய முந்துகானே செய்துக் கொண்டி.",
+   "wer": 0.990990990990991,
+   "cer": 0.990990990990991
+  },
+  {
+   "ref": "ఇంటర్నెట్లో hostile environment course' కోసం వెతికితే ఆ శిక్షణ అందించే స్థానిక కంపెనీ చిరునామా దొరుకుతుంది",
+   "hyp": "Internetloch, Hostile, Environment, Course, Course & Vithikitha, Asixx & Andhra & Chastar, Ni Ke Company, Shirna Ma, Dhur Kuthandai",
+   "wer": 0.9716981132075472,
+   "cer": 0.9716981132075472
+  },
+  {
+   "ref": "బుధవారం జరిగిన ఈవెంట్కు ముందు carpanedo ఛాంపియన్షిప్లో రెండు వ్యక్తిగత రేసులలో పాల్గొన్నారు",
+   "hyp": "BUDWARAM JARGAN E-VENTKUMMUNDU, CARPANIIDO, CHAMPION SHIPLOW RANDO VEGTIGA TARASALO, PALOONNARU",
+   "wer": 0.989010989010989,
+   "cer": 0.989010989010989
+  },
+  {
+   "ref": "జపాన్ అణు సంస్థ తెలిపిన వివరాల ప్రకారం ఈ ప్లాంట్ లో రేడియోయాక్టివ్ సీసియం అయోడిన్ లను గుర్తించారు",
+   "hyp": "Jai Pann Anusamstha Telikinam Vevaralaprakaram, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, Ṭhbhagam, �",
+   "wer": 0.9896907216494846,
+   "cer": 0.9896907216494846
+  },
+  {
+   "ref": "ఏది ఏమయినప్పటికీ రాత్రికి రాత్రే పథకాన్ని అమలు చేసి సోవియట్ యూనియన్ రెడ్ ఆర్మీకి చెందిన 800,000 మంది సైనికులు రిగా శాంతి ఒప్పందం సోవియట్-పోలిష్ నాన్-అగ్రెషన్ ఒప్పందం మరియు ఇతర అంతర్జాతీయ ఒప్పందాలు ద్వైపాక్షిక మరియు బహుపాక్షిక ఒప్పందాలను ఉల్లంఘిస్తూ పోలాండ్ యొక్క తూర్పు ప్రాంతాలపై దాడి చేసిన తరువాత బెలరషియన్ మరియు ఉక్రేనియన్ ఫ్రంట్లు సృష్టించారు",
+   "hyp": "Éd i Ṭhāpidhi ki Ṭhātri ki Ṭhātri pātakāni amulu chaisi, Soviya Tūnian Reddārmi ki chendinā, Ṭhātri ki Ṭhātri pātakāni amulu chaisi, Soviya Tūnian Reddārmi ki chendinā, Ṭhātri ki Ṭhātri ki Ṭhātri pātakāni amulu chaisi, Soviya Tūnian Reddārmi ki chendinā, Ṭhātri ki Ṭhātri ki Ṭhātri ki Ṭhātri ki Ṭhātri ki Ṭhātri ki Ṭhātri ki Ṭhātri pātakāni amulu chaisi, Soviya Tūnian Reddārmi ki chendinā, Ṭh",
+   "wer": 0.9797687861271677,
+   "cer": 0.9797687861271677
+  },
+  {
+   "ref": "చాలామంది ఈకలు కలిగి ఎగరగలగటం వల్ల డైనోసార్లు గా వాటి గురించి ఆలోచించరు",
+   "hyp": "dine-no-sarlu",
+   "wer": 0.18571428571428572,
+   "cer": 0.18571428571428572
+  },
+  {
+   "ref": "ఈ నగరం దేశంలోని ఇతర నగరాలకు పూర్తిగా విరుద్ధమైనది ఎందుకంటే అది ఎక్కువగా ఆఫ్రికన్ శైలి కంటే అరబిక్ శైలి కలిగి ఉంటుంది",
+   "hyp": "अगनाः कर्म देसम वोनी गरा नाः नाः करा नाः कु पूर्तिका विलित्वाना ती नगन्ते एद गोग वा आब अगन्ते नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः नाः न",
+   "wer": 0.9655172413793104,
+   "cer": 0.9655172413793104
+  },
+  {
+   "ref": "సాధారణంగా ఈవెంట్కు వచ్చిన అతిథులను ఆహ్లదకరంగా మరియు వారిని అక్కడే ఉండేటట్లు చేయడానికి వారికి ప్రత్యేకమైన ఆహారం పానీయాలు మరియు వినోదానికి సంబందించిన ఆఫర్లను అందిస్తారు",
+   "hyp": "Saadhanamga event ko vachinatiduulanu ahlaadukaranga marivuvaru. Akkada urndayatlu sheyataanikhi varykipratiakamai na aharam paniyallu marivuvinavdhani ki samandhiin chanaafarlaanu andhi staru.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఎమ్ఎస్ కేంద్ర నాడీ వ్యవస్థపై ప్రభావం చూపించే ఒక వ్యాధి ఇది మెదడు వెన్నముక మరియు ఆప్టిక్ నరంతో తయారవుతుంది",
+   "hyp": "MS K-N-DRA N-O-D-Veversthapai Prabawam Choopinchaewo Kavyathi, Medalu Venna Mukkamaru, Optik Naramto Thayaravto",
+   "wer": 0.9904761904761905,
+   "cer": 0.9904761904761905
+  },
+  {
+   "ref": "ఫెరల్ పిల్లలు విడిచిపెట్టడానికి లేదా పారిపోవడానికి ముందు తీవ్రమైన పిల్లల వేధింపులకు లేదా గాయపడి ఉండవచ్చు",
+   "hyp": "پیرال پیللہ لگیدیش پٹھٹھا ٹانکی لیے تھا پاری پاڑانکی کمுندு تیورامانہ پیللہ لگیدھم کلکہ لگیدھا گائی پڑھا گیا پڑھا",
+   "wer": 0.9807692307692307,
+   "cer": 0.9807692307692307
+  },
+  {
+   "ref": "కొత్తగా ఏదైనా వచ్చినప్పుడు కీబోర్డ్ ఎలా ఉంటుందో అని ఎవరైనా ఆశ్చర్యపడవచ్చు",
+   "hyp": "கொت்டகہ இதை எனہ வچின் பொடு கிபோட எல்லாம் உண்டுவனே வரேனா ஆஷ்சரிய படவை چூ.",
+   "wer": 0.958904109589041,
+   "cer": 0.958904109589041
+  },
+  {
+   "ref": "కోతల కోసం ఆయన ఒక సంఖ్యను అనుకోలేదు అవి చైనా ఆర్ధిక ఉత్పత్తి ఆధారంగా తయారు చేయబడతాయి",
+   "hyp": "ko thala koosam aain oka sankan oan ko ledo avi chaina ardi ka upad bhaatit ala daranga tayaru chae baad thaayi",
+   "wer": 0.9397590361445783,
+   "cer": 0.9397590361445783
+  },
+  {
+   "ref": "ఎక్కువగా కార్లను కలిగి ఉండడం వలన రహదారులపై అధిక ప్రమాదాలకు కారణం అవుతుంది ఇది ఆరోగ్య రక్షణలో గాయపడిన శరీరాలను బాగు చేయడంలో వైద్యరంగంలో నూతన సంస్కరణలకు దారి తీస్తుంది",
+   "hyp": "یک کوگa kaarlanu kaalagu vunadamvalanah rahadaralapai adika pramadhala ko karanam avthundi. iwi arowgye rakshna lvo gaipadina siriralanu baagu chaedam lo, vaidjye rangam lo, nothana samskaranalaku daari tisundi.",
+   "wer": 0.9818181818181818,
+   "cer": 0.9818181818181818
+  },
+  {
+   "ref": "ఒలివర్ సాక్స్ తన పేపర్ ది ప్రెసిడెంట్ స్పీచ్ లో మెదడు దెబ్బతినడం వల్ల స్పీచ్ అర్థం చేసుకోలేని వ్యక్తులు ఎంత నిజాయితీగా ఉన్నా కూడా నిజాయితీని ఎలా అంచనా వేయగలుగుతున్నారో సూచించాడు",
+   "hyp": "Þaqs, tanapapapr, di Presidentspeach, lw, Madhada Dhabitinanda Manila, speech, adam, chais, ko, ni viettulu, yantha, nijayetayag, vanna, poda, nijayetayi ni yala, anchana veyagalagu, tanapapr, sushin, chagu.",
+   "wer": 0.9717514124293786,
+   "cer": 0.9717514124293786
+  },
+  {
+   "ref": "శీతాకాలంలో ఉత్తర బాల్టిక్ ను దాటి వెళితే క్యాబిన్ లొకేషన్ ని తనిఖీ చేయండి ఎందుకంటే మంచు గుండా వెళ్లడం వల్ల అత్యంత ప్రభావితమైన వారికి చాలా భయంకరమైన చప్పుడు వస్తుంది",
+   "hyp": "Shita Kalamlo uttra baal tiknu dhati veli te kabin location lo thani ki cha yadni, Indu kante manchugunda veledam vallak tienta prebhavita mainavari ke chala bhaiyankara maina chakpudo vasthu ni",
+   "wer": 0.9754601226993865,
+   "cer": 0.9754601226993865
+  },
+  {
+   "ref": "పిల్లలు నిర్లక్ష్యం వేధింపులు మరియు ఇంకా దోపిడి వరకుగల అనేక రకాల కారణాల వల్ల ఫోస్టర్ కేర్ లో ఉంచబడ్డారు",
+   "hyp": "Pellalu, Nirlaksham, Vedimpulu, Maruyo, Indka, Dhoppadi, Varukungal, Anika, Rakkala, Karanalu, Vala, Nana, Fostar, Keyla, Vunjabadaru.",
+   "wer": 0.970873786407767,
+   "cer": 0.970873786407767
+  },
+  {
+   "ref": "బార్సిలోనా అధికారిక భాషలు కాటలాన్ స్పానిష్ దాదాపు సగం మంది కేటలాన్ మాట్లాడడానికి ఇష్టపడతారు అధిక సంఖ్యాకులు దానిని అర్థం చేసుకుంటారు దాదాపు ప్రతి ఒక్కరికీ స్పానిష్ తెలుసు",
+   "hyp": "Barsilona Adhikarika Barsalu Katalan Spanish Dadaapu Sakam Mandi Katalan Maatlaadu dani kiyahta kadahtar Adhika Sankayaku daanu aradam chaesh kuntar Dadaapu Prativakkar ki Spanish Tel",
+   "wer": 0.9941176470588236,
+   "cer": 0.9941176470588236
+  },
+  {
+   "ref": "ఎయిర్ క్రాఫ్ట్ తక్కువ దూరాలలో వెళ్లడానికి ఎఫ్ ఏ ఏ క్లెయిమ్స్ అనుమతించే నెక్స్ట్ జెన్ వ్యవస్థ ప్రతి సంవత్సరం మిలియన్ ల కొద్దీ గాలన్ల ఇంధనాన్ని ఆదా చేసి కార్బన్ ఎమిషన్స్ ని తగ్గిస్తుంది",
+   "hyp": "AILCRAFT TAKO DORALO LO VALATANIKI, یا فیا یا کلیم سنمتینچن نکشجن یا وستپرتی سمتر ملیللک کت دیگالن لیندنان آدتشی سے کاربان امیشنز میں تک دیستون دی.",
+   "wer": 0.7868852459016393,
+   "cer": 0.7868852459016393
+  },
+  {
+   "ref": "కానీ ఇప్పటికీ డైనోసార్ లాగా కనిపించే పక్షుల గురించి చాలా విషయాలు ఉన్నాయి",
+   "hyp": "Kaani ipad ki dino sar lagakan pinche paksil guranche tala visayala unnai.",
+   "wer": 0.9722222222222222,
+   "cer": 0.9722222222222222
+  },
+  {
+   "ref": "దీనిని రసాయనం యొక్క ph అని అంటారు ఎర్ర క్యాబేజీ జ్యూస్ ను ఉపయోగించి ఇండికేటర్ తయారు చేసుకోవచ్చు",
+   "hyp": "dini ni rasa hai ram yok ka bhihe chani antaru yara kaapaiji juus na upiwaginji indikator thayaru chay sko hohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohohoho",
+   "wer": 0.9894736842105263,
+   "cer": 0.9894736842105263
+  },
+  {
+   "ref": "\"\"\"ఇది వీడ్కోలు కాదు. ఇది ఒక అధ్యాయం ముగియడం మరియు కొత్త అధ్యాయానికి నాంది పలకడం.\"\"",
+   "hyp": "ایدی ویٹ کول گا دیائم مگیدم مریو کتا ادیائانکی ناندی پلکڑا",
+   "wer": 0.6626506024096386,
+   "cer": 0.6626506024096386
+  },
+  {
+   "ref": "సింగపూర్ ఉప ప్రధాని వాంగ్ కాన్ సెంగ్ తో ఆయనకు స్వాగతం పలికి సింగపూర్ ప్రధాని లీ హ్సీన్ లూంగ్ తో వాణిజ్యం ఉగ్రవాద అంశాలపై చర్చించారు",
+   "hyp": "Shingapuropapradani vang, kansent, aayana kusvaga tampali ki Shingapur Pradani li, hins, lunto, vani jiyam vokravadam jaya lapai chachinjaya rung.",
+   "wer": 0.9770992366412213,
+   "cer": 0.9770992366412213
+  },
+  {
+   "ref": "ఎక్కువగా పన్ను విధించే దేశాలకు వెళ్లే ప్రయాణికులు కొన్నిసార్లు  ముఖ్యంగా మద్యపానీయాలు  పొగాకు వంటి ఉత్పత్తులపై గణనీయమైన మొత్తంలో డబ్బును ఆదా చేయవచ్చు",
+   "hyp": "1,5 kg panu vizinche desa, 1 kg panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu panu pan",
+   "wer": 0.9865771812080537,
+   "cer": 0.9865771812080537
+  },
+  {
+   "ref": "కొన్ని ప్రాంతాల్లో ఒక నిమిషం పాటు నీటిని మరిసించడం మరికొన్ని నిమిషాల్లో కొన్ని నిమిషాలు అవసరం",
+   "hyp": "Kani Pranthal lo, 1 kane misham pato, neethi ni marisin chadam marikonu nemisall lo, koni nemisall lo, avasaram.",
+   "wer": 0.989247311827957,
+   "cer": 0.989247311827957
+  },
+  {
+   "ref": "తడి బట్టలు ఇస్త్రీ చేయడం వల్ల ఆరడానికి సహాపడుతుంది చాలా హోటళ్లలో గదిలో ఒక్కటీ లేనప్పటికీ అరువు మీద ఇస్త్రీ పెట్టె మరియు ఇస్త్రీ బోర్డు దొరుకుతాయి",
+   "hyp": "3-4 Ṭhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhb",
+   "wer": 0.993103448275862,
+   "cer": 0.993103448275862
+  },
+  {
+   "ref": "ఇంతకు ముందు ఖర్చు-పొదుపు ఇంకా కార్యాచరణ కారకాల కోసం ప్రపంచ వ్యాప్తంగా ప్రారంభించిన asus eee pc 2007 taipei it నెలలో హాట్ టాపిక్గా మారింది",
+   "hyp": "× ndag mundu, karchu, padu pui, inga, karya, charanak, karakal, kosam, propan, chwapthanga, praram, minjana, asus, trippili, pc, rnduvali, edu, typi, it, nal, hot topic, gha, marit.",
+   "wer": 0.9708029197080292,
+   "cer": 0.9708029197080292
+  },
+  {
+   "ref": "స్త్రీలు అసలు వైవాహిక స్థితితో సంబంధం లేకుండా ఏ మహిళా ప్రయాణికులైనా తాము వివాహం చేసుకున్నామని చెప్పడం మంచిది",
+   "hyp": "srilo, ṣasala vay vahakastitthu sambandam lekhunda Ṭhiyah mahila prayaniklay na tamu vivaḥum chais kuna mani chappadam manchiri.",
+   "wer": 0.9814814814814815,
+   "cer": 0.9814814814814815
+  },
+  {
+   "ref": "మీకు రోమాన్స్ భాష తెలిస్తే పోర్చుగీస్ నేర్చుకోవడాన్ని మీరు సులభతరం చేస్తారు",
+   "hyp": "Mi krumans baasatelis te porch gis nyech kova danyi miro svalabataram chayas taru",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "జన్యు వైవిధ్యం రెండు విభాగాలుగా ఉందని ఇరవయ్యవ శతాబ్దపు పరిశోధన చూపింది దాగినవి మరియు వ్యక్తీకరించడినవి",
+   "hyp": "जेंजिवाविदिम विभाशाल। वूदनि विर्वावावा सता आदप परसोदना जूपन दाग नवि मरिव विगते कर नविनवि",
+   "wer": 0.8431372549019608,
+   "cer": 0.8431372549019608
+  },
+  {
+   "ref": "స్త్రీలు అసలు వైవాహిక స్థితితో సంబంధం లేకుండా ఏ మహిళా ప్రయాణికులైనా తాము వివాహం చేసుకున్నామని చెప్పడం మంచిది",
+   "hyp": "3 । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । ।",
+   "wer": 0.9074074074074074,
+   "cer": 0.9074074074074074
+  },
+  {
+   "ref": "ఎత్తైన అక్షాంశాల వద్ద లేదా పర్వత మార్గాలలో ప్రయాణించే ఎవరైనా హిమపాతము మంచు లేదా గడ్డకట్టించే ఉష్ణోగ్రత గురించి అలోచించి తమ ప్రయాణానాలను ప్లాన్ చేసుకోవాలి",
+   "hyp": "hiddena, kshansala vada leida parvatamargal lo priyaninji yavarayana, hemapatamu manshuleda, gadakattinji ushrokratagurinji alaqinji tama priyanalanu plancheis kovalik.",
+   "wer": 0.9869281045751634,
+   "cer": 0.9869281045751634
+  },
+  {
+   "ref": "అతను ప్రారంభంలో గ్రేట్ యార్మౌత్ లోని జేమ్స్ పేజెట్ ఆసుపత్రిలో చేరాడు",
+   "hyp": "Aadhanu Praramamlou, Grad, Yarmouth Lowney, James Bayeset Hospitala, Chairadu.",
+   "wer": 0.9852941176470589,
+   "cer": 0.9852941176470589
+  },
+  {
+   "ref": "అయితే అది నిజం కాదు పత్రం వెనుక ఏదో రాసి ఉన్నా అది నిధి పటం కాదు",
+   "hyp": "آئی تی ادینجم کا دو پترم میں کرا ایدو راسیوننا ادینی دی پتام کا دو",
+   "wer": 0.953125,
+   "cer": 0.953125
+  },
+  {
+   "ref": "ద్వీపాల్లో సరస్సుల్లో మీకు ఒక యాచ్ అవసరం లేదు",
+   "hyp": "v pala sarasulua meeto moka at osaram leida",
+   "wer": 0.9555555555555556,
+   "cer": 0.9555555555555556
+  },
+  {
+   "ref": "తత్వవేత్త అయిన అరిస్టాటిల్ భూమి నీరు గాలి ఇంకా అగ్ని అనే నాలుగు అంశాలలో ప్రతిదీ ఒకటి లేదా అంతకంటే ఎక్కువ అంశాల మిశ్రమంతో రూపొందించబడిందని సిద్ధాంతప్రకారంగా నిరూపించారు",
+   "hyp": "तद्वावेतान आरिस्च्तादल बुमी, नीरू, पालि, चालि, नियनालु वामसाल नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं नहीं �",
+   "wer": 0.9880239520958084,
+   "cer": 0.9880239520958084
+  },
+  {
+   "ref": "ఒక నాగరికత అనేది ఒక సమాజం సహజీవనం మరియు పని చేసే గణనీయమైన పెద్ద సమూహం ద్వారా పంచుకోబడే ఏకవచన సంస్కృతి",
+   "hyp": "vaka naagari kata anidhi vaka samajam saha ji vana mariyu pani chaisa ganan iyamayana paddha samoham dvara panch koa bada eka vachana samskruti",
+   "wer": 0.9702970297029703,
+   "cer": 0.9702970297029703
+  },
+  {
+   "ref": "బ్లాగులు కూడా విద్యార్థి రాతను మెరుగుపరచడానికి తోడ్పడగలవు విద్యార్థులు తరచుగా తమ బ్లాగ్ అనుభవాన్ని స్లోపీ గ్రామర్ మరియు స్పెల్లింగ్ తో ప్రారంభిస్తారు అయితే ఆడియెన్స్ యొక్క ఉనికి సాధారణంగా మారుతుంది",
+   "hyp": "BLAGUL KODA VIDEAR TIRADHAN MIRIVU PRAJADANI KEDHOR PALADARVU VIDEARTUL TARCHUGA TAMAM BLAGAN VANVAN NI SLOPI GRAAMAR MARIVU SPELLING TO PRARAM BISTARU AYTAI ARDIALS YO KAMUNI KEE SADAR NANGA MARUTU NDI",
+   "wer": 0.9898477157360406,
+   "cer": 0.9898477157360406
+  },
+  {
+   "ref": "అయినప్పటికీ క్షయ వ్యాధి గల సమూహం మొత్తంలో ఇప్పటికీ xdr-tb శాతం తక్కువగా ఉన్నట్లు కనిపిస్తుంది దక్షిణాఫ్రికాలో ఏ సమయంలోనైనా మొత్తం 330,000 మందిలో 6,000 మందికి సోకింది",
+   "hyp": "5 nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9757575757575757,
+   "cer": 0.9757575757575757
+  },
+  {
+   "ref": "సైకాలజీ సహా విజ్ఞాన శాస్త్రం యొక్క అన్ని విషయాలపై అరిస్టాటిల్ అభిప్రాయాలు అంగీకరించబడ్డాయి",
+   "hyp": "Saikaalaji zaha, vignanashastra maya karni visiyaalapai, Arishtautil abhi prayaalu angi karincha bataaye.",
+   "wer": 0.9888888888888889,
+   "cer": 0.9888888888888889
+  },
+  {
+   "ref": "సహజమైన వాతావరణంలో ఉన్నపుడు చెట్లు ఆహ్లాదకరంగా ఉంటాయి కాబట్టి వాటిలో నుండి ఒక్క భాగాన్ని కూడా తీసివేయడానికి ప్రయత్నించవద్దు",
+   "hyp": "Saadamai na vata varnamala unna pudu cekul aakhla da karanga untai. Kaapati vati ilanu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu neu ne",
+   "wer": 0.9590163934426229,
+   "cer": 0.9590163934426229
+  },
+  {
+   "ref": "క్షేత్ర పర్యటనలు ఏ తరగతిగదిలోనైనా పెద్ద భాగం చాలా తరచుగా ఒక ఉపాధ్యాయురాలు తన విద్యార్థులను బస్సు ప్రయాణం వికల్పం లేని ప్రదేశాలకు తీసుకెళ్లడానికి ఇష్టపడతారు",
+   "hyp": "くしゃいhtrapaariyatana loo ndai na petha baagam 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。 。",
+   "wer": 0.9419354838709677,
+   "cer": 0.9419354838709677
+  },
+  {
+   "ref": "1963లో డ్యామ్ నిర్మించాకా నది అంతటా వ్యార్ధాలని తీసుకువచ్చే సీజనల్ వరదలు ఆగిపోయాయి",
+   "hyp": "15-15-15, 3-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-6, 7-",
+   "wer": 0.9390243902439024,
+   "cer": 0.9390243902439024
+  },
+  {
+   "ref": "కాంతి కాలుష్యం నేడు ఉన్న సమస్య కాదు ఆధునిక కాలంలో నిర్మించిన వాటి కంటే సాధారణంగా నగరాల్లో లేదా క్యాంపస్ లలో ఇవి తేలికగా చేరుతున్నాయి",
+   "hyp": "காண்டி காளுஷும் நேவ்டும் ஒன்ன சமுஷஷய கால் அது நிகக்காளம்லும் நெடுமின் சினாவாட்டிக் கண்டு சாதாரணங்கன அவரால்லைதா கேண்டும் செல்லலும் இவித்தையில் காத்துக்கொள்ளும் நாய்",
+   "wer": 0.9772727272727273,
+   "cer": 0.9772727272727273
+  },
+  {
+   "ref": "భూమి మీద ఉన్న నదుల నుండి మహాసముద్రాలలోకి పోయే 20 శాతం నీరు అమెజాన్ నుండి వస్తుంది",
+   "hyp": "پூ می می்விடாம் நான் நகத்து நுண்டி, ஓா சாம்தும் நில்லைக்கிபோய் ஏறு சாத்தாம் நீரு, அம்மா சாம்ணும் நடு வார்ஸ்டும்தே.",
+   "wer": 0.9876543209876543,
+   "cer": 0.9876543209876543
+  },
+  {
+   "ref": "అదే నెలలో మషాద్ వద్ద రన్ వేపై మరో విమానం ఓవర్ రన్ వేపై పడి గోడను గుద్ది పదిహేడు మంది ప్రాణాలు కోల్పోయారు",
+   "hyp": "अदे बिग़् बिग़् वावा विमानम वोवर बिग्पावा पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप पप",
+   "wer": 0.9519230769230769,
+   "cer": 0.9519230769230769
+  },
+  {
+   "ref": "గత అక్టోబర్ నుండి వెల్లువెత్తిన పరిపాలనా వ్యతిరేక నిరసనలకు స్పందనగా martelly ఏర్పరచినదే ఈ కమీషన్",
+   "hyp": "ghat aktobannu nunde velluvethinna paripalana vidtirayagan irsanalana nung spandananga martelli ir parichinadhe e commission",
+   "wer": 0.9895833333333334,
+   "cer": 0.9895833333333334
+  },
+  {
+   "ref": "పిల్లల కోసం పిరమిడ్ సౌండ్ మరియు లైట్ షో ఈ ప్రాంతంలో అత్యంత ఆసక్తికరమైన విషయాల్లో ఒకటిగా ఉంది",
+   "hyp": "Pillala kursam piramid sound mariu lightsho, i prantam lo attyant asakti karamayana visi halalo okati gaande",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "సంఘటనలు జరిగిన కాలాన్ని సాధారణంగా హై మధ్య యుగాలు గా 11 12 మరియు 13వ శతాబ్దాలలో క్రీ.శ 1000-1300 ఐరోపా చరిత్ర కాలంగా పేర్కొంటారు",
+   "hyp": "சنگتانہلوں جریگنہ کالانے ھا درانگا ہی مجھے ہوگا ھا ھا دکھنڈوں پنندوں گے دیگی پتھمولوں سے دھا در لگا کلیشتی سکن۔ لییی پتھمولوں دن دلہی راپا چیریتھ رکھا کالانگا بیرگنٹاروں۔",
+   "wer": 0.984251968503937,
+   "cer": 0.984251968503937
+  },
+  {
+   "ref": "యుద్ధం ముగిసి రెండు సంవత్సరాలు గడిచేసరికి పూర్వపు మిత్రపక్షాలు ఇప్పుడు శత్రువులు అయ్యాయి మరియు ప్రచ్ఛన్న యుద్ధం మొదలైంది",
+   "hyp": "یادa mughusi rende saamatral gadjiye saar ki poharabh metra pakshali puri shetravalayeye mariw pracharna یادa mothala indi",
+   "wer": 0.9666666666666667,
+   "cer": 0.9666666666666667
+  },
+  {
+   "ref": "ద్వీపాల్లో సరస్సుల్లో మీకు ఒక యాచ్ అవసరం లేదు",
+   "hyp": "dwi palo sarasullo mi kowakayaj au saram lehdhu",
+   "wer": 0.9333333333333333,
+   "cer": 0.9333333333333333
+  },
+  {
+   "ref": "802.11ఎన్ ప్రమాణం 2.4 గిగాహెర్ట్జ్ మరియు 5.0 గిగాహెర్ట్జ్ పౌనఃపున్యాలపై పనిచేస్తుంది",
+   "hyp": "2.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.",
+   "wer": 0.9047619047619048,
+   "cer": 0.9047619047619048
+  },
+  {
+   "ref": "ఫోటోగ్రాఫర్లు తరువాత ఒక వృద్ధ మహిళ యొక్క స్థానాన్ని తీసుకున్నారు ఆమె కు అవసరమైన లావేటర్ అవసరం మెండోజా ను కాల్చి వేయబడింది",
+   "hyp": "photograferl Ṭarvata vākaradh maila yakkastana ndiśikunnaru. Aameku Ṭhosaramāyana Ṭhilaaveta Ṭhavasaram. Mundao zānu khaljivehe vadi ndi.",
+   "wer": 0.9669421487603306,
+   "cer": 0.9669421487603306
+  },
+  {
+   "ref": "బ్రిటిష్ వలసవాదులు తమ సొంత ప్రదేశంగా తీసుకున్న చోటు ఇదే మరియు మీరు దేశం యొక్క వలసరాజ్యాల ఆధారం గురించి వెతుకుతున్నట్లయితే దానిని ప్రారంభించడానికి ఇదే సరైన చోటు",
+   "hyp": "1 ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ ھ",
+   "wer": 0.9433962264150944,
+   "cer": 0.9433962264150944
+  },
+  {
+   "ref": "రొమాంటిక్ వాదంలో సాంస్కృతిక నిర్ణయాల్లో పెద్ద అంశం కలదు గోతే ఫిచ్టే ష్లేగెల్ వంటి రచయితల నుండి తీసుకోబడింది",
+   "hyp": "Ramanthik vatham lo samskrutika nernayal lo peth da amsam kaladu gothe fish shlegel 1-2 rajayethala nondi tis ko badindi",
+   "wer": 0.9813084112149533,
+   "cer": 0.9813084112149533
+  },
+  {
+   "ref": "ఎబోలా మరణాలను తగ్గించగలదని భావించే ఒక ప్రయోగాత్మక టీకా ఉన్నప్పటికీ ఇప్పటికే ఉన్న ఇన్ఫెక్షన్కు చికిత్స చేయడానికి తగిన మందులు ఇంకా అందుబాటులో లేవని స్పష్టంగా నిర్ధారించబడింది",
+   "hyp": "ये बोला नाल नाल तक दिश बापन जे बापन जे परे़ लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव लाव ला",
+   "wer": 0.9709302325581395,
+   "cer": 0.9709302325581395
+  },
+  {
+   "ref": "ఆటల నుండి నిషేధించబడినందున అతను తన నొప్పిని అధిగమించడానికి అవసరమైన మందులను తీసుకోలేకపోయాడు",
+   "hyp": "اطلاعن مدینیشیدینشنندنہ مدنو اطلاعنوپی ادیوہ مدشدانیکی اوزرہ مینمندلو تیسکو اللہ کو پیئیڈو",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "కానీ కెప్టెన్ వికెట్ కోల్పోయిన తర్వాత ఇండియా ఇన్నింగ్స్ ముగించడానికి 7 వికెట్లు కోల్పోయి కేవలం 36 పరుగులు మాత్రమే చేసింది",
+   "hyp": "Kaani, Captain Viket Kohlpa era tarwata India innings mothin chadhani ki e-e-e-viket Kohlpa iai Kaavala muppai ar parugul mathra me chesindhi.",
+   "wer": 0.9834710743801653,
+   "cer": 0.9834710743801653
+  },
+  {
+   "ref": "అదే విధమైన హైకింగ్ రూట్ వలే స్కీయింగ్ రూట్ గురించి ఆలోచించండి",
+   "hyp": "Aadhe vidamana hiking route wale skiing route gurinji alo chinchandhi",
+   "wer": 0.9836065573770492,
+   "cer": 0.9836065573770492
+  },
+  {
+   "ref": "చేసిన పని ఎక్కువగా సిద్ధాంతంగానే ఉంది కాని ధనుస్సు గెలాక్సీ చేసిన పరిశీలనలను ఉన్నటుగా భావించడానికి ఈ కార్యక్రమం వ్రాయబడింది",
+   "hyp": "つまり れいが 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生きれいに 生き",
+   "wer": 0.983739837398374,
+   "cer": 0.983739837398374
+  },
+  {
+   "ref": "\"university of dundeeకు చెందిన ప్రొఫెసర్ pamela ferguson \"అనుమానితుల ఫోటోలను ప్రచురిస్తే జర్నలిస్టులు ప్రమాదకరమైన దారిలో నడుస్తున్నట్లు అనిపిస్తుంది\" అని తెలిపారు.",
+   "hyp": "UNIVERSHA OF DUNDICUCHENDI na PROFESSOR PAULA FERGUSON, Arumani Telafotova na na Prachari Stage Journalistru Pramadakaraman na Daru na Nandatthusunatlu Anipinsi Thundi, Anithele Paru.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "\"ఈజిప్ట్‌కు చెందిన వాలీ అఫ్ ది డెడ్‌లోని గిజా ప్లాట్యూ లేదా \"గిజా నెక్రోపోలిస్\"\"లో అనేక పిరమిడ్‌లు వీటిలో గ్రేట్ పిరమిడ్ అతిపెద్దది అనేక చిన్న సమాధులు అనేక దేవాలయాలు మరియు గొప్ప సింహిక ఉన్నాయి.",
+   "hyp": "じゃあ れども アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェンスは アニカチェ",
+   "wer": 0.9896373056994818,
+   "cer": 0.9896373056994818
+  },
+  {
+   "ref": "1990 లో ఎడారి ఇసుక ముప్పు కారణంగా ప్రమాదంలో ఉన్న ప్రపంచ వారసత్వ ప్రదేశాల జాబితాలో ఇది కూడా చేర్చబడింది",
+   "hyp": "10-10 ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatombailu ndalatom",
+   "wer": 0.9803921568627451,
+   "cer": 0.9803921568627451
+  },
+  {
+   "ref": "plitvice lakes జాతీయ ఉద్యానవనం ఒక అడవి లాగా ఉంటుంది ఇక్కడ ప్రధానంగా బీచ్ స్ప్రూస్ మరియు ఫిర్ చెట్లు మరియు ఆల్పైన్ మరియు మధ్యధరా వృక్షసంపద మిళితమై ఉంటాయి",
+   "hyp": "PLITWE SLAKES JATIA UDIANAMANUM VAKADVI LAGA VUNTUNDI ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔",
+   "wer": 0.9013157894736842,
+   "cer": 0.9013157894736842
+  },
+  {
+   "ref": "జపాన్ అణు సంస్థ తెలిపిన వివరాల ప్రకారం ఈ ప్లాంట్ లో రేడియోయాక్టివ్ సీసియం అయోడిన్ లను గుర్తించారు",
+   "hyp": "Jepan Anusa Mastu Telipinavivaralaprakaram, i planto lo Radio Actu CCM Ayodin Lalo Gurthin Chyaru",
+   "wer": 0.979381443298969,
+   "cer": 0.979381443298969
+  },
+  {
+   "ref": "ప్రతి ఒక్కరూ సమాజంలో భాగస్వాములుగా ఉంటారు ఇంకా రవాణా వ్యవస్థలను ఉపయోగిస్తారు రవాణా వ్యవస్థ గురించి దాదాపు ప్రతి ఒక్కరూ ఫిర్యాదు చేస్తారు",
+   "hyp": "Prati vakkaru samajamla vbhaagasvamla ga unta aru Ṭhankar ravana viyavastala nu upiyav gistaru Ṭhankaru ravana viyavastagurinch dada pu prati vakkaru firiyadu chaystaru",
+   "wer": 0.9779411764705882,
+   "cer": 0.9779411764705882
+  },
+  {
+   "ref": "ప్రజలు కాకపోవచ్చు ముందుగా ఇంటికి తిరిగి వచ్చే ప్రయాణికులకు సహనం మరియు అవగాహన కూడా అవసరం",
+   "hyp": "پر اجل ککپا ہوچیو۔ مندگا انٹکی تیریکے وچھے پریانکلککل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل کل ک",
+   "wer": 0.9885057471264368,
+   "cer": 0.9885057471264368
+  },
+  {
+   "ref": "అయితే నిదానంగా ఉన్న ప్రసార మాధ్యమాల కారణంగా పశ్చిమంలో స్టైల్స్ 25 నుండి 30 సంవత్సరాల వరకు వెనుకబడవచ్చు",
+   "hyp": "hitha nidhananga vannaprasara majya mala karananga, fashimamlul stiles iruye hidunundi moppai sa matra la warku benakapadavattu.",
+   "wer": 0.9803921568627451,
+   "cer": 0.9803921568627451
+  },
+  {
+   "ref": "పశ్చిమ ఐరోపా ప్రజలు మధ్య యుగాల చివరిలో వారి సొంత శైలిని అభివృద్ధి చేసుకోవడం ప్రారంభించారు మతపరమైన యుద్ధాల ఫలితంగా ఆ సమయంలో సంభవించిన అతిపెద్ద అభివృద్ధిలో ఒకటి ప్రజలు బట్టలు వేసుకోవడానికి బటన్లను ఉపయోగించడం ప్రారంభించారు",
+   "hyp": "Pashima Ayuropa Prajalu, Madhyaya Yoga Lachewarelu, Vari Santasaiyanya Abhivruti, Shei Skor, Praharambin, Shei Rho, Mataparamai, Yudhala Falitanga, Asamiya Mula, Sambalin, Shei Nathipeda, Abhivruti Lho, Vakati Prajalu, Bhattal, Veskoda, Niki, Bhattan, Upayagin, Praharambin, Shei Rho.",
+   "wer": 0.9771689497716894,
+   "cer": 0.9771689497716894
+  },
+  {
+   "ref": "1966 నుండి సుందర్బన్స్ అడవి జంతువులకు అభయారణ్యంగా ఉంది ఇప్పుడు ఆ ప్రాంతంలో 400 రాయల్ బెంగాల్ పులులు మరియు 30,000 మచ్చల జింకలు ఉన్నాయని అంచనా వేయడమైనది",
+   "hyp": "15.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.30.",
+   "wer": 0.94,
+   "cer": 0.94
+  },
+  {
+   "ref": "టిబెట్ ధ్యానానికి కేంద్రం దేవయోగం వివిధ దేవతల యొక్క విజువలైజేషన్ ద్వారా శక్తి మార్గాలను శుభ్రం చేయబడతాయి చక్రాలు యాక్టివేట్ చేయబడతాయి మరియు జ్ఞానచైతన్యాన్ని సృష్టించబడుతుంది",
+   "hyp": "tibet dhyanāna ki kendram dhyavayagam. vibhita dhyavatali yok ka visualisation vara sakti margaalana subram cheibad tahi. chakraali aktiver tahi marayu niyana cheetan niyani srustin cha bada tundi.",
+   "wer": 0.976878612716763,
+   "cer": 0.976878612716763
+  },
+  {
+   "ref": "మగవారిని తిరస్కరించడంలో ధృడంగా ఉండండి మరియు మీ ఉద్దేశాలపై స్థిరంగా ఉండడానికి భయపడకండి  సంస్కృతి పరంగా వ్యత్యాసాలైనా కాకపోయినా అది సరి కాదు!",
+   "hyp": "مگا وارنی ترسکر انچرم்லு துடங்கا உண்டாட்டு மரیوں میی اُتھے செல்லப் பைச் செரங்கا உண்டானுக்கு بயபடக் கண்டி. சமس் கொள்ளத்திப் பரங்கா, எத்தையா சாலையினாகக்காகப் போய் என்றால் அதிசரிகாது.",
+   "wer": 0.9784172661870504,
+   "cer": 0.9784172661870504
+  },
+  {
+   "ref": "సుందర్బన్లను unesco ప్రపంచ వారసత్వ ప్రదేశంగా ప్రకటించింది భారత భూభాగంలోని అటవీ భూభాగాన్ని సుందర్బన్ జాతీయ ఉద్యానవనం అని అంటారు",
+   "hyp": "Sunderbhanu na Yunesco Prabhu, Yunesco Prabhamsha Vara Satva Pradeshanga Prakatenshi, Bharatabhubha Ghamlu na Atavi Bubha Ghani Sunderbhanu na Jatiya Gujdhyana Varam na Ani Antau.",
+   "wer": 0.9841269841269841,
+   "cer": 0.9841269841269841
+  },
+  {
+   "ref": "ఆకులు మరియు గింజలలో లభించే ప్రోటీన్లు మనకు అత్యంత సులభంగా లభించే మొక్కల వనరులు కానీ ఇవి మనవంటి వారికి వండనిదే జీర్ణించుకోవడం కష్టం",
+   "hyp": "Aqulu mariyo dindrula labin cha prothi ng lua ngakathi ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ngath ng",
+   "wer": 0.9846153846153847,
+   "cer": 0.9846153846153847
+  },
+  {
+   "ref": "సుందర్బన్స్ ప్రపంచంలోనే అతిపెద్ద లిటరల్ మాంగ్రోవ్ బెల్ట్ ఇది తీరం నుండి 80 కి.మీ 50 మైళ్ళు బంగ్లాదేశ్ మరియు భారత అంతఃపుర ప్రాంతాలలో విస్తరించి ఉంది",
+   "hyp": "سندر بانس پر پنچم لونے اتیپیدھا لیٹرال مینگرو بیلٹ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔",
+   "wer": 0.9455782312925171,
+   "cer": 0.9455782312925171
+  },
+  {
+   "ref": "వ్యాధి పందుల ద్వారా వ్యాపిస్తుంది ఇది తరువాత దోమల ద్వారా మనుషులకి సోకుతుంది",
+   "hyp": "viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadipangu ledoara viyadip",
+   "wer": 0.9866666666666667,
+   "cer": 0.9866666666666667
+  },
+  {
+   "ref": "ఫలితంగా ఒక అడ్డంకిని అధిగమించడానికి కలిసి పనిచేసే సంస్థ ప్రక్రియ వినియోగదారుని యొక్క అవసరానికి సేవలందించే కొత్త సృజనాత్మక ప్రక్రియకు దారితీస్తుంది",
+   "hyp": "Fale tanga vakartam ki ni ṭika mī chadāna ki kaalye si pani chaisa samosa prekriye viniku yav gadāra niyaka. Fasarāna ki zyavalandin chi kotrhusurna akma ka prekriye dārti astandī.",
+   "wer": 0.9794520547945206,
+   "cer": 0.9794520547945206
+  },
+  {
+   "ref": "\"అతని వయసు 20ఏళ్లని తెలుస్తోంది. బీబర్ ఒక ప్రకటనలో ఇలా అన్నాడు \"నేను ఈ విషాద సంఘటనలో లేకపోయినప్పటికీ లేదా ప్రత్యక్షంగా పాల్గొననప్పటికీ నా ఆలోచనలు మరియు ప్రార్థనలు బాధితుడి కుటుంబంతో ఉన్నాయి.\"\"",
+   "hyp": "यह वादने वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे वादे",
+   "wer": 0.9791666666666666,
+   "cer": 0.9791666666666666
+  },
+  {
+   "ref": "దాని పొడవైన దవడలు 70 కంటే ఎక్కువ రేజర్ వంటి పదునైన దంతాలతో దాని నోటి పైభాగంలో అదనపు సెట్ తోపాటు అమర్చబడి ఉన్నాయి దాని మార్గం గుండా వెళ్లినప్పుడు తప్పించుకునే అవకాశం ఉండదు",
+   "hyp": "dhbknti ekko vrhezr vantipadu na na dhanthalatho dhani noti pai baagam lho adhanapu set toapatu amarcha badi unna hi dhani margangun da villinapu tu tappin chikunye avakasam unna dhu",
+   "wer": 0.9705882352941176,
+   "cer": 0.9705882352941176
+  },
+  {
+   "ref": "ఈ ప్రమాదం ఎత్తుగా ఉన్న పర్వత భూభాగంలో జరిగిందని ఇంకా శత్రువులు రాజేసిన అగ్ని ఫలితంగా జరిగిందని నమ్ముతారు",
+   "hyp": "i prebalam yat tuga 1 parwotam bhu ba gamblo jadgin tani, nga sietru bhu raja yasena at ni palitanga jadgin tani nama taru.",
+   "wer": 0.9711538461538461,
+   "cer": 0.9711538461538461
+  },
+  {
+   "ref": "నౌకాశ్రయం 1889లో ఒక అపఖ్యాతిపాలైన నౌకాదళ స్థావరంగా ఉంది జర్మనీ సంయుక్త బ్రిటన్ నుండి ఏడు నౌకలు నౌకాశ్రయాన్ని విడిచిపెట్టడానికి నిరాకరించాయి",
+   "hyp": "Nauka Srayam, Pajanurangala, Nauka Dala, Stavarangala, Jermani, Samyuktha, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka Srayani, Nauka S",
+   "wer": 0.9784172661870504,
+   "cer": 0.9784172661870504
+  },
+  {
+   "ref": "కోతల కోసం ఆయన ఒక సంఖ్యను అనుకోలేదు అవి చైనా ఆర్ధిక ఉత్పత్తి ఆధారంగా తయారు చేయబడతాయి",
+   "hyp": "Coatalokosam aayna vapa sankkinanuko leidu, avi chayna aadika wadpati aadaranga tayaru sheywarataiy.",
+   "wer": 0.9879518072289156,
+   "cer": 0.9879518072289156
+  },
+  {
+   "ref": "సాధారణంగా ఈవెంట్కు వచ్చిన అతిథులను ఆహ్లదకరంగా మరియు వారిని అక్కడే ఉండేటట్లు చేయడానికి వారికి ప్రత్యేకమైన ఆహారం పానీయాలు మరియు వినోదానికి సంబందించిన ఆఫర్లను అందిస్తారు",
+   "hyp": "Saadarna ngga, event ko vachin na atidu lanu, ahlath karanga, maru varu ni akkade vunde tatu chaedanaki, varu ki pratyakamayana aharam, paniyalu, maru, vino dani ki sambandinjana ahar lano, andis taru.",
+   "wer": 0.9819277108433735,
+   "cer": 0.9819277108433735
+  },
+  {
+   "ref": "చర్చి యొక్క కేంద్ర అధికారం రోమ్లో వెయ్యి సంవత్సరాలుగా ఉంది మరియు ఈ అధికారం డబ్బు ఈ సిద్ధాంతాన్ని నెరవేరుస్తుందా అని చాలా మంది ప్రశ్నించాడానికి దారితీసింది",
+   "hyp": "چچیک گندரی دکھاں میں روان்டுவی یہ ہر ساہترாக் காண்டே. میںڈیہ دکھاں رہوں் دبھو یہییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییی",
+   "wer": 0.9805194805194806,
+   "cer": 0.9805194805194806
+  },
+  {
+   "ref": "ఒట్టావా కెనడా యొక్క మనోహరమైన ద్విభాషా రాజధాని మరియు కెనడా యొక్క గత మరియు వర్తమానాలను ప్రదర్శించే కళా ప్రదర్శనశాలలు మరియు వస్తుప్రదర్శనశాలల శ్రేణిని కలిగి ఉంది",
+   "hyp": "ずったわけなど夷かまぬ 遥かまぬ 遥かがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがとがと",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ప్రజాదరణ పొందిన వాడుకలో సఫారీ అనే పదం అద్భుతమైన ఆఫ్రికన్ వన్యమృగాలను చూడటానికి ముఖ్యంగా సవన్నా లో ఓవర్ ల్యాండ్ ప్రయాణాన్ని సూచిస్తుంది",
+   "hyp": "پر جادرனپنனے واضکلوں سفاریانے پدم ادبتماین آفریکان ونیمراگانے لنچورتانکی مکیمگہ سورنالوں ووووورلاً پریارانی سوچشتوندی",
+   "wer": 0.8582089552238806,
+   "cer": 0.8582089552238806
+  },
+  {
+   "ref": "దుస్తులు చాలా వేడిగా మారకుండా జాగ్రత్తగా ఉండండి ఇది సంకోచానికి కారణమవుతుంది లేదా తీవ్రమైన సందర్భాలలో కాలిపోయే అవకాశం ఉంది",
+   "hyp": "دوستு lு چாலہ வیڈگہ مارکنڈہ چاگرتگہ ہندண்டی. இது سنکو چانے کی کارنہ موتا ہندی. لیے دا تیوரமہینہ سندر بھالا لوں کالپویا ہے اوکہ سمھندی.",
+   "wer": 0.9752066115702479,
+   "cer": 0.9752066115702479
+  },
+  {
+   "ref": "పైన ఉన్న స్పష్టమైన అందమైన ఆకాశం అలాగే చుట్టుపక్కల ఉన్న అనేక పర్వతాలు తప్ప మరేమీ కనిపించవు గుహ లోపల నుండి బయటి ప్రదేశం చాలా తక్కువగా కనిపిస్తుంది శబ్దాలు చాలా తక్కువగా వినపడతాయి",
+   "hyp": "...",
+   "wer": 0.017045454545454544,
+   "cer": 0.017045454545454544
+  },
+  {
+   "ref": "టర్కీలోని గజియాంటెప్ లో నిన్న ఉదయం పోలీసు హెడ్ క్వార్టర్స్ వద్ద పేలిన కారు బాంబు పేలి ఇద్దరు పోలీసు అధికారులు మృతి చెందగా మరో ఇరవై మందికి పైగా గాయపడ్డారు",
+   "hyp": "Tarki Lone Ghaziantep Lone ninna Udayam Police Headquarters Waad Depeelinna Karubam Upeli Idhru Police Sadi Karul Muthi Chandaga Marau Irawe Mandeke Paiga Gayapaddaru",
+   "wer": 0.9934640522875817,
+   "cer": 0.9934640522875817
+  },
+  {
+   "ref": "మీ చేతులపై ఉన్న తేమ బాహ్య పొరలతో కలిసి ప్రభావం చూపుతుంది ఇది చూడడానికి వింతగా ఉండి ఇంకా ఒక రకమయిన పెంకు చిప్పలా చేస్తుంది",
+   "hyp": "1 個 nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9586776859504132,
+   "cer": 0.9586776859504132
+  },
+  {
+   "ref": "మరోవైపు చాలా దేశాల్లో చలి మరియు మంచు పరిస్థితులు సాధారణంగా ఉంటాయి మరియు సంవత్సరం అంతా ట్రాఫిక్ కి అంతరాయం లేకుండా ఉంటుంది",
+   "hyp": "Rai Patala desaala salim vadiya manchipat sithil salim ngon taim vadi sal tranta trafi ki entran ili ngon dandi.",
+   "wer": 0.8925619834710744,
+   "cer": 0.8925619834710744
+  },
+  {
+   "ref": "మీరు షిప్ బోర్డ్ విహారాలను ఉపయోగించి విదేశాలకి వెళ్తే మాత్రమే మీకు ప్రత్యేక వీసా 2009 నాటికి అవసరం ఉండదు",
+   "hyp": "میرுشیپ بوڑوہر آلனے ویپویاؤگنشی ویدے شالکو வیلیتے ماترمی میرکو پر اتیاکا ویسا ارنے ویل پنٹھوں میدرانٹی کی آبسرام گنڈا دو",
+   "wer": 0.9903846153846154,
+   "cer": 0.9903846153846154
+  },
+  {
+   "ref": "\"university of dundeeకు చెందిన ప్రొఫెసర్ pamela ferguson \"అనుమానితుల ఫోటోలను ప్రచురిస్తే జర్నలిస్టులు ప్రమాదకరమైన దారిలో నడుస్తున్నట్లు అనిపిస్తుంది\" అని తెలిపారు.",
+   "hyp": "अनुवर्टियाव बूनदे पूजिन दिन परबहें सर पमेर लाव पर पर गुवसन वनु परेशुरिस्ते जन वर्छलु प्रमाद कर प्रमान दरल नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नगन नग",
+   "wer": 0.9631901840490797,
+   "cer": 0.9631901840490797
+  },
+  {
+   "ref": "హైడ్రోజన్ అయాన్లు అనేవి ఎలక్ట్రాన్లు తీసివేయబడిన ప్రోటాన్లు హైడ్రోజన్ అణువులలో 1 ప్రోటాన్ మరియు 1 ఎలక్ట్రాన్ ఉంటాయి కాబట్టి",
+   "hyp": "hodrogen ayonlo anevi elektronlo tis veibadno prottanlo hodrogen alovalo lo vaka prottan mario vaka elektron unta i kaavatti",
+   "wer": 0.967479674796748,
+   "cer": 0.967479674796748
+  },
+  {
+   "ref": "ఈ దంపతులు తమ బిడ్డ కోసం దత్తత తీసుకునే ప్రక్రియను ఎంచుకోవచ్చు",
+   "hyp": "dapta tati kutu prakriyanu",
+   "wer": 0.4262295081967213,
+   "cer": 0.4262295081967213
+  },
+  {
+   "ref": "రోమ్ లోని వివిధ ప్రదేశాలలో ప్రజలు ఈ వేడుకను చూసేందుకు వీలు కలిగించడానికి అనేక పెద్ద టివి తెరలను ఏర్పాటు చేశారు",
+   "hyp": "Roomlau na Vivita Pradeshala Lolo Prejali viyadikon choosyendiku Vilo Kalgintarana Kehane ka Pitha TV Thar Lalo ail Parti Chesharu",
+   "wer": 0.990909090909091,
+   "cer": 0.990909090909091
+  },
+  {
+   "ref": "ద్వీపసమూహం ద్వీపకల్పానికి ఉత్తరంలో 120 కిలోమీటర్ల దూరంలో ఉంది విల్లా లాస్ ఎస్ట్రెల్లాస్ స్థావరాలలో కింగ్ జార్జ్ ద్వీపం అతిపెద్దది",
+   "hyp": "dvp samoham dvp kalypanu ki vuttaram lo, nota yaraway kilometrula doram lo vundi. villa las estrelas taavral lo, kingjaj dvapam atipaddadi.",
+   "wer": 0.9844961240310077,
+   "cer": 0.9844961240310077
+  },
+  {
+   "ref": "మీరు మీ స్వంతం ఆలోచనలతో కాకుండా ప్రభుత్వాల సలహా కూడా తీసుకోవాలని అనుకోవచ్చు అయితే వారి సలహా వారి పౌరుల కోసం రూపొందించబడింది",
+   "hyp": "Miru mis fantamalo chanala to kaakunna prebutwala salha ko da tis ko alane yanuko hocho. Aitavari salha vari pavrula koosam rupa dinsha baadindi.",
+   "wer": 0.983739837398374,
+   "cer": 0.983739837398374
+  },
+  {
+   "ref": "ఒలివర్ సాక్స్ తన పేపర్ ది ప్రెసిడెంట్ స్పీచ్ లో మెదడు దెబ్బతినడం వల్ల స్పీచ్ అర్థం చేసుకోలేని వ్యక్తులు ఎంత నిజాయితీగా ఉన్నా కూడా నిజాయితీని ఎలా అంచనా వేయగలుగుతున్నారో సూచించాడు",
+   "hyp": "Þauliver Sox, tanapépar, di President Spee Shlou, Madhavu Debatirana Marana, speech Ardham Českola ni Vyethu, yantha nijayati dhaumna koda, nijayati ni yala Anchuna Veyagalugu Turnara, Svuchinchagdu.",
+   "wer": 0.9830508474576272,
+   "cer": 0.9830508474576272
+  },
+  {
+   "ref": "పిల్లలు నిర్లక్ష్యం వేధింపులు మరియు ఇంకా దోపిడి వరకుగల అనేక రకాల కారణాల వల్ల ఫోస్టర్ కేర్ లో ఉంచబడ్డారు",
+   "hyp": "پیلہ لہنیریکٹ نلکشم ویدھمپلوں مریو اینکا دو پیڑی ارکو گلا انگرکالا کارانہ لہا ہلا پوسترکیرلو اینچا بڑا رہے",
+   "wer": 0.9611650485436893,
+   "cer": 0.9611650485436893
+  },
+  {
+   "ref": "ప్రజలు కాకపోవచ్చు ముందుగా ఇంటికి తిరిగి వచ్చే ప్రయాణికులకు సహనం మరియు అవగాహన కూడా అవసరం",
+   "hyp": "Pradhalu kakapochu, munduga inti ki tiri ke vachya pranana kula ko sahanam mari vavagahana kood hava saram.",
+   "wer": 0.9655172413793104,
+   "cer": 0.9655172413793104
+  },
+  {
+   "ref": "హుహ్నే రాజీనామా చేసి ఆయనను కేబినెట్ లో ఎడ్ డేవీ ఎంపీ గా భర్తీ చేయనున్నారు నార్మన్ లాంబ్ mp బిజినెస్ మినిస్టర్ ఉద్యోగం డేవీ ఖాళీ చేయాలని భావిస్తున్నారు",
+   "hyp": "Huchne Rajinamachasi, Aine Nuka binetlo 8 Devi MPga Bharti Chayanun Naru, Narmann Lom MP Business, Minister Uddhivgam Devi Kali Chayalani Bhaavistun Naru.",
+   "wer": 0.9466666666666667,
+   "cer": 0.9466666666666667
+  },
+  {
+   "ref": "ఉదాహరణకు ప్రపంచంలో అత్యంత సాధారణమైన స్థిర చిత్ర ఫోటోగ్రఫీ ఫార్మాట్ 35mm ఇది అనలాగ్ ఫిల్మ్ శకం ముగింపులో ప్రధాన చలన చిత్ర సైజు",
+   "hyp": "Uda Haranaku propunjomilo atyanda sadarana mayanastera chitra fotografi format, mukpayaidu MM, nd analog film sekam mugimpu lo pradana chalat chitra saizu.",
+   "wer": 0.976,
+   "cer": 0.976
+  },
+  {
+   "ref": "మీకు sie అనే పదం పక్కన వచ్చే నౌన్స్ అన్నీ ఎల్లప్పుడు క్యాపిటల్ లెటర్తో ప్రారంభం అవుతాయి అది వాక్యం మధ్యలోనైనా సరే",
+   "hyp": "Mi kushai,anye padam pakkana vachai,naun sani elapur,captur ladrto praramamautai,adibaak ke madhe launaina sarai.",
+   "wer": 0.9557522123893806,
+   "cer": 0.9557522123893806
+  },
+  {
+   "ref": "సింహాలు ఎక్కువగా సామాజిక పిల్లులు ఇవి ప్రైడ్స్ అని పిలిచే పెద్ద గుంపుల్లో నివసిస్తాయి",
+   "hyp": "smeha rikko wa saamajika piliw lo ghiwi frights anipil chaipatta gumpul doan nivasistari",
+   "wer": 0.9764705882352941,
+   "cer": 0.9764705882352941
+  },
+  {
+   "ref": "బాలిలో అజెండాలోని ఇతర విషయాలలో ప్రపంచంలోని మిగిలిన అడవులను రక్షించడం అభివృద్ధి చెందుతున్న దేశాలు తక్కువ-కాలుష్య మార్గాల్లో ఎదగడానికి సహాయపడే సాంకేతికతలను పంచుకోవడం ఉన్నాయి",
+   "hyp": "यह पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर �",
+   "wer": 0.9649122807017544,
+   "cer": 0.9649122807017544
+  },
+  {
+   "ref": "కొన్ని మార్గాల్లో పెద్ద కంపెనీలు తమ స్వంత విమానాలను కలిగి ఉన్నాయి కానీ ఇతర మార్గాలు చిన్న సంస్థలకు ఒక సమస్య కలదు",
+   "hyp": "Kunde Margaalwa pethda companyla tamasvantawemana ala na kaalagiwannaayi, kani itara Margaalwa chinnna samasthala kwa kasaamasya kaladu.",
+   "wer": 0.9910714285714286,
+   "cer": 0.9910714285714286
+  },
+  {
+   "ref": "అది నీటిలోకి వచ్చిన దేని పైన దాడి చేసింది t rex వంటి ఒక పెద్ద డైనోసార్ కూడా దానికి సరిపోలదు",
+   "hyp": "aji nitrilo ko hochi deyini pai dhari chaisindi t rex 1t 1ka petha dino sar koda dani ki saripol hidhu",
+   "wer": 0.967032967032967,
+   "cer": 0.967032967032967
+  },
+  {
+   "ref": "ఈ యూరోపియన్ చరిత్ర కాలంలో ఉన్నతంగా మరియు శక్తివంతంగా మారిన catholic church పరిశీలనలోకి వచ్చింది",
+   "hyp": "i یروپین چریترا کالم لہوننا تنگا مرییشکتی ون تنگا مارینا کتلک چیرچ پریشینہ لگی وچنگی",
+   "wer": 0.8631578947368421,
+   "cer": 0.8631578947368421
+  },
+  {
+   "ref": "\"ఒక ముఠా వీధులలో తిరుగుతూ వినియోగ వస్తువుల దుకాణాలను దోచుకోవడంతో bishkekను ఒక పరిశీలకుడు \"అరాచక\" స్థితిలో కూరుకుపోతుందని వివరించారు.",
+   "hyp": "اوکہ مطا ویدو لالو ترگو تو وینیوگہ وستو لدو کانا لانو دوچکو ورمتو بشککنو اوکہ پرشی لکوڑو اراجکستیلو کورگو پوطنان بیوارن چیارو",
+   "wer": 0.9166666666666666,
+   "cer": 0.9166666666666666
+  },
+  {
+   "ref": "దానికి సంబంధించిన కానీ సాధారణంగా ఆల్పైన్ శైలి అధిరోహణ స్కై పర్యటన లేదా పర్వతారోహణం నిటారుగా భూభాగంపై జరుగుతుంది రెండో వాటిని పాల్గొన్న మరియు చాలా బిరుసైన స్కిస్ మరియు బూట్లు అవసరం పడదు",
+   "hyp": "10 ھaq",
+   "wer": 0.03260869565217391,
+   "cer": 0.03260869565217391
+  },
+  {
+   "ref": "gizaలో ఉన్న great pyramid నేటికీ ఏడు వింతలలో ఒకటిగా ఉంది",
+   "hyp": "Gijala urna ,Greet Pyramid Nathiki illu Venthala urna",
+   "wer": 0.8571428571428571,
+   "cer": 0.8571428571428571
+  },
+  {
+   "ref": "ముప్పై ఆడ సింహాలు మరియు పిల్ల కూనలతో కలిసి 1 నుండి 3 మగ సింహాలు జతకూడి సమూహాలుగా తయారవుతాయి",
+   "hyp": "muffa yadasimhalo mariyo pillakunalto kalisi hokatinundi muur maga simhalo jatakuris hamu haluga tayaro tayi",
+   "wer": 0.978021978021978,
+   "cer": 0.978021978021978
+  },
+  {
+   "ref": "మిడిల్ ఆర్డర్ బ్యాట్స్ మెన్ సచిన్ టెండూల్కర్ రాహుల్ ద్రావిడ్ లు రాణించి వంద పరుగుల భాగస్వామ్యాన్ని సాధించారు",
+   "hyp": "Midilowder Batsman Sachin Tendulkar Rao Kudravi Lurahanin Ji vanda Parvula Bhaagasvamiya Nisadin Shahar",
+   "wer": 0.9444444444444444,
+   "cer": 0.9444444444444444
+  },
+  {
+   "ref": "ఉత్తరాన ఈ ప్రాంతం సాహెల్ దక్షిణాన మరియు పశ్చిమాన అట్లాంటిక్ మహాసముద్రం ద్వారా సరిహద్దుగా ఉంది",
+   "hyp": "ずたなな イプランテム サーハル ドッシュ な な マデュー パッシュ マナ アクランティック サマハー サム ドラム ドラ サリハ ドッガ ウンディ",
+   "wer": 0.7849462365591398,
+   "cer": 0.7849462365591398
+  },
+  {
+   "ref": "అవి పొలుసులు పంజాలతో పాదాలు కలిగి గుడ్లు పెడతాయి అవి ఒక టి-రెక్స్ వంటి వాటి రెండు వెనుక కాళ్ళపై నడుస్తాయి",
+   "hyp": "abhi polu sulu panjala to padhalo kali ki gudlu pad thai abhi oka terex vantivati randu kwenaka kala paenadu thai",
+   "wer": 0.9523809523809523,
+   "cer": 0.9523809523809523
+  },
+  {
+   "ref": "ప్రతీ జనరేషన్తో రెండు సమూహాల మధ్య వేరుపరచడం ఇంకా తిరిగి కలపడం అనేది వైవిధ్యాన్నిముందుకు వెనుకకు మార్చుతుంది",
+   "hyp": "Prati generation 2 Samu Khanamathya Veeru Parchadam Ṭhika Ṭhrikahalapadam anayi de, Veivethyan de Munda Kuvainu Kakao, Mahatchatham de.",
+   "wer": 0.9906542056074766,
+   "cer": 0.9906542056074766
+  },
+  {
+   "ref": "పునర్నిర్మాణ ఒప్పందాలను washington‌లో గుర్తింపు ఉన్న వారికి ఇవ్వడంపై పునర్నిర్మాణ ఉద్యమం యొక్క విమర్శలు దృష్టి పెట్టింది",
+   "hyp": "Pwnar Nermana Uppandalanu vashinthanu Lohurpur Thimpurvanwaraki vadampai Pwnar Nermana Uthyamam Yokkavimar Salu Drushtipetinthi",
+   "wer": 0.9916666666666667,
+   "cer": 0.9916666666666667
+  },
+  {
+   "ref": "ఏరోస్మిత్ వారి పర్యటనలో మిగిలిన సంగీత కచేరీలను రద్దు చేసింది",
+   "hyp": "みギュロスミッツバリーパディアトナル マイグルウの シャンギーと カッチェリーランを ラッドジェシンディ",
+   "wer": 0.8666666666666667,
+   "cer": 0.8666666666666667
+  },
+  {
+   "ref": "ప్రాచీన చైనా చరిత్రలో ఈ మూడు రాజ్యాల శకము రక్తపాత యుగాలలో ఒకటి xi’anలో గ్రాండ్ ప్యాలెస్‌ సింహాసనాన్ని పొందడానికి పోరాడుతూ వేలాది మంది మరణించారు",
+   "hyp": "پر آچینہ چینا چریترலو یموڑو رجل سیکمو رکھتا پاہتی اوگالو لوکتی ۔ ۔ ۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔",
+   "wer": 0.9790209790209791,
+   "cer": 0.9790209790209791
+  },
+  {
+   "ref": "ఇది బేస్ స్టేషన్ లో డ్యూయల్ రేడియోలు ఉంటే 802.11a 802.11b మరియు 802.11gతో అనుకూలంగా వెనుకకు అనుమతిస్తుంది",
+   "hyp": "b",
+   "wer": 0.009523809523809525,
+   "cer": 0.009523809523809525
+  },
+  {
+   "ref": "టిబెట్ ధ్యానానికి కేంద్రం దేవయోగం వివిధ దేవతల యొక్క విజువలైజేషన్ ద్వారా శక్తి మార్గాలను శుభ్రం చేయబడతాయి చక్రాలు యాక్టివేట్ చేయబడతాయి మరియు జ్ఞానచైతన్యాన్ని సృష్టించబడుతుంది",
+   "hyp": "tbdhiyananikyandra dhiyavayagam vivitha dhiyavathala yakka vizualisation rara sikthya maargalano subranchaya bhaarthai, chakralaakti vithaya bhaarthai yam aru nannachitan nyanisrushitan chabadthi",
+   "wer": 0.9884393063583815,
+   "cer": 0.9884393063583815
+  },
+  {
+   "ref": "తత్వవేత్త అయిన అరిస్టాటిల్ భూమి నీరు గాలి ఇంకా అగ్ని అనే నాలుగు అంశాలలో ప్రతిదీ ఒకటి లేదా అంతకంటే ఎక్కువ అంశాల మిశ్రమంతో రూపొందించబడిందని సిద్ధాంతప్రకారంగా నిరూపించారు",
+   "hyp": "Tathwar vethaain aris trathil bhumi niru gali inga agni aninalu amshallu prathivi vakati lehda anthakanti ekku amshallu misramam tha rupandhenchepadindani siddharthu prakaranga niru pinchiaru.",
+   "wer": 0.9880239520958084,
+   "cer": 0.9880239520958084
+  },
+  {
+   "ref": "\"\"\"ఒక నిజమైన \"\"\"అదృశ్య జట్టు\"\"\" ఉనికి లార్సన్ మరియు lafasto 1989 p109 కూడా ఒక వర్చువల్ జట్టు యొక్క ఒక ప్రత్యేక భాగం.\"\"",
+   "hyp": "1.5% ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu ndrushyatu",
+   "wer": 0.9491525423728814,
+   "cer": 0.9491525423728814
+  },
+  {
+   "ref": "కొన్ని ప్రాంతాల్లో ఒక నిమిషం పాటు నీటిని మరిసించడం మరికొన్ని నిమిషాల్లో కొన్ని నిమిషాలు అవసరం",
+   "hyp": "konumi pramthal lo oka nemisam pātu nītinim marisim chadam marikonin imisal lokoonin imisal loko oka siram",
+   "wer": 0.978494623655914,
+   "cer": 0.978494623655914
+  },
+  {
+   "ref": "కానీ భూమధ్య రేఖకు కేవలం కొన్ని డిగ్రీల ఉత్తరంలో అధిక ఉష్ణం లో ఉంచడం వలన మీరు వేడి ఎల్లప్పుడూ బలమైన సూర్యుడు ఆకాశం నిర్మలంగా ఉన్నప్పుడు చాలా అరుదుగా రెండింటిని ఎదుర్కోవాల్సి ఉంటుంది",
+   "hyp": "kani buhumati arī ka gughevalam konne digi la uttharam lo vadi ka usnam lo uthnichadam lo nama raanam iro viro illappuru bhalam aina suri du akāshan ninma raanggaun na prachāla arūdhu qārinditani yadur ko valsai untondi",
+   "wer": 0.9833333333333333,
+   "cer": 0.9833333333333333
+  },
+  {
+   "ref": "మీ చేతులపై ఉన్న తేమ బాహ్య పొరలతో కలిసి ప్రభావం చూపుతుంది ఇది చూడడానికి వింతగా ఉండి ఇంకా ఒక రకమయిన పెంకు చిప్పలా చేస్తుంది",
+   "hyp": "vanda gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gavu na gav",
+   "wer": 0.9669421487603306,
+   "cer": 0.9669421487603306
+  },
+  {
+   "ref": "టర్కీ అధ్యక్షుడు రెసెప్ తయ్యిప్ ఎర్డోగాన్ ట్రంప్ ఫోన్ సంభాషణ జరిపిన తరువాత ఈ ప్రకటన చేశారు",
+   "hyp": "Tarki, ndikshulu, receptayip, edogan, trump, phone, sambashana, jeripin na tarawati, prakatanna, chaisaru.",
+   "wer": 0.9555555555555556,
+   "cer": 0.9555555555555556
+  },
+  {
+   "ref": "ఒక ట్రిప్ పుస్సీని ప్రతిబింబించడానికి మరియు అనుభవాలను భవిష్యత్తు క్లాసులతో పంచుకోవడానికి కూడా ఒక ఫీల్డ్ ట్రిప్ ని వాస్తవంగా పంచుకోవడం అనేది ఒక గొప్ప మార్గం",
+   "hyp": "1 ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ ھپ",
+   "wer": 0.9419354838709677,
+   "cer": 0.9419354838709677
+  },
+  {
+   "ref": "అదే విధమైన హైకింగ్ రూట్ వలే స్కీయింగ్ రూట్ గురించి ఆలోచించండి",
+   "hyp": "dhagging root vallu scaiing root gurin chala chanchanti",
+   "wer": 0.8852459016393442,
+   "cer": 0.8852459016393442
+  },
+  {
+   "ref": "అనేక ప్రోటాన్లు న్యూట్రాన్లతో ఒక కేంద్రకాన్ని ఒకే దగ్గర ఉంచడానికి తీసుకునే శక్తి అనే సూత్రంపైన విచ్ఛిత్తి బాంబు పనిచేస్తుంది",
+   "hyp": "vizitriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatriyatri",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "చంద్రుడి భూమిపై ఉన్నసముద్రాలలో ఆటుపోట్లు కలిగించినట్లు సాగిట్టారియస్ గెలాక్సీ పైన పాలపుంత ప్రభావం చూపుతుంది",
+   "hyp": "じゃんどりぴょみぴょう vrn サムズラ アーティポート カレー インジナクル サーガッター リアス ギャラックスイパイ パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン パラパン",
+   "wer": 0.9906542056074766,
+   "cer": 0.9906542056074766
+  },
+  {
+   "ref": "వాస్తవానికి అది ఉనికిలో ఉందని ఏ ఒక్కరికి తెలిసినా కూడా కనుగొనడం అంత సులభం కాదు ఒకసారి గుహ లోపలికి వెళ్తే మొత్తం ఒంటరిగా ఉంటుంది",
+   "hyp": "وستوانگی ادی اونکلہ اُن دنی یہ اکر کی تلسینا کڑا کنگورڈا منت سلوبام کا دو اوکسار گوھلوپل کی வیلتے مطمون تاریگا اُن ٹندی",
+   "wer": 0.905511811023622,
+   "cer": 0.905511811023622
+  },
+  {
+   "ref": "కోచామో లోయ చిలీ యొక్క ప్రధాన అధిరోహణ గమ్యస్థానం దక్షిణ అమెరికా యొక్క యోసెమైట్ గా ప్రసిద్ధి చెందింది ఇది వివిధ రకాల గ్రానైట్ పెద్ద గోడలు మరియు క్రాగ్ లతో ఉంది",
+   "hyp": "Cochamoloya chili yokka pradana adirohna gamyastanam daksi namarika yokka yosamaitu ka presidhi chendindi.",
+   "wer": 0.6751592356687898,
+   "cer": 0.6751592356687898
+  },
+  {
+   "ref": "ప్రజాదరణ పొందిన వాడుకలో సఫారీ అనే పదం అద్భుతమైన ఆఫ్రికన్ వన్యమృగాలను చూడటానికి ముఖ్యంగా సవన్నా లో ఓవర్ ల్యాండ్ ప్రయాణాన్ని సూచిస్తుంది",
+   "hyp": "پلچாதாரணہ پنதின் வாழுக்கரல்லும் சாப்பாரி என்ன பதம்? புத்துமையின் அப்பற்றும் வண்ணியும் ஒருகாரல்லாம் என்று சுறுவிட்டான் என்றுக்கு முக்கேங்கள் சவன்னால் உயவும் வருலான் பரியானான் என்று சுற்று சரிஷ்துந்து",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఇటలీలోని అనేక ఇతర నగరాల్లో మిగతా ప్రపంచం అంతా మరీ ముఖ్యంగా పోలెండ్ లో ఇలాంటి ఏర్పాట్లు జరిగాయి వీటిని చాలామంది వీక్షించారు",
+   "hyp": "Saadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam naadam",
+   "wer": 0.9754098360655737,
+   "cer": 0.9754098360655737
+  },
+  {
+   "ref": "కొన్ని అణువులు స్థిరంగా ఉండని కేంద్రకాన్ని కలిగి ఉంటాయి అంటే అవి కొంచెంగా లేదా ఏ మాత్రం ముందుకి వెళ్లకుండా విడిపోతాయి",
+   "hyp": "کنی انوğlu ستراگا ہونڑنے کیندرکانکالی ہونٹائی انٹے اوی کنچنگہ لیدہ ایمہتر مندکو வیلہ کنڈا ویڈی پوٹائی",
+   "wer": 0.8547008547008547,
+   "cer": 0.8547008547008547
+  },
+  {
+   "ref": "సరుకులను రవాణా చేయడానికి ఓడలను ఉపయోగించడం అనేది పెద్ద సమూహంలో ప్రజలు మరియు సరుకులని మహాసముద్రాల గుండా తరలించడానికి అత్యంత సమర్థవంతమైన మార్గం",
+   "hyp": "پریکுலنு روانا چیے دانکی ہوڑا لنوپیگنچڑا منایدی پیدھ دی سمو ہمل پریجل میں مریو سرکுலنு محاسموڑ رالا گنڈا ترالنچڑانکی اتکیں گے سمتدہ مانتا مہینا مارگم",
+   "wer": 0.9714285714285714,
+   "cer": 0.9714285714285714
+  },
+  {
+   "ref": "దీనిని రసాయనం యొక్క ph అని అంటారు ఎర్ర క్యాబేజీ జ్యూస్ ను ఉపయోగించి ఇండికేటర్ తయారు చేసుకోవచ్చు",
+   "hyp": "Dini ni Rasayanam yaka Pihach anyantaru irra gya beji juusno upiog inchi indicator tearu chaise ko vachu",
+   "wer": 0.9894736842105263,
+   "cer": 0.9894736842105263
+  },
+  {
+   "ref": "\"ఈజిప్ట్‌కు చెందిన వాలీ అఫ్ ది డెడ్‌లోని గిజా ప్లాట్యూ లేదా \"గిజా నెక్రోపోలిస్\"\"లో అనేక పిరమిడ్‌లు వీటిలో గ్రేట్ పిరమిడ్ అతిపెద్దది అనేక చిన్న సమాధులు అనేక దేవాలయాలు మరియు గొప్ప సింహిక ఉన్నాయి.",
+   "hyp": "Ígiptu kuchendina wall, Lee of the dead log, Giza platyule da, Giza nekro polislo, anekapiramitlo vitlo, great pyramid atipedati, anekachinna samad hulu anekadhewal ae hulu mariyu guppasimhi kaun na ae.",
+   "wer": 0.9792746113989638,
+   "cer": 0.9792746113989638
+  },
+  {
+   "ref": "the u.s. corps of engineers అంచనా ప్రకారం 6 అంగుళాల వర్షపాతం గతంలో దెబ్బతిన్న నదులపై నిర్మించిన అనకట్టలను దెబ్బతీస్తుంది",
+   "hyp": "dhiyu sqop sqop ndyunayas anchana prakaram  haar angola ravarşakaatam dhattam nilwam debbete ninadulpay nirminca aana katarana debbete istulde",
+   "wer": 0.9333333333333333,
+   "cer": 0.9333333333333333
+  },
+  {
+   "ref": "అర్జెంటీనా థియేటర్ లో అధ్యక్ష పదవికి పోటీ చేయాలని శ్రీమతి కిర్చ్నర్ తన ఉద్దేశాన్ని ప్రకటించారు ఆమె 2005లో సెనేట్ కు తన ప్రచార కార్యక్రమాన్ని ప్రారంభించినప్పుడు బ్యూనస్ ఎయిర్స్ ప్రావిన్స్ ప్రతినిధి బృందంలో సభ్యురాలిగా కలదు",
+   "hyp": "Arjun Tena, Tia, Tarlow, Adekshapadvi ki Poti, Chayalani, Sreema, Te, Kishan, Tanamudhe, Shanna, Prakatin, Chyaru, Amir Induvel, Ayidhala, Senet, Kuthana Prachara, Kari, Kraman, Praram, Minjnappur, Bionas, Aires, Pravins, Prattin, Idhi, Brandam, Sabiralika, Kaladu.",
+   "wer": 0.9773755656108597,
+   "cer": 0.9773755656108597
+  },
+  {
+   "ref": "సుందర్బన్స్ ప్రపంచంలోనే అతిపెద్ద లిటరల్ మాంగ్రోవ్ బెల్ట్ ఇది తీరం నుండి 80 కి.మీ 50 మైళ్ళు బంగ్లాదేశ్ మరియు భారత అంతఃపుర ప్రాంతాలలో విస్తరించి ఉంది",
+   "hyp": "sundharbans propanchomloni atipetha literal mangrove belt ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔",
+   "wer": 0.9455782312925171,
+   "cer": 0.9455782312925171
+  },
+  {
+   "ref": "1966 నుండి సుందర్బన్స్ అడవి జంతువులకు అభయారణ్యంగా ఉంది ఇప్పుడు ఆ ప్రాంతంలో 400 రాయల్ బెంగాల్ పులులు మరియు 30,000 మచ్చల జింకలు ఉన్నాయని అంచనా వేయడమైనది",
+   "hyp": "Pantamnivandala Aravayarunandi, Sunderbans, Adavijenthubalaku, Abhaya Aranyanga, Indi, Ippudu, Apraantamu, Nalukmanala, Royal, Bengal, Pillu, Manu, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood, Mood",
+   "wer": 0.96,
+   "cer": 0.96
+  },
+  {
+   "ref": "usa జిమ్నాస్టిక్స్ మరియు usoc ఒకే లక్ష్యాన్ని కలిగి ఉన్నాయి జిమ్నాస్టిక్స్ క్రీడ మరియు ఇతరములను క్రీడాకారులు తమ కలలను ఒక సురక్షితమైన సానుకూల ఇంకా సాధికార వాతావరణంలో అనుసరించడానికి సాధ్యమైనంత సురక్షితమైనవిగా చేయడం",
+   "hyp": "U.S.A. Gymnastics Maru U.S. Vosy vakeelakshyani Kali ki vannai Gymnastics Kriida maru itarumalanu kriida karelu tamak kalalanu vaka surakshitamaina saanukoola inga saadukur saadikara vatavaranamlau hanusa rengedanu ki saadge mananta surakshitamainavagha chaedam",
+   "wer": 0.9716981132075472,
+   "cer": 0.9716981132075472
+  },
+  {
+   "ref": "నిందితుడు ముఖకవతలతో కోర్టులో హాజరయినట్లు పోలీసు ఉన్నతాధికారి చంద్ర శేఖర్ సోలంకి తెలిపారు",
+   "hyp": "...",
+   "wer": 0.03409090909090909,
+   "cer": 0.03409090909090909
+  },
+  {
+   "ref": "కాంగ్రెస్ 2005 ఆర్థిక సంవత్సరంలో అశ్లీల కార్యక్రమానికి నిధులను సమకూర్చడం ప్రారంభించింది మరియు fbi 10 మంది ఏజెంట్లను వయోజన అశ్లీల తత్వానికి అంకితం చేయాలని పేర్కొంది",
+   "hyp": "Con�es 2.5% nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd , nd ,nd ,nd ,nd , nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd ,nd",
+   "wer": 0.9447852760736196,
+   "cer": 0.9447852760736196
+  },
+  {
+   "ref": "ఈ వ్యాధిపై ఐరాస నిపుణుడైన డానియెల్లె లాంటాగ్నే మాట్లాడుతూ ఈ విస్ఫోటనం శాంతికాముకుల వల్ల సంభవించి ఉంటుందని పేర్కొన్నారు",
+   "hyp": "viyadipai ayrasa nipurunaena denial longa tartna motlaadu, visputanam santi kaamokulavala sambavinchina untundani peerkun naru.",
+   "wer": 0.9830508474576272,
+   "cer": 0.9830508474576272
+  },
+  {
+   "ref": "ఫలితంగా ప్రదర్శకులు స్టేజ్పై కణాబిస్ జాయింట్స్ను తాగారు మరియు థియేటర్ కూడా ప్రేక్షకులను తాగమని ప్రోత్సహిస్తోంది",
+   "hyp": "Fali Thanga Pradarsakulu stage 5 Cannabis joints nd Thagaru, Maruti theatre nda Prakshakulu Thagami Prothasis Thanga",
+   "wer": 0.990990990990991,
+   "cer": 0.990990990990991
+  },
+  {
+   "ref": "యునైటెడ్ స్టేట్స్ లోని ప్రిన్స్టన్ విశ్వవిద్యాలయం మరియు స్వీడన్ లోని ఉప్సలా విశ్వవిద్యాలయానికి చెందిన పరిశోధకులు ఈ కొత్త జాతులు కేవలం రెండు తరాలలోనే ఆవిర్భవించాయని నివేదించాయి అయితే ఈ ప్రక్రియ చాలా ఎక్కువ కాలం పడుతుందని విశ్వసించారు ఒక ఎండెమిక్ డార్విన్ ఫించ్ జియోస్పిజా ఫోర్టెస్ మరియు వలస వచ్చిన కాక్స్ పిజా కోనిరోస్ట్రిస్ మధ్య ప్రవచించబడిన కారణంగా",
+   "hyp": "UNS TEST LONI, Princeton, Vishwa Vidyalaya, Marius Fidenloni, Uppsala, Vishwa Vidyalaya, Kichendina Parisho Dakulu, Kottajatulakaevulam Rundu Tarala Lone, Avirbancha, Nivea Dincha, Ita Iiprakriya Chalak, Ekko Akalam, Padutunna Nivivas, Vishwasin Charu, Oka Endemic Darwin French, Geospisa Forest, Marius Vala Sa Vachina, Cox, Pisa, Koni, Roastris, Madhya Prachincha, Badaena Karananga.",
+   "wer": 0.9770773638968482,
+   "cer": 0.9770773638968482
+  },
+  {
+   "ref": "అదే రోజు సుమారు 1200 జిఎమ్ టి వద్ద ప్రమాదం జరిగిన స్థలం నుంచి వాహనాన్నే తీసుకెళ్లారు",
+   "hyp": "hadeeru, ju sumaru panin, vandalu, GMT vadda, pramadam jariin, installam, naji vahan, hane, tis kille, rub",
+   "wer": 0.9642857142857143,
+   "cer": 0.9642857142857143
+  },
+  {
+   "ref": "రోలాండో మెన్డోజా తన m16 రైఫిల్ను పర్యాటకులపై పేల్చాడు",
+   "hyp": "Rulando, Mendoza, M16 rifle, Pariyatokulapa, Pail Chadu.",
+   "wer": 0.9433962264150944,
+   "cer": 0.9433962264150944
+  },
+  {
+   "ref": "1976 నాటికి మ్యాచు పిచ్చులో ముప్పై శాతం పునరుద్ధరించబడింది నేటి వరకు పునరుద్ధరణ కొనసాగింది",
+   "hyp": "15th day, Dhebhaiyaaru nati ki miha chupi chilu upai shatham punaruddin chabadindhi nati varakupuraruddin rana kona saagindhi",
+   "wer": 0.9666666666666667,
+   "cer": 0.9666666666666667
+  },
+  {
+   "ref": "రెగ్యులర్ పదార్థం చేసే విధంగానే కృష్ణ పదార్థం కూడా ఇతర కృష్ణ పదార్థాలను ప్రభావితం చేస్తుందని శాస్త్రవేత్తలు నిర్ధారించగలిగారు",
+   "hyp": "Rigular padardam ceze vidangane kristna padardam kuda itara kristna padardalam prebha vittam cees tundani, sastra vetalam idharin ce gali gairu.",
+   "wer": 0.984,
+   "cer": 0.984
+  },
+  {
+   "ref": "మోల్డోవా రాజధాని చిసినావు స్థానిక భాష రొమేనియన్ కానీ రష్యన్ విస్తృతంగా ఉపయోగించబడుతుంది",
+   "hyp": "ملووى راجدان چیسینا اوستانکا باش رومینین کانی رشین ویسٹھنگا اوپیگ انچبڑتوندی",
+   "wer": 0.8620689655172413,
+   "cer": 0.8620689655172413
+  },
+  {
+   "ref": "\"ఇది తరచుగా ఊహాత్మకమైనప్పటికీ పారిస్‌లోని ప్రజలతో బాగా కలిసిపోవడానికి మీ ప్రవర్తన ఉత్తమంగా ఉండాలి మరియు \"bien élevé\" బాగా ఎదిగిన వ్యక్తి లాగా వ్యవహరించాలి. ఇలా చేయడం వలన చాలా సులభంగా అందరితో కలిసిపోవచ్చు.",
+   "hyp": "இதی تارچு گا او ہاپ مکمینہ پٹکی پیریسلونی پر جلتوں باگا پلیسپوڑانکے می پرورتہ نوطمگا اوندالی مریو باگا یدگی نبیتی لگا بیاوہر انجالی یلہ چیڑا مرنا چالہ سولبہ مگا اندر تو کلسپوچی",
+   "wer": 0.8480392156862745,
+   "cer": 0.8480392156862745
+  },
+  {
+   "ref": "అయినా అధికారుల సలహా తీసుకోండి అన్ని సూచనలను అ౦ది౦చ౦డి భద్రతా హెచ్చరికలను జాగ్రత్తగా గమని౦చ౦డి",
+   "hyp": "Aayana, Adikaalasala ha, teiskundi. Anni sushanelano, Anddin Shindi. Madrahata, HHRKana, Jagrataka, Gamanin Shindi.",
+   "wer": 0.967741935483871,
+   "cer": 0.967741935483871
+  },
+  {
+   "ref": "సంఘటనలు జరిగిన కాలాన్ని సాధారణంగా హై మధ్య యుగాలు గా 11 12 మరియు 13వ శతాబ్దాలలో క్రీ.శ 1000-1300 ఐరోపా చరిత్ర కాలంగా పేర్కొంటారు",
+   "hyp": "sangatana lo jirigana khalaan ni sadharananga hai majjayu walu gha padakundu panendu maru padhumu lozhetaapdaalana kristi sekan vegi pahamuodanda na aireopa chiritra khalanga pherkantaru",
+   "wer": 0.9921259842519685,
+   "cer": 0.9921259842519685
+  },
+  {
+   "ref": "కూర అనేది మూలికలు మరియు మసాలాదినుసుల ఆధారంగా తయారు చేయబడ్డ వంటకం ఇది మాంసం లేదా కూరగాయలతో కలిపి ఉంటుంది",
+   "hyp": "mullikalu maruyu masala dinasunu aadharanga tayaru chaeye vada vannakam.",
+   "wer": 0.6699029126213593,
+   "cer": 0.6699029126213593
+  },
+  {
+   "ref": "వారి క్రమశిక్షణతో కూడిన డిఫెన్స్ బంతి నిర్వహణ నైపుణ్యాలు మరియు అద్భుతమైన టీం వర్క్ వారిని నిలబెట్టాయి మరియు ఓడించే జట్టు ఇదేనని స్పష్టమైంది",
+   "hyp": "vahari kremasikshana to kudin na defense bhanthi nirvahana naipunnyalo maryu adhbhutamay na team war kuware nilabhetyaayi maryu odinche jetu ideinanis pastama indi.",
+   "wer": 0.9640287769784173,
+   "cer": 0.9640287769784173
+  },
+  {
+   "ref": "తోటి మల్ల యుద్ధకారులు కూడా లూనాకు నివాళులు అర్పించారు",
+   "hyp": "توٹی ملہ یددہ کارولہ کڑالونہ کنی واللہ عربینچارو",
+   "wer": 0.8867924528301887,
+   "cer": 0.8867924528301887
+  },
+  {
+   "ref": "ధృవ కాంతిని చూడటానికి ఇది మంచి అవకాశాన్ని అందిస్తుంది ఎందుకంటే ఆ సమయంలో ఆకాశం చీకటిగా ఉంటుంది",
+   "hyp": "dhrurakantini troodatani ki idaanamansi avakasaani anthis tuni ndu kante aasamiyamu lo avakasaan chikati ka untoon di",
+   "wer": 0.989247311827957,
+   "cer": 0.989247311827957
+  },
+  {
+   "ref": "సెయింట్ పీటర్స్ బర్గ్ క్రూజ్ లు పట్టణంలో సమయం ఉంటాయి. క్రూయిజ్ ప్రయాణీకులకు వీసా ఆవశ్యకతల నుంచి మినహాయింపు ఇవ్వబడుతుందినిబంధనలను చెక్ చేయండి",
+   "hyp": "sainter Petersberg cruise low , patanam low , samayam unta i cruise prayanikloku visa avasya katalanunji minhaim goi gopadu tundi nibandharanlu check chae indi",
+   "wer": 0.9642857142857143,
+   "cer": 0.9642857142857143
+  },
+  {
+   "ref": "పారిసియన్లు ఉద్రేకంగా మొరటుగా మరియు అహంకారంతో కూడుకొని ఉంటారని పేరు ఉంది",
+   "hyp": "Parasi Anulu, Uddre Kanga, Muratuga, Marihu, Hankaram, Tukudu, Kune, Untarani, Pairu, Undhi.",
+   "wer": 0.9444444444444444,
+   "cer": 0.9444444444444444
+  },
+  {
+   "ref": "వర్చువల్ పరంజాలు సాఫ్ట్ వేర్ లో అంతర్గతీకరించబడతాయి మరియు ప్రశ్నించడానికి ప్రాంప్ట్ చేయడానికి మరియు విద్యార్థి ఒంటరిగా హ్యాండిల్ చేయడానికి సవాలుగా ఉండే ప్రక్రియలను వివరించడానికి ఉద్దేశించబడ్డాయి",
+   "hyp": "vrchwal paranjalu, software, antar gati karincha bada aayu, mario prasmini chadani ki pramk chaidani ki mario vidyardhi vantarika handle chaidani ki savalga hunde prakriya lana huyavaran chadani ki kudde sincha bada aayu.",
+   "wer": 0.9948453608247423,
+   "cer": 0.9948453608247423
+  },
+  {
+   "ref": "10 00-11 00 pm mdt సమయంలో యార్డ్లోని ఖైదీలు నిప్పు పెట్టడం మొదలుపెట్టారు",
+   "hyp": "10-10-10PM MDT-SOMIMILO, ndLONICAL DELU, ndLUPUPETTEDA Madhru",
+   "wer": 0.75,
+   "cer": 0.75
+  },
+  {
+   "ref": "ఆ విధంగా పెన్సిల్ బయటకు వచ్చినప్పుడు చాలా మందికి మంచి స్నేహితుడు",
+   "hyp": "avidanga, pencell bai te ki vachanapru chala mandi ki manjisne hidhu",
+   "wer": 0.953125,
+   "cer": 0.953125
+  },
+  {
+   "ref": "మొరాకో అంతటిలో షాపింగ్ చేయడానికి అత్యంత తక్కువ ఆసక్తికర ప్రదేశాలలో casablanca ఒకటి",
+   "hyp": "موراکو انتتیلو شاپن جیدان کی اتکنت تک کو آسکتی کر پڑے شاللو کسب لنکہ اوکتی",
+   "wer": 0.8658536585365854,
+   "cer": 0.8658536585365854
+  },
+  {
+   "ref": "అధిక గాలులు వడగళ్లు అధిక అవపాతాలు మరియు అడవి మంటలు అనేవి ఉరుములు టోర్నాడ్ లు జలప్రవాహాలు మరియు తుఫానులు వంటి తీవ్రమైన వాతావరణ ప్రభావాలు",
+   "hyp": "Adika Galu Vada Galu Adika Vapatalu Mariewadvi Mantalvanavi Urumulu Tonne Lalu Jaila Pravaha Lalu Mariew Tufan Lalu Vantitri Thivra Mainavata Varna Pravaha Lalu",
+   "wer": 0.9925925925925926,
+   "cer": 0.9925925925925926
+  },
+  {
+   "ref": "క్రస్ట్ ఉపరితల పోర కేంద్రానికి సమీపంలో 70 km మందం మరియు కేంద్రానికి దూరంగా 100 km మందం ఉంటుంది",
+   "hyp": "Crust uparitha lappora krindhaan keindranik sami pammala debbaik kilomitala manda maryu keindraniki turangaavanda kilomitala manda muntunda",
+   "wer": 0.9680851063829787,
+   "cer": 0.9680851063829787
+  },
+  {
+   "ref": "మీరు నేషనల్ ట్రెజర్ సినిమా చూసినట్లయితే స్వాతంత్ర్య ప్రకటన వెనుక ఒక నిధి మ్యాప్ రాయబడిందని మీరు భావించవచ్చు",
+   "hyp": "میڈு نیسنும் tradyat sinnu machi sneet klate svathantar prakata na viena kao ga nidhi m'ia praya valinu di m'ia vavin chachu",
+   "wer": 0.9532710280373832,
+   "cer": 0.9532710280373832
+  },
+  {
+   "ref": "ఈ అవక్షేపం ఇసుక దిబ్బలు మరియు బీచ్ లను సృష్టించడానికి అవసరం ఇది వన్యప్రాణుల ఆవాసాలుగా ఉపయోగపడింది",
+   "hyp": "sr.",
+   "wer": 0.030927835051546393,
+   "cer": 0.030927835051546393
+  },
+  {
+   "ref": "నాగరికత' అనే పదం లాటిన్ సివిలీస్ నుండి వచ్చింది ఇది లాటిన్ సివిలకు సంబంధించినది దీనికి అర్థం పౌరుడు మరియు సివిటస్ అంటే నగరం లేదా నగర-రాష్ట్రం మరియు ఇది సమాజం యొక్క సైజును కూడా కొంతవరకు నిర్వచించవచ్చు",
+   "hyp": "naagarikatane padam latin civili rundi vachindi ndi latin civili lakku samandinchenadi ndi nike ardham paurudu mario civilites antin agaram leida nagara rastram mario ndi samajam yukkasaidunu koda kuntabarku nero vachincha vachu",
+   "wer": 0.964824120603015,
+   "cer": 0.964824120603015
+  },
+  {
+   "ref": "క్రస్ట్ ఉపరితల పోర కేంద్రానికి సమీపంలో 70 km మందం మరియు కేంద్రానికి దూరంగా 100 km మందం ఉంటుంది",
+   "hyp": "krist uparithala porra kendraanike sami pama mulu dabbai kilom meter la manda maru kendraanike dooranda vanda kilom meter la manda muntandi",
+   "wer": 0.9787234042553191,
+   "cer": 0.9787234042553191
+  },
+  {
+   "ref": "ఇతర నామినేషన్లలో ఉత్తమ చిత్రం దర్శకుడు సినిమాటోగ్రఫీ కాస్ట్యూమ్ డిజైన్ ఫిల్మ్ ఎడిటింగ్ ఒరిజినల్ స్కోర్ ప్రొడక్షన్ డిజైన్ సౌండ్ ఎడిటింగ్ సౌండ్ మిక్సింగ్ మరియు ఒరిజినల్ స్క్రీన్ ప్లే చేర్చబడి ఉన్నాయి",
+   "hyp": "ایثر & عاملینشن للا لو اُتھم اچترم درسا کڑو سینیمانٹوگرافی, کسٹیم ریزین, فیم ایڈیٹنگ, اوڑینالسکور, پڑکشنژیزین, سونڈیڈیٹنگ, سونڈ میکسین, مریو اوڑینالسکرین پلے چیرچا بڑے اُننا ایڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈیڈ",
+   "wer": 0.9847715736040609,
+   "cer": 0.9847715736040609
+  },
+  {
+   "ref": "చంద్రుడి ఉపరితలం పై రాళ్లు ధూళితో తయారు చేస్తారు చంద్రుని బాహ్య పొరను క్రస్ట్ అంటారు",
+   "hyp": "जब वो पर तलाम पप पर यह वो बाब पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर पर",
+   "wer": 0.9523809523809523,
+   "cer": 0.9523809523809523
+  },
+  {
+   "ref": "పర్యాటకులకు వాస్తవంగా అవి ఎలా ఉండేవో ఒక ఆలోచన ఇవ్వడానికి కాంప్లెక్స్ అంచులలోని చాలా భవనాలు పునర్నిర్మించబడ్డాయి",
+   "hyp": "varyatakulaku vastavanga viyela vundevo vokaluchaneyavatani ki kompleksanchaluroni jala bavna lukunarne niminjabadayi.",
+   "wer": 0.990990990990991,
+   "cer": 0.990990990990991
+  },
+  {
+   "ref": "ఇది ఎవరు రాశారో ఎవరికీ తెలియనప్పటికీ దీని గురుంచి చాలా కాలం నుండి తెలుసు పెద్ద పార్చ్మెంట్ డాక్యుమెంట్‌ను దీని కొలత 29¾ inches x 24½ inches ఉంటుంది స్టోర్ చేయడానికి రోల్ చేయబడింది",
+   "hyp": "dhiyabarurasara yabaraki teliyanapat ki dhiyanigurinch chala kalamna dhiyal su petha parchman documentna dhiyanikolata yuravaitumethi moppauinchilu nintu yuravainalagannaru ujulunthundi stor chayadaliku roll chayadalinthi",
+   "wer": 0.9720670391061452,
+   "cer": 0.9720670391061452
+  },
+  {
+   "ref": "ఒక నాగరికత అనేది ఒక సమాజం సహజీవనం మరియు పని చేసే గణనీయమైన పెద్ద సమూహం ద్వారా పంచుకోబడే ఏకవచన సంస్కృతి",
+   "hyp": "پکھا ناگری کتا آنی دی ایک سمواجم سہجی ونم مریو پنیچے سے گنانی یا مائنا پیدھا سموھا دوارہ پنچو کو بڑے یا گاوچنہ سمسکوٹی",
+   "wer": 0.9702970297029703,
+   "cer": 0.9702970297029703
+  },
+  {
+   "ref": "వాస్తవానికి అది ఉనికిలో ఉందని ఏ ఒక్కరికి తెలిసినా కూడా కనుగొనడం అంత సులభం కాదు ఒకసారి గుహ లోపలికి వెళ్తే మొత్తం ఒంటరిగా ఉంటుంది",
+   "hyp": "mastavani ke edi 1 kg omdani, ھa eva kare ki tili sinakodakanukadam antasulabamkadam, kasarigohalapali ke elte matamantarigamantandari.",
+   "wer": 0.968503937007874,
+   "cer": 0.968503937007874
+  },
+  {
+   "ref": "కొత్తగా ఏదైనా వచ్చినప్పుడు కీబోర్డ్ ఎలా ఉంటుందో అని ఎవరైనా ఆశ్చర్యపడవచ్చు",
+   "hyp": "Kuttaka eedena vuchinapuru ki board elavantundu ani yuvar naina ashtarya padavachu",
+   "wer": 0.9315068493150684,
+   "cer": 0.9315068493150684
+  },
+  {
+   "ref": "1537 లో అసున్సియోన్ స్థాపించినప్పటి నుండి పరాగ్వే దాని స్వదేశీ స్వభావం మరియు గుర్తింపును చాలా వరకు ఉంచగలిగింది",
+   "hyp": "10 ھa nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda nda",
+   "wer": 0.9636363636363636,
+   "cer": 0.9636363636363636
+  },
+  {
+   "ref": "కొన్ని అణువులు స్థిరంగా ఉండని కేంద్రకాన్ని కలిగి ఉంటాయి అంటే అవి కొంచెంగా లేదా ఏ మాత్రం ముందుకి వెళ్లకుండా విడిపోతాయి",
+   "hyp": "کنی انوولو ستراگگا ہونڈا نی کیندراکانی کالگی ہونٹائی انٹے آبی کنچنگا لے دا ییمہ آترم مندکی ویڈی پوطائی",
+   "wer": 0.8632478632478633,
+   "cer": 0.8632478632478633
+  },
+  {
+   "ref": "మగవారిని తిరస్కరించడంలో ధృడంగా ఉండండి మరియు మీ ఉద్దేశాలపై స్థిరంగా ఉండడానికి భయపడకండి  సంస్కృతి పరంగా వ్యత్యాసాలైనా కాకపోయినా అది సరి కాదు!",
+   "hyp": "மگوائر نے تراسکر انچرا منا درودنگا ہونண்டு மرییو میی ودیشہ اللہ پیس کرمگا ہونண்டானی کی بائپڑا کنگی. سمسکریت پرنگا ویتیہ سالہ எனہا کاکہ پوینا قدیسہ رکھا تھو.",
+   "wer": 0.9856115107913669,
+   "cer": 0.9856115107913669
+  },
+  {
+   "ref": "ఎక్కువగా పన్ను విధించే దేశాలకు వెళ్లే ప్రయాణికులు కొన్నిసార్లు  ముఖ్యంగా మద్యపానీయాలు  పొగాకు వంటి ఉత్పత్తులపై గణనీయమైన మొత్తంలో డబ్బును ఆదా చేయవచ్చు",
+   "hyp": "1 ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa ھa",
+   "wer": 0.9664429530201343,
+   "cer": 0.9664429530201343
+  },
+  {
+   "ref": "కేవలం కొన్ని స్వల్ప బేధాలు తప్ప కాల్పనిక బృందాలు కూడా సాంప్రదాయ బృందాల వంటి నైపుణ్యం కలిగి ఉంటాయి",
+   "hyp": "khevalam korni svalpa bea daalutappa kaalpanika brundaalukoda sampradhaya brundaaluvanti naipunyam kaligumantai",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "మేకలు ఇరాన్ లోని జాగ్రోస్ పర్వతాలలో సుమారు 10,000 సంవత్సరాల క్రితం మొదటిసారిగా పెంపుడు జంతువులుగా ఉన్నట్లు తెలుస్తోంది",
+   "hyp": "Mekalu Iran Lone Jagros Parvata Lolo Sumaru Padivela Samvacharalakritam Madhati Sariga Pempuru Jent Uluga Unattu Telostunde",
+   "wer": 0.9745762711864406,
+   "cer": 0.9745762711864406
+  },
+  {
+   "ref": "కానీ ఇప్పటికీ డైనోసార్ లాగా కనిపించే పక్షుల గురించి చాలా విషయాలు ఉన్నాయి",
+   "hyp": "kana ippad ki dino sar lagakana pin ce pakshala gurun ce tala visayalun na i",
+   "wer": 0.9444444444444444,
+   "cer": 0.9444444444444444
+  },
+  {
+   "ref": "ఫలితంగా 2 చేప జాతులు అంతరించిపోయాయి మరో 2 చేప జాతులు హంప్బ్యాక్ చబ్తో సహా అంతరించిపోతున్నాయి",
+   "hyp": "Falythangar 2 Ṣepaja, Jharalu & Antharinchpoi, Marar 2 Ṣepaja, Thulu, Hampupak, Chapp, Tha Sahayapar, Antharinchpoi Thanai.",
+   "wer": 0.9456521739130435,
+   "cer": 0.9456521739130435
+  },
+  {
+   "ref": "దళాల రాకకు ముందు హైతీ 1800 ల నుండి ఈ వ్యాధికి సంబంధించిన సమస్యలను ఎదుర్కొనలేదు",
+   "hyp": "Dhalalaraaka munda, hayati, pajna na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na na",
+   "wer": 0.9615384615384616,
+   "cer": 0.9615384615384616
+  },
+  {
+   "ref": "మరోవైపు చాలా దేశాల్లో చలి మరియు మంచు పరిస్థితులు సాధారణంగా ఉంటాయి మరియు సంవత్సరం అంతా ట్రాఫిక్ కి అంతరాయం లేకుండా ఉంటుంది",
+   "hyp": "மرو ویکو چالا دیشارا لو چلی مرییو منچو پرستیدلی صادارا نگا ہندگا ہندگای مرییو سمچر منتہ ٹرافککہ کی انترایم لیکن دا ہندگا ہندگای",
+   "wer": 0.9834710743801653,
+   "cer": 0.9834710743801653
+  },
+  {
+   "ref": "అధిక గాలులు వడగళ్లు అధిక అవపాతాలు మరియు అడవి మంటలు అనేవి ఉరుములు టోర్నాడ్ లు జలప్రవాహాలు మరియు తుఫానులు వంటి తీవ్రమైన వాతావరణ ప్రభావాలు",
+   "hyp": "Aadika gaalulu vada gaalulu, Aadika abapaathalu mario advi mantaluanevi, Guru mulu torna dalulu, Jala pravaha lulu mario tufaanulu vant tevra mainavata vana pravavalu.",
+   "wer": 0.9851851851851852,
+   "cer": 0.9851851851851852
+  },
+  {
+   "ref": "విశ్వంలో ని ప్రతిదీ పదార్థంతో తయారు చేయబడింది అన్ని పదార్థము కూడా పరమాణువులు అనే చిన్న కణాలతో తయారు చేయబడి ఉంటుంది",
+   "hyp": "vishamlou niprati di padardham tu thayaru ce baadindi,anne padardhamu koda parinamu halu,anne cinnakanaal tu pthayaru ce baad hi unthundi.",
+   "wer": 0.9912280701754386,
+   "cer": 0.9912280701754386
+  },
+  {
+   "ref": "నిద్రకు అంతరాయం అనేది మీ సాధారణ నిద్ర కాలంలో ఉద్దేశ్యపూర్వకంగా మేల్కొనే ప్రక్రియ ఇంకా కొద్ది కాలం తరువాత నిద్రపోవడం 10-60 నిమిషాలు",
+   "hyp": "Nidrako antraayum anyathi mihyzadhanu nidra khalamno uthya sa porwakonga melkonea prakriya ingka kodhikhalam tarawata nidra povrompa dhi nondhi arvaneyumshan",
+   "wer": 0.9846153846153847,
+   "cer": 0.9846153846153847
+  },
+  {
+   "ref": "కేవలం కొన్ని స్వల్ప బేధాలు తప్ప కాల్పనిక బృందాలు కూడా సాంప్రదాయ బృందాల వంటి నైపుణ్యం కలిగి ఉంటాయి",
+   "hyp": "khevalam kune svalpa beedalu tappa kaelpennika brundaalukoda sambradhaya brundaaluvanti naipunyam keli kevuntaiye",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఉత్తరానికి సులభంగా చేరుకొనే దినాన రొమాంటిక్ మనోహరమైన పట్టణం సింత్రా పట్టణం ఉంది మరియు లార్డ్ బైరాన్ ద్వారా నమోదు చేయబడిన దాని వైభవాల గురించి ఒక ప్రకాశవంతమైన కథనం తరువాత విదేశీయులకు ఇది ప్రసిద్ధి చెందింది",
+   "hyp": "1 Ṛṭhāraanika Ṛlubanga Ṛyāru kune dinaanā, ramanantik, manoharamayana patanam, sintra patanam, mundi. Maree lād bairan, dvarā, namoadu ceibandana dāni vāibhavala gulinji vakaprakasa vantamayana kadanam, taravata, vidēsiellaku, idhi prasiddhi chendhiyendhi.",
+   "wer": 0.9802955665024631,
+   "cer": 0.9802955665024631
+  },
+  {
+   "ref": "బ్లాగింగ్ అనేది సహకారాన్ని ప్రేరేపించే సాధనం మరియు సాంప్రదాయ పాఠశాల రోజు కంటే ఎక్కువగా నేర్చుకోవడానికి విద్యార్థులను ప్రోత్సహిస్తుంది",
+   "hyp": "blogginga ne di sakaarande prierje pinche sadhanam marju sampradaya pata saala rooji kanti ekko ghanerj kodanakhi vidyar dhilaanu proth sa hisnandhi",
+   "wer": 0.9548872180451128,
+   "cer": 0.9548872180451128
+  },
+  {
+   "ref": "ప్రమాదం జరిగిన తరువాత గిబ్సన్ ఆసుపత్రికి తీసుకెళ్లబడ్డాడు కానీ కొంతసేపటికి తరువాత మరణించాడు",
+   "hyp": "Pramadam gyarigine tarwatha Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibsar Қibs",
+   "wer": 0.989010989010989,
+   "cer": 0.989010989010989
+  },
+  {
+   "ref": "రోలాండో మెన్డోజా తన m16 రైఫిల్ను పర్యాటకులపై పేల్చాడు",
+   "hyp": "RoLando Mendoza Tana M16 rifle NONF, Pariatulak Pariatulak Pariatulak Pail Chadu",
+   "wer": 0.9811320754716981,
+   "cer": 0.9811320754716981
+  },
+  {
+   "ref": "మీకు రోమాన్స్ భాష తెలిస్తే పోర్చుగీస్ నేర్చుకోవడాన్ని మీరు సులభతరం చేస్తారు",
+   "hyp": "Mi ke romance baasateliste, poerch gays nerch kagdaan ni veeru slava taram chayas taru.",
+   "wer": 0.96,
+   "cer": 0.96
+  },
+  {
+   "ref": "యూఎస్ఏ జిమ్నాస్టిక్స్ యునైటెడ్ స్టేట్స్ ఒలింపిక్ కమిటీ లేఖకు మద్దతు ఇస్తుంది అలాగే మా అథ్లెట్లందరికీ సురక్షితమైన వాతావరణాన్ని అందించడానికి ఒలింపిక్ కుటుంబం యొక్క సంపూర్ణ అవసరాన్నీ అంగీకరిస్తుంది",
+   "hyp": "यूच्विजिजिजिजिजना स्टिक सिवराणिच नदिज वलाम्टि कमिति गवप मञद़िस्तिब गवपिजिब गवपिजिब गवपिजिब गवपिजिब गवपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब गपिजिब ग",
+   "wer": 0.9381443298969072,
+   "cer": 0.9381443298969072
+  },
+  {
+   "ref": "నేడు రెక్కలు ముడుచలేని ఒకే ఒక కీటకాలు డ్రాగన్ ఈగలు మరియు మేయీలు",
+   "hyp": "1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1 kg , 1",
+   "wer": 0.9047619047619048,
+   "cer": 0.9047619047619048
+  },
+  {
+   "ref": "ఇది మరియా కింద సన్నగా మరియు హైల్యాండ్స్ కింద మందంగా ఉంటుంది",
+   "hyp": "இது மریعا کندہ سنگا مریو ہیلانس کندہ مندنگا ہم تندی",
+   "wer": 0.8135593220338984,
+   "cer": 0.8135593220338984
+  },
+  {
+   "ref": "ముందుగా  అనేక మంది రైడర్లు హీల్ మరియు  మృదువైన చాలా ఇరుకైన సోల్ తో రైడింగ్ బూట్లు ధరిస్తారు",
+   "hyp": "முندுகا, ANEKAMANDA RIDER LLE HILL, MARIOM RUDHWA INA CHALA, IRUKANE SORUTH RIDING BUDDLE DARISTAARO",
+   "wer": 0.978021978021978,
+   "cer": 0.978021978021978
+  },
+  {
+   "ref": "అంతేకాకుండా ప్రతి రాజవంశానికి చెందిన ప్రాంతాలు కొన్ని సంవత్సరాలుగా విభజించబడి ఉన్నాయి ఈ కాలాలలో బాగా తెలిసినది హాన్ మరియు జిన్ రాజవంశం మధ్య 60 సంవత్సరాల పాటు జరుగుతున్న మూడు రాజ్యాల శకము",
+   "hyp": "Antikakunna Prattir Rajavamshani ki Chinna prantal ko ni Samatralgavyevichinchabadi vunnai.",
+   "wer": 0.478494623655914,
+   "cer": 0.478494623655914
+  },
+  {
+   "ref": "అనేక ప్రోటాన్లు న్యూట్రాన్లతో ఒక కేంద్రకాన్ని ఒకే దగ్గర ఉంచడానికి తీసుకునే శక్తి అనే సూత్రంపైన విచ్ఛిత్తి బాంబు పనిచేస్తుంది",
+   "hyp": "انேக்கப் போட்டான்லு, நیுட்டுராலத்தோ வக்கேன்று காணி வகேதுக்கிறான் உன்றுடானுக்கிற்குத் திசுக்குணே சிற்றி, அணைச் சுத்துரம் பயன் விஷ்சித்தி வாம்முன் பணிசேச் சொந்தி.",
+   "wer": 0.9838709677419355,
+   "cer": 0.9838709677419355
+  },
+  {
+   "ref": "ముందుగా  అనేక మంది రైడర్లు హీల్ మరియు  మృదువైన చాలా ఇరుకైన సోల్ తో రైడింగ్ బూట్లు ధరిస్తారు",
+   "hyp": "முندگا, آنے کمندی ریدارلو, ہیل مریم مرودوائینا, چالا ہی رکائنا سولتو, ریڈیگ بوتلو درستارو",
+   "wer": 0.9340659340659341,
+   "cer": 0.9340659340659341
+  },
+  {
+   "ref": "పరికరాన్ని గాల్లో కదిలించడం ద్వారా వీడియో గేమ్స్లో యాక్షన్లు మరియు కదలికలను నియంత్రించడానికి ఇది ఆటగాళ్లకు వీలు కల్పిస్తుంది",
+   "hyp": "پریکرانی گاللوکதلینچڈا دوارہ ویڈیو گیمسلو ایکشنلو مریوکதلی کلو نینڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈڈ�",
+   "wer": 0.9838709677419355,
+   "cer": 0.9838709677419355
+  },
+  {
+   "ref": "\"అన్ని విషయాలను పరిగణనలోకి తీసుకుంటే మన పూర్వీకులు వారి \"ప్రోటీన్ సమస్యను\" ఈ రోజు పసరికగల మైదానం పై చింప్స్ చేసే విధంగానే పరిష్కరిస్తే మనం ఆశ్చర్యపోనవసరం లేదు.",
+   "hyp": "unni vişi alanu pari gana lwagitis kunti, mana purvi kulu vari protein samasyanu, irozu, pasarika gala maidaanam pail, chimps, chese vidanam dhani paris karisthi manaanam asya repo naozaaram lehdu.",
+   "wer": 0.9811320754716981,
+   "cer": 0.9811320754716981
+  },
+  {
+   "ref": "\"గత వారం అదనంగా 34 వేడెక్కిన సంఘటనల గురించి apple తమకు తెలియజేసినట్లు meti ప్రకటించింది దీనిని కంపెనీ \"నాన్-సీరియస్\" గా చెప్తున్నారు.",
+   "hyp": "Ngatabhara madhanangah muppai na wadu gwede kina sankatan lagurin chwiyai apel tamaku, chilai jashnattu m eta praketin chindhi. Dine ni kampini non-series ka chyptan maru.",
+   "wer": 0.9849624060150376,
+   "cer": 0.9849624060150376
+  },
+  {
+   "ref": "ఎబోలా మరణాలను తగ్గించగలదని భావించే ఒక ప్రయోగాత్మక టీకా ఉన్నప్పటికీ ఇప్పటికే ఉన్న ఇన్ఫెక్షన్కు చికిత్స చేయడానికి తగిన మందులు ఇంకా అందుబాటులో లేవని స్పష్టంగా నిర్ధారించబడింది",
+   "hyp": "1 Ṭhaggincha gala dhani baavincha vakaprayav gathma kathayaka vannapati ki Ṭhaggincha gala dhani baavincha vakaprayav gathma kathayaka vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki Ṭhaggincha gala dhani baavincha vannapati ki",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "గోమా కొంచెం సురక్షితమే అయితే ఉత్తర కివు ప్రావిన్స్లో కొనసాగుతున్న గొడవల పరిస్థితిని అర్థం చేసుకోవడానికి గోమా బయట ఎవరైనా వెళ్ళివచ్చిన వారిని అడిగి తెలుసుకోవాలి",
+   "hyp": "goma konsum surikshetam e aithe Ṛtara kivu prāvinsu la konasaagutanna godavala paristhi thi ni ardham chaisu kawad hani ki goma bhajtaya varena velli vachinavar ni adi ki telu kawwali",
+   "wer": 0.9746835443037974,
+   "cer": 0.9746835443037974
+  },
+  {
+   "ref": "తన కారుపై నియంత్రణ కోల్పోవడంతో జియాన్కార్లో ఫిసిచెల్లా రేసు ప్రారంభమైన వెంటనే ముగించాడు",
+   "hyp": "यह लिवाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वा�",
+   "wer": 0.9540229885057471,
+   "cer": 0.9540229885057471
+  },
+  {
+   "ref": "ఈ సర్వీసును తరచుగా షిప్పింగ్ ప్లెషర్ క్రాఫ్ట్తో పాటు రిమోట్ డేటా మరియు వాయిస్ అవసరాలున్న యాత్రలకు వాడుతారు",
+   "hyp": "i servisnu taro chuga shipping, pleasure, craft och artu, remote data, mario voice ao saralunna yadra lakho vaad taru.",
+   "wer": 0.9622641509433962,
+   "cer": 0.9622641509433962
+  },
+  {
+   "ref": "\"కత్రినా తుఫాను నేపథ్యంలో సహాయం  మరియు పునర్నిర్మాణం కోసం ఖర్చు చేయడం గురించి  వివాదానికి మొదలైంది; కొంతమంది ఆర్థిక సలహాదారులు \"బుష్ యొక్క న్యూ ఓర్లీన్స్ డీల్  అని వెటకారంగా అన్నారు.",
+   "hyp": "கתرینا توفانوں نے پتھ دیم لہ سہاہاں مریو پنر نرمانوں کوسم کچچے ایدام گورنچی ۔ یہ واضانکی مدلہ اندی۔ کنتماندی آردی کا سالہہ دارلو بششکہ نیو اورلینز دیل انی بیٹھ کرنگا آنہارا۔",
+   "wer": 0.9065934065934066,
+   "cer": 0.9065934065934066
+  },
+  {
+   "ref": "చంద్రుడి ఉపరితలం పై రాళ్లు ధూళితో తయారు చేస్తారు చంద్రుని బాహ్య పొరను క్రస్ట్ అంటారు",
+   "hyp": "چندRODI VUPERI THALAM PAY RALU DULITO THAYARU CHENDRODI NAY BAHYA PORU NU CRUST ANTARU",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "నేపాల్ un శాంతి పరిరక్షక బెటాలియన్ తెలియకుండానే ఈ వ్యాధిని haitiకి తీసుకువచ్చింది అని the haitian institute for justice and democracyని సూచించే స్వతంత్ర అధ్యయనాలు ప్రస్తావించింది",
+   "hyp": "NEPAL, UN, SHANTI, PRAERAKSHAKA, BETALIAN, TIILIAKONDANI, IVYANDANI, HAYTIDI, SKWATSHINDI, ANI, NAYAYTAN, INSTRUTUUT FOR GESSTIS AND DOMACRACINI, SUSHIN, CHESVATAN, RADIANALU, PRASTAV INSHINDI.",
+   "wer": 0.9325842696629213,
+   "cer": 0.9325842696629213
+  },
+  {
+   "ref": "నిందితుడు ముఖకవతలతో కోర్టులో హాజరయినట్లు పోలీసు ఉన్నతాధికారి చంద్ర శేఖర్ సోలంకి తెలిపారు",
+   "hyp": "Nindu Thedu, Makhakavathalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalal",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "మక్కాకు ఉత్తరాన ఉన్న పర్వతాలలో 1 దానిపై ఉన్న ఈ గుహ ప్రపంచంలోని ఇతర ప్రాంతాల నుండి పూర్తిగా వేరుచేయబడింది",
+   "hyp": "makaq utdharanamannam parvathaalalo vakadhanipai vanna e-guhar, parapanchamlani itara prantalaanamdi purthigaviru chayabadindhi.",
+   "wer": 0.9903846153846154,
+   "cer": 0.9903846153846154
+  },
+  {
+   "ref": "బ్లాగులు కూడా విద్యార్థి రాతను మెరుగుపరచడానికి తోడ్పడగలవు విద్యార్థులు తరచుగా తమ బ్లాగ్ అనుభవాన్ని స్లోపీ గ్రామర్ మరియు స్పెల్లింగ్ తో ప్రారంభిస్తారు అయితే ఆడియెన్స్ యొక్క ఉనికి సాధారణంగా మారుతుంది",
+   "hyp": "BLOG LUCODA ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔",
+   "wer": 0.9289340101522843,
+   "cer": 0.9289340101522843
+  },
+  {
+   "ref": "మాకు ఖచ్చితంగా తెలియదు కానీ అది ఒక ఫోర్క్ నాలుక కలిగి ఉండవచ్చు దాని ఆహారంలో తాబేళ్లు పెద్ద చేపలు ఇతర మొసాసర్లు కూడా ఉన్నాయి మరియు అది ఒక కానిబల్ కూడా అయి ఉండవచ్చు",
+   "hyp": "ماکو کچتنگہ தெریعے ہیں کہانی ادیو کا 4-4 کلگیوندوچ دانی آہرامنہ طابلیو پیدھا شیپلو اترامت موصہ سر لو کڑا منای مریو ادیو کا کانی بل کڑا ایوندوچ",
+   "wer": 0.8580246913580247,
+   "cer": 0.8580246913580247
+  },
+  {
+   "ref": "డాక్యుమెంట్ లీక్ ప్రకారం సరిహద్దుల వివాదాన్ని సూచిస్తుంది ఇది 1967 మిడ్ఈస్ట్ యుద్ధానికి ముందు సరిహద్దుల ఆధారంగా పాలస్తీనా కోరుకుంది",
+   "hyp": "Documentary League Parakaram Sarihaddulu Vivaadhani ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi ndhi",
+   "wer": 0.9541984732824428,
+   "cer": 0.9541984732824428
+  },
+  {
+   "ref": "టెలివిజన్ నివేదికలు మొక్క నుండి తెల్లటి పొగ వస్తున్నట్లు చూపుతాయి",
+   "hyp": "τیلی بیجو نیویدھے کلوں مکانوں نے تیلیٹ پگوستورناکلے شوبتای",
+   "wer": 0.8769230769230769,
+   "cer": 0.8769230769230769
+  },
+  {
+   "ref": "ఉత్తరానికి సులభంగా చేరుకొనే దినాన రొమాంటిక్ మనోహరమైన పట్టణం సింత్రా పట్టణం ఉంది మరియు లార్డ్ బైరాన్ ద్వారా నమోదు చేయబడిన దాని వైభవాల గురించి ఒక ప్రకాశవంతమైన కథనం తరువాత విదేశీయులకు ఇది ప్రసిద్ధి చెందింది",
+   "hyp": "ëUttarani ki sulubhanga, chairuku ni dhe na na, Romantic Manoharamanapattanam, Santra Patanam, vandhi. Maruyul Lard Bhairan dwaran, Namo dhi chayabarna, Vanivayabha, Lagurichu, Kapprakashavantamana, Kadanam, Torvatha, Vidyasi, Lakhudu Prasiddhi, Chen dendi.",
+   "wer": 0.9802955665024631,
+   "cer": 0.9802955665024631
+  },
+  {
+   "ref": "ఏంజెల్ 2006 సంస్థపనితీరు ఉన్నత స్థాయికి చేరుకోవడానికి సహాయపడే ఒక పద్ధతిగా కంటిన్యూయమ్ విధానాన్ని వివరిస్తుంది",
+   "hyp": "اینجل سمستہ پانیٹور اُن نتستہ ایک چیر کو وعدانی کے سہاہہ ہے پڑے اُکہ پددتگا کنتنیم ویدانانی ویور اِس تنی",
+   "wer": 0.9357798165137615,
+   "cer": 0.9357798165137615
+  },
+  {
+   "ref": "ధృవ కాంతిని చూడటానికి ఇది మంచి అవకాశాన్ని అందిస్తుంది ఎందుకంటే ఆ సమయంలో ఆకాశం చీకటిగా ఉంటుంది",
+   "hyp": "drupakantini trodda tanikhi, ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya vakasaani anthi stundhi. ida manjiya v",
+   "wer": 0.978494623655914,
+   "cer": 0.978494623655914
+  },
+  {
+   "ref": "రెండవ సెట్‌లో del potroకు ఆధిక్యం లభించినా కూడా ఈ సెట్‌లో కూడా 6-6కి చేరుకున్న తర్వాత టై బ్రేక్ అనివార్యం అయ్యింది",
+   "hyp": "2 ndaosetlu delp potroku ,adikimla binchina kuda ,isetrokuuda ,sixig aru aru ki cheyru kundnataruata ,time break anivaliye maini",
+   "wer": 0.9649122807017544,
+   "cer": 0.9649122807017544
+  },
+  {
+   "ref": "కుండలినీ యోగాతో కుండలినీ శక్తిజ్ఞానోదయ శక్తి యోగా భంగిమలు శ్వాస వ్యాయామాలు మంత్రాలు మరియు దృశ్యాల ద్వారా జాగృతం చేయబడుతుంది",
+   "hyp": "கொண்டலின் இோகத் தோ கொண்டலின் செற்றி, நான் ஓடய செற்றி, இோகப் பண்டி மலு, свயாசா, வியாயா மலு, மன்றாலு, மரியுதுருச்சியாலு, வாரா ஜாگரத்தன் செய்யவட்டும் தி.",
+   "wer": 0.983739837398374,
+   "cer": 0.983739837398374
+  },
+  {
+   "ref": "మీకు sie అనే పదం పక్కన వచ్చే నౌన్స్ అన్నీ ఎల్లప్పుడు క్యాపిటల్ లెటర్తో ప్రారంభం అవుతాయి అది వాక్యం మధ్యలోనైనా సరే",
+   "hyp": "miko saii padam pakka vatch nav channi elappu do kaptr latur do praram bambu oto ay naiyadhi vakya majjelav nai na saray",
+   "wer": 0.9646017699115044,
+   "cer": 0.9646017699115044
+  },
+  {
+   "ref": "రెండు పొడి పొడిలను కలిపి తరువాత శుభ్రమైన తడి చేతులతో వాటిని ఒక బంతిలో నొక్కండి",
+   "hyp": "2 コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロナウイル コロ",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "ఇక్కడ తమ సమయాన్ని బ్రతికి౦చిన స్త్రీపురుషులు ఇ౦కా చాలామ౦ది పురుషులు స్త్రీలు అక్కడ మరణి౦చిన లేదా మరణి౦చే ౦దుకు కృషి చేసిన మరి౦తమ౦ది యూదులు యూదులు కాని వారు కూడా ఉన్నారు",
+   "hyp": "icadama samayanipratikinchena stri purusulu, icad chala mandipurusulu striulu, akkada maraninchina leida maraninchendukurse chaisena marintamandhi yudulu, yudulu, kanivaru koda unnaru.",
+   "wer": 0.9761904761904762,
+   "cer": 0.9761904761904762
+  },
+  {
+   "ref": "ఇతర నామినేషన్లలో ఉత్తమ చిత్రం దర్శకుడు సినిమాటోగ్రఫీ కాస్ట్యూమ్ డిజైన్ ఫిల్మ్ ఎడిటింగ్ ఒరిజినల్ స్కోర్ ప్రొడక్షన్ డిజైన్ సౌండ్ ఎడిటింగ్ సౌండ్ మిక్సింగ్ మరియు ఒరిజినల్ స్క్రీన్ ప్లే చేర్చబడి ఉన్నాయి",
+   "hyp": "i tara namination lalo utama chitram darsakuru sinmoat agrafic costume design, film editing, original score, production design, sound editing, sound mixing mario, original screenplay chettabade unna i.",
+   "wer": 0.9746192893401016,
+   "cer": 0.9746192893401016
+  },
+  {
+   "ref": "హాంగ్ కాంగ్ యొక్క ఉత్తమ వీక్షణలు పొందడానికి ద్వీపం వదిలి మరియు ఎదురుగా ఉన్న కౌలూన్ జలఫ్రంట్ కు తల",
+   "hyp": "ہونکاں یکہ اُتھمہ ویکشنہ لگا پندہاں کی بیپاں مدلی مریو ادرگہ ہونہ کاولونجیلہ فرنتکوطلا",
+   "wer": 0.8762886597938144,
+   "cer": 0.8762886597938144
+  },
+  {
+   "ref": "దుస్తులు చాలా వేడిగా మారకుండా జాగ్రత్తగా ఉండండి ఇది సంకోచానికి కారణమవుతుంది లేదా తీవ్రమైన సందర్భాలలో కాలిపోయే అవకాశం ఉంది",
+   "hyp": "دستுளை چாலہ வیڈکہ மارکھنڈا جاگرتگا ہண்டண்டی ۔ இந்த சங்கோயம் சانைக்கு கார்ணமாவது ۔ لیதா திவிரம்மை நசந்தர்கள் அல்லாக கால் காலி போய்யாக ஒக்காசா முந்தி۔",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "సునామీ హెచ్చరిక జారీ చేయలేదు మరియు జకార్తా భూభౌతిక సంస్థ ప్రకారం భూకంపం 6.5 ఆవశ్యకతను చేరుకోలేదు కనుక ఎలాంటి సునామీ హెచ్చరిక జారీ చేయబడదు",
+   "hyp": "sannami htrika jali chayel riyadu mariyadu jakartha vuhu bhoop tika sannastaprakaram bhukampam maru pointayadu aawashiya kathana chayur ko riyadu kaanaka illaantai sannami htrika jali chayel riyadu paradu",
+   "wer": 0.9854014598540146,
+   "cer": 0.9854014598540146
+  },
+  {
+   "ref": "ఎయిర్ క్రాఫ్ట్ తక్కువ దూరాలలో వెళ్లడానికి ఎఫ్ ఏ ఏ క్లెయిమ్స్ అనుమతించే నెక్స్ట్ జెన్ వ్యవస్థ ప్రతి సంవత్సరం మిలియన్ ల కొద్దీ గాలన్ల ఇంధనాన్ని ఆదా చేసి కార్బన్ ఎమిషన్స్ ని తగ్గిస్తుంది",
+   "hyp": "Þracht takhko dhuraalow wallatani ki, fiaa claims animatinja, next gen, yavastaprati samadshram miliannlakodi qaaralalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalalal",
+   "wer": 0.9781420765027322,
+   "cer": 0.9781420765027322
+  },
+  {
+   "ref": "జనాల గుంపు చుట్టూ చేరి అరుస్తూ మరియు రాజు మరియు రాణిని బెదిరిస్తుండగా వాళ్ళు ఒక గుర్రపు బండిలో పారిస్కు తిరిగి ప్రయాణమయ్యారు",
+   "hyp": "यह लानाल बचुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुटुुटुटुटुटुटुट�",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "అధికార పార్టీ సౌత్ వెస్ట్ ఆఫ్రికా పీపుల్స్ ఆర్గనైజేషన్ ఎస్డబల్యూఏపిఓ కూడా పార్లమెంటు ఎన్నికలలో మెజారిటీని నిలుపుకుంది",
+   "hyp": "Bhajikarika Party, South West, Africa, Peoples, Organisation, NWA, APO, KUDA, Parliament, Indicolour, Majority, NILPKUNDI.",
+   "wer": 0.9914529914529915,
+   "cer": 0.9914529914529915
+  },
+  {
+   "ref": "ఈ యూరోపియన్ చరిత్ర కాలంలో ఉన్నతంగా మరియు శక్తివంతంగా మారిన catholic church పరిశీలనలోకి వచ్చింది",
+   "hyp": "Yui Europei ng Jairitra Kallu hoonna tanga madiu sekti hoon tanga maarina Keralic Church Parasitila na loki hootsin",
+   "wer": 0.9894736842105263,
+   "cer": 0.9894736842105263
+  },
+  {
+   "ref": "స్పెక్ట్రం యొక్క మరో చివర ఒక వ్యక్తి గుర్తించలేని వ్యక్తిగా మారతాడు అతడు లేదా ఆమె టీమ్ చేస్తున్న ప్రతిదానిని మార్చాలని మరియు దానిని తమ స్వంతం చేసుకోవాలని భావిస్తారు",
+   "hyp": "Spatrum, ھاکھا ماروچشے vra, ھاکھا بیتگுریتن چلےனی بیتگا مارتடу. ھا تدو لیدہ آمے, ھاکھایتیم چیسٹنے پر اچدانی, ھاکھایتا لنی مارشانی, ھاکھایتا لنی ماریو, ھاکھایتا لنی تمس وانتا لنی بہایستارو.",
+   "wer": 0.9878048780487805,
+   "cer": 0.9878048780487805
+  },
+  {
+   "ref": "సహజమైన వాతావరణంలో ఉన్నపుడు చెట్లు ఆహ్లాదకరంగా ఉంటాయి కాబట్టి వాటిలో నుండి ఒక్క భాగాన్ని కూడా తీసివేయడానికి ప్రయత్నించవద్దు",
+   "hyp": "Saadamai na vatha varnam nappu da chetlu ahla da karanga untai kaabati vathilanu na nevaka baaganu kuda tisbe danki praitanjavadhu.",
+   "wer": 0.9754098360655737,
+   "cer": 0.9754098360655737
+  },
+  {
+   "ref": "రెండవ సెట్‌లో del potroకు ఆధిక్యం లభించినా కూడా ఈ సెట్‌లో కూడా 6-6కి చేరుకున్న తర్వాత టై బ్రేక్ అనివార్యం అయ్యింది",
+   "hyp": "10-12 Ṭhbhag.",
+   "wer": 0.10526315789473684,
+   "cer": 0.10526315789473684
+  },
+  {
+   "ref": "ముఖ్యంగా ఒక వ్యక్తి అబద్ధం చెప్తున్నాడా లేదా అనేది అతని వ్యక్తీకరణలను సూక్ష్మంగా గమనించడం ద్వారా కనుగొనవచ్చు",
+   "hyp": "mokyenga mokabhakti abandham jyopthurara leidahanedi aadani vakti karanamu suf khmanga gamunin chiran dvarha kaluganu vachu",
+   "wer": 0.9814814814814815,
+   "cer": 0.9814814814814815
+  },
+  {
+   "ref": "ai సైన్స్ ఫిక్షన్ యొక్క బలమైన కాన్నోటేషన్ ను కలిగి ఉన్నప్పటికీ ai కంప్యూటర్ సైన్స్ యొక్క చాలా ముఖ్యమైన శాఖను ఏర్పరుస్తుంది ఒక యంత్రంలో ప్రవర్తన అభ్యసన ఇంకా తెలివైన అనుసరణను కలిగి ఉంటుంది",
+   "hyp": "A.I.Science Fiction %,Ballamayana Connotation %,Kalige 1 %,A.I.Computer %,Science %,Kalige 1 %,Mukyamaayana %,Saya Kano Air Paru %,Mokyantram Lava Pravartana %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,A.I.Com %,",
+   "wer": 0.9623655913978495,
+   "cer": 0.9623655913978495
+  },
+  {
+   "ref": "రాస్బీ నెంబర్ ఎంత చిన్నగా ఉంటే మ్యాగ్నెటిక్ రివర్సల్స్కు సంబంధించి నక్షత్రం అంత తక్కువ చురుకుగా ఉంటుంది",
+   "hyp": "Raspi nr. nt. chinnaga nda magnetic river salko sambandinchi naksatram hantachuruga ndi.",
+   "wer": 0.8446601941747572,
+   "cer": 0.8446601941747572
+  },
+  {
+   "ref": "దేశంలో ఎలాంటి నష్టం వాటిల్లలేదని నార్తర్న్ మెరియానా స్ ఎమర్జెన్సీ మేనేజ్ మెంట్ కార్యాలయం తెలిపింది",
+   "hyp": "Dheeshamlohi elanthi nastam vaatele lehdeni, Naurthar Miriyanas, Emergency Management Corialaim, Telipindi.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "స్కాటర్బ్ బస్ 403 రెగ్యులర్ గా సింటాకు ప్రయాణిస్తుంది కాబో డా రోకా వద్ద ఆపుచేస్తుంది",
+   "hyp": "Scatter bus 4-1-3 regular gait santaqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+   "wer": 0.9523809523809523,
+   "cer": 0.9523809523809523
+  },
+  {
+   "ref": "రిప్ ప్రవాహాలు అనేవి బీచ్ నుండి విడిపోయే అలల నుండి వచ్చే ప్రవాహం తరచుగా ఒక రీఫ్ లేదా సారూప్యత కలిగి ఉంటాయి",
+   "hyp": "Rippu Prawa halu anevi bheechuunni vidupoye aralannuunne vajhe Prawa ham. Taurujudha ocharri fleda saru pitha kaliyoantai.",
+   "wer": 0.9811320754716981,
+   "cer": 0.9811320754716981
+  },
+  {
+   "ref": "గత 2 శతాబ్దాలలో ఈ ఆటంకం అనేక అంతర్జాతీయ ఒప్పందాల చేత క్రోడీకరించబడిన సాధారణంగా ఆమోదించబడే అంతర్జాతీయ చట్టాన్ని ఉల్లంఘించినప్పటికీ కీలకమైన సైనిక మరియు పౌర సరఫరాలను తగ్గించి వ్యూహం సమర్థవంతంగా ఉందని నిరూపించబడింది",
+   "hyp": "gathar indu shatabdhalalau ی artangam anik antar shatiye vappandhala shatakrodi karinja baadu ndha saandharananga amodinja baadu antar shatiye chattar ne vullanginja na pati ki keelakamayana sainaka mayu pavuru sarvar alana thaiginja yoham samakta vantangam vandharan iru painja baadindhi",
+   "wer": 0.976303317535545,
+   "cer": 0.976303317535545
+  },
+  {
+   "ref": "ఈ ఫార్మాట్ యొక్క కారక నిష్పత్తి సరళమైన పూర్ణాంక నిష్పత్తిని పొందడానికి పన్నెండుతో భాగించడం కాబట్టి 3 2 గా చెప్పబడింది",
+   "hyp": "अपार्मेर तेका कारा कनिस्विति सरलामाना पूराम कविश विश पतिनि पून्दानि कि पन्नें दुपागेंचदम कावटि मूडु नुविन्दु के ज़्प परिन्ति",
+   "wer": 0.9914529914529915,
+   "cer": 0.9914529914529915
+  },
+  {
+   "ref": "దళాల రాకకు ముందు హైతీ 1800 ల నుండి ఈ వ్యాధికి సంబంధించిన సమస్యలను ఎదుర్కొనలేదు",
+   "hyp": "دلالا راکا کموندو ہیتی پدھمدی وندلالمنڈی یہ یادک سمبندنچن سمسٹیلون ایدرکانا لیدو",
+   "wer": 0.9871794871794872,
+   "cer": 0.9871794871794872
+  },
+  {
+   "ref": "అయినప్పటికీ క్షయ వ్యాధి గల సమూహం మొత్తంలో ఇప్పటికీ xdr-tb శాతం తక్కువగా ఉన్నట్లు కనిపిస్తుంది దక్షిణాఫ్రికాలో ఏ సమయంలోనైనా మొత్తం 330,000 మందిలో 6,000 మందికి సోకింది",
+   "hyp": "Aina Purti ki Sheva Yadhi Gala Samoha Muttam Lwag Ippurti ki XDR TBSYTAM TAKKOGA 1 NATIL KANEPISTUKANDI DAKSHNA FRIKALO AISAMEM LONAINA MUTHAM MURULAKSHA LA MUTH PAYE VELE MANDILO RRVELE MANDIKI SOKINDI",
+   "wer": 0.9757575757575757,
+   "cer": 0.9757575757575757
+  },
+  {
+   "ref": "అట్లాంటిక్ హరికేన్ సీజన్లో పేరు పెట్టిన పదవ ఉపఉష్ణమండల తుఫాను jerry ఈ రోజు అట్లాంటిక్ మహాసముద్రంలో ఏర్పడింది",
+   "hyp": "اتلانٹک ہڑکہ دیکن چیز ان்ளவ پیری پیٹھے نہ پதاوہ اپا اُشنا مندہ لہتுپانو جرییی روز اتلانٹک ماؤں سمدھنلے ہوئی رپڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہڑ ہ�",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "లోహమిశ్రమాలు ప్రాథమికంగా రెండు లేదా అంతకంటే ఎక్కువ లోహాల మిశ్రమం ఆవర్తన పట్టికలో చాలా అంశాలు ఉన్నాయని మర్చిపోవద్దు",
+   "hyp": "Loa misre mowlua ,prada mikanka randu levanthakant ekko loa kala misre mowala misre mowala misre mowala mowala mowala misre mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala mowala m",
+   "wer": 0.9824561403508771,
+   "cer": 0.9824561403508771
+  },
+  {
+   "ref": "క్రస్ట్ సన్నగా ఉండటం వల్ల దగ్గరల్లో మరింత మరియా ఉండవచ్చు లావా పైకి పైకి లేచడానికి చాలా సులభంగా ఉండేది",
+   "hyp": "Crust sonaga vundatam valla ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔ ۔",
+   "wer": 0.9405940594059405,
+   "cer": 0.9405940594059405
+  },
+  {
+   "ref": "కొన్ని క్రియలు ఆబ్జెక్టుల మధ్య తేడాను గుర్తించడానికి ఇది ఒక ముఖ్యమైన మార్గం",
+   "hyp": "korni kriya lu abjectula majya teyadana gurthin chananaki idhe vaka mukyemaina margam",
+   "wer": 0.9733333333333334,
+   "cer": 0.9733333333333334
+  },
+  {
+   "ref": "మీరు నేషనల్ ట్రెజర్ సినిమా చూసినట్లయితే స్వాతంత్ర్య ప్రకటన వెనుక ఒక నిధి మ్యాప్ రాయబడిందని మీరు భావించవచ్చు",
+   "hyp": "Miro National Treasure Cinema Chosinatlai Tha Swatantra Prakatana Venuka Vakani Nidhi Map Raya Badi Nani Miro Bavin Chavachu",
+   "wer": 0.9719626168224299,
+   "cer": 0.9719626168224299
+  },
+  {
+   "ref": "వాటికన్ సిటీ జనాభా సుమారు 800 ఇది ప్రపంచంలో అతి చిన్న స్వతంత్ర దేశం ఇంకా అతి తక్కువ జనాభా కలిగిన దేశం",
+   "hyp": "यह तो लिवाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा वाशा",
+   "wer": 0.9504950495049505,
+   "cer": 0.9504950495049505
+  },
+  {
+   "ref": "ఆటల నుండి నిషేధించబడినందున అతను తన నొప్పిని అధిగమించడానికి అవసరమైన మందులను తీసుకోలేకపోయాడు",
+   "hyp": "hathenu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu tananu",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "కోచామో లోయ చిలీ యొక్క ప్రధాన అధిరోహణ గమ్యస్థానం దక్షిణ అమెరికా యొక్క యోసెమైట్ గా ప్రసిద్ధి చెందింది ఇది వివిధ రకాల గ్రానైట్ పెద్ద గోడలు మరియు క్రాగ్ లతో ఉంది",
+   "hyp": "Cochamo Loya chili yokka Pradana Adirohana Gammyastanamu, Dakshina amrika yokka, Jose Maid ka presidhi chendindi, iwi vividarakaala granite peth daguralu mari yokraagla tao undi.",
+   "wer": 0.9872611464968153,
+   "cer": 0.9872611464968153
+  },
+  {
+   "ref": "ఈ అవక్షేపం ఇసుక దిబ్బలు మరియు బీచ్ లను సృష్టించడానికి అవసరం ఇది వన్యప్రాణుల ఆవాసాలుగా ఉపయోగపడింది",
+   "hyp": "i nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9587628865979382,
+   "cer": 0.9587628865979382
+  },
+  {
+   "ref": "పాత రోజుల్లో షో టాక్ రేడియోపై దృష్టి కేంద్రీకరించిన దీర్ఘకాలం నడిచే ఇంటర్నెట్ రేడియో సైట్ టోగినెట్ రేడియోలో మాత్రమే వచ్చేది",
+   "hyp": "10.5% ndr.",
+   "wer": 0.08130081300813008,
+   "cer": 0.08130081300813008
+  },
+  {
+   "ref": "బాలిలో అజెండాలోని ఇతర విషయాలలో ప్రపంచంలోని మిగిలిన అడవులను రక్షించడం అభివృద్ధి చెందుతున్న దేశాలు తక్కువ-కాలుష్య మార్గాల్లో ఎదగడానికి సహాయపడే సాంకేతికతలను పంచుకోవడం ఉన్నాయి",
+   "hyp": "Bhali lo ghandhalo ni etra viśyall lo papanjshap lo ni mihi ni na anapallu na raksinjadam abhivrithi chendithu na deshall lo takhva kali shomar ghar lo yadadhani ke sahai padhe saankethe katalanu panjshapo doon vannai.",
+   "wer": 0.9883040935672515,
+   "cer": 0.9883040935672515
+  },
+  {
+   "ref": "usa జిమ్నాస్టిక్స్ మరియు usoc ఒకే లక్ష్యాన్ని కలిగి ఉన్నాయి జిమ్నాస్టిక్స్ క్రీడ మరియు ఇతరములను క్రీడాకారులు తమ కలలను ఒక సురక్షితమైన సానుకూల ఇంకా సాధికార వాతావరణంలో అనుసరించడానికి సాధ్యమైనంత సురక్షితమైనవిగా చేయడం",
+   "hyp": "युविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविविवि",
+   "wer": 0.8018867924528302,
+   "cer": 0.8018867924528302
+  },
+  {
+   "ref": "జన్యు వైవిధ్యం రెండు విభాగాలుగా ఉందని ఇరవయ్యవ శతాబ్దపు పరిశోధన చూపింది దాగినవి మరియు వ్యక్తీకరించడినవి",
+   "hyp": "جنی وائیوی دیم رنڈوی با گا لوگہ اندانی ایرا ویہ و ستاب دبو پریشوگان چوب اندی داگی ناوی مریو وقتی پر انچہ بڑے ناوی",
+   "wer": 0.9607843137254902,
+   "cer": 0.9607843137254902
+  },
+  {
+   "ref": "మెట్రోలో రెగ్యులర్ ప్రకటనలు కేటలాన్ లో మాత్రమే చేయబడతాయి అయితే ప్రణాళిక లేని అంతరాయాలు స్పానిష్ ఇంగ్లీష్ ఫ్రెంచ్ అరబిక్  జపనీస్ సహా వివిధ భాషల్లో ఆటోమేటెడ్ సిస్టమ్ ద్వారా ప్రకటించబడతాయి",
+   "hyp": "Metrol & regular prepetanalu kaetlon lo madramatye vartay, ai te pranalikalin antraialu Spanish, Indi, French, Arabic, Japanese sahab, Vibhidhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhb",
+   "wer": 0.9837837837837838,
+   "cer": 0.9837837837837838
+  },
+  {
+   "ref": "కొన్ని షిప్ లు బ్రోచర్ లలో బెర్లిన్ జర్మనీని చూపించాయి మీరు పైన ఉన్న మ్యాప్ ని చూసినట్లయితే బెర్లిన్ సముద్రం సమీపంలో ఎక్కడా లేదు మరియు నగర సందర్శన షిప్ ధరలో చేర్చబడలేదు",
+   "hyp": "کن்னு சிப்பு ரோஷர்லலோ பெழில்ஜெரிமனின் சூபின்சாயி மிருப்பாய்னம் உன்னமாகப் பெண்ணு ஜூஷினர் தலைத்து பெழில்ஸாமுத்து மிபம்மல் எக்கடாலே ஏது மரியும் நகர சந்தர் சிப்பதரலோ ஜேட்ட்டப்படா ஏது",
+   "wer": 0.9880952380952381,
+   "cer": 0.9880952380952381
+  },
+  {
+   "ref": "ఈ కీటకాల సమూహానికి ఒక సంప్రదాయ పరంగా ఎంటోమాలజిస్ట్ లు బగ్ అనే పదాన్ని ఉపయోగిస్తారు",
+   "hyp": "kithakala samuhanikhi vuka sampradayam paranga ntomala gist bhang anye padhani ubiyodistaru",
+   "wer": 0.9878048780487805,
+   "cer": 0.9878048780487805
+  },
+  {
+   "ref": "క్రస్ట్ సన్నగా ఉండటం వల్ల దగ్గరల్లో మరింత మరియా ఉండవచ్చు లావా పైకి పైకి లేచడానికి చాలా సులభంగా ఉండేది",
+   "hyp": "கرست سنگا ہونڈٹم ہوا لگا دیکھ گرلو مرینتا مریعا ہونڈا ہوا چو۔ لاوہ پائکپائکی لیے وڈانکی چالا سو بہت سلو بگا ہونڈے دی۔",
+   "wer": 0.9504950495049505,
+   "cer": 0.9504950495049505
+  },
+  {
+   "ref": "గ్రీకు పరిజ్ఞానం క్షీణించడంతో పాశ్చాత్యులు తమ గ్రీకు తాత్విక శాస్త్రీయ మూలాల నుండి వేరుపడ్డారు",
+   "hyp": "greeku parikniyanam kshinin chadam to pasyatulu tamandgreeku tathvikas asreya mooranand veeropadaru",
+   "wer": 0.9680851063829787,
+   "cer": 0.9680851063829787
+  },
+  {
+   "ref": "సింహ గర్వం తోడేళ్ళు లేదా కుక్కల ప్యాక్ ల వలె సింహాలు కానీ ఇతర పెద్ద పిల్లులు కాదు ప్రవర్తనలో ఆశ్చర్యకరంగా పోలి ఉన్న జంతువులు ఇంకా వాటి వేట కొరకు చాలా ప్రాణాంతకంగా కూడా పనిచేస్తాయి",
+   "hyp": "Simha Garbham Ṭhodayu lehda Ṭhukkala pākalavala Simha Luka ni Ṭhar peda pili lukaadu. Pravarthana Loha Asteyla Karanga Poli vannajentvalu Ṭhikā vāti vāti vāti kuru kuchala prānamthakaṅga kuda pannajas thai.",
+   "wer": 0.9832402234636871,
+   "cer": 0.9832402234636871
+  },
+  {
+   "ref": "అనేక జర్మన్ బేక్డ్ గూడ్స్లో బాదం హాజెల్ నట్స్ ఇంకా ఇతర ట్రీ నట్స్ కూడా ఉంటాయి పాపులర్ కేకులు తరచుగా ఒక కప్పు బలమైన కాఫీతో బాగా జతచేయబడతాయి",
+   "hyp": "Anei ka germam, baked goods lo, baadam, hazelnuts, Ṭhik, Ṭerak, tree nuts Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik, Ṭhik,",
+   "wer": 0.927536231884058,
+   "cer": 0.927536231884058
+  },
+  {
+   "ref": "పురాతన కాలం నుండి బంగారం వెండి మరియు రాగి వంటి ప్రాథమిక రసాయన మూలకాల గురించి ప్రజలకు తెలుసు ఎందుకంటే వీటిని ప్రకృతిలో సహజ రూపంలో కనుగొనవచ్చు మరియు ఆదిమ సాధనాలతో తవ్వటం చాలా సులభంగా ఉంటుంది",
+   "hyp": "پورாத்தனா காலம்ணண்டி, பங்காரம் விண்டி, மரியும் ராகிவண்டி, பிராதமைக் கரசாயினமோல காலகுணிஞ்சி பரத்தில் குதெளிஸு, இந்த பண்டை வேரிந்து பிரக்குருத்தில் சாதுரம்பும்லாக் கண்கண்வன வைத்தும் மரியும் அதிமைசாதனால் கவளம் சாலா சொரு பங்காம் உண்டு.",
+   "wer": 0.9893617021276596,
+   "cer": 0.9893617021276596
+  },
+  {
+   "ref": "ప్రతీ జనరేషన్తో రెండు సమూహాల మధ్య వేరుపరచడం ఇంకా తిరిగి కలపడం అనేది వైవిధ్యాన్నిముందుకు వెనుకకు మార్చుతుంది",
+   "hyp": "Prati generation 2 Samuhala Madhyav vairu parachadam inka Tirigikalapada Mani dhi Vaivit jhani munduku vannu kaku maatchu tundi",
+   "wer": 0.9906542056074766,
+   "cer": 0.9906542056074766
+  },
+  {
+   "ref": "లఖా సింగ్ ఛప్పన్ భోగ్ భజన ను కూడా సమర్పించాడు గాయకుడు రాజు ఖండేల్వాల్ అతని వెంట ఉన్నారు",
+   "hyp": "Laka Singh Chappan Vok Bhajanuku Pura Samar Pinshiaru Gaya Kulu Raju Khandelvala Kathar Ni Vanda Vannaru",
+   "wer": 0.9770114942528736,
+   "cer": 0.9770114942528736
+  },
+  {
+   "ref": "అందువల్ల కేవలం లేబుల్ వలే నోటేషన్ జోడించబడి ఉండవచ్చు",
+   "hyp": "hindi valla kevalam label valla notification jodim chabadi vanda vachu",
+   "wer": 0.9807692307692307,
+   "cer": 0.9807692307692307
+  },
+  {
+   "ref": "ట్రాఫిక్ ఫ్లో అనేది రెండు పాయింట్ల మధ్య వ్యక్తిగత డ్రైవర్ లు మరియు వేహికల్స్ యొక్క చలనాన్ని అధ్యయనం చేస్తుంది మరియు అవి ఒకరితో ఒకరు చేసే పరస్పర చర్యల గురించి అధ్యయనం చేస్తుంది",
+   "hyp": "Trafik flow anethi, 2 poindla madya vekti gata driverlu mari vehical siyokka chalanani adya enom chayastundi mari vakarita vakaru chayase paris paris charial gurin chay adya enom chayastundi",
+   "wer": 0.96,
+   "cer": 0.96
+  },
+  {
+   "ref": "దురదృష్టవశాత్తు ట్రాఫిక్ ప్రవాహాన్ని అధ్యయనం చేయడం కష్టం ఎందుకంటే డ్రైవర్ ప్రవర్తనను 1 వంద శాతం నిశ్చయంగా ఊహించలేము",
+   "hyp": "بரدரوش்ட வசாது, TRAFFIC PROVA HANI, ADIYAYANUM CHEADUM KASTIUM. இந்து கண்டை, DRYVER PROVA RTHANANO, VAKA VANDASAHAM NISTYA YANGA, OIN CHELEUM.",
+   "wer": 0.991304347826087,
+   "cer": 0.991304347826087
+  },
+  {
+   "ref": "మిడిల్ ఆర్డర్ బ్యాట్స్ మెన్ సచిన్ టెండూల్కర్ రాహుల్ ద్రావిడ్ లు రాణించి వంద పరుగుల భాగస్వామ్యాన్ని సాధించారు",
+   "hyp": "Middil Order Batsman, Sachin Tendulkar, Raffeldrabidlum, Rahn & Jee, Vanda Parugala Baga Swamyani, Sadiñchara.",
+   "wer": 0.9722222222222222,
+   "cer": 0.9722222222222222
+  },
+  {
+   "ref": "ఇది మనకు ట్రైన్ కారు మరియు అనేక ఇతర రవాణా పరికరాలని తీసుకువచ్చింది",
+   "hyp": "dill monna kutra in kauriyu mariyana ke tararavana parikararalana ti tiiskuva mochinda",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "\"ఫిన్లాండ్ ఒక గొప్ప బోటింగ్ గమ్యం. \"వెయ్యి సరస్సుల భూమి\" లో సరస్సులతో పాటు మరియు తీరప్రాంత ద్వీపసమూహాలతో సహా వేలాది ద్వీపాలను కలిగి ఉంది.",
+   "hyp": "Fínlán । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । ।",
+   "wer": 0.9197080291970803,
+   "cer": 0.9197080291970803
+  },
+  {
+   "ref": "అండర్ వాటర్ టోపాలజీ వల్ల రిటర్న్ ఫ్లో కొన్ని లోతైన సెక్షన్ ల వద్ద కేంద్రీకృతమై ఉంటుంది మరియు వేగంగా ప్రవహించే ప్రవాహం నుంచి లోతైన నీరు అక్కడ ఏర్పడుతుంది",
+   "hyp": "under water topology valla, return flow con lotha in a section la vada kendri kutamai unpundi, mar yu veganga prevahin chae prevaham nnichil lotha inanero akkada air padu tundi.",
+   "wer": 0.9605263157894737,
+   "cer": 0.9605263157894737
+  },
+  {
+   "ref": "వివాహమై ఇద్దరు పెద్ద పిల్లలున్న దువల్ ఈ కథకు సంబంధించిన మిల్లర్పై పెద్ద ముద్ర వేయలేదు",
+   "hyp": "viva humai İt duru peta pillaluna nduval İt kata ko sambalnein chi millar pai peta mudra vea leedu",
+   "wer": 0.9882352941176471,
+   "cer": 1.011764705882353
+  },
+  {
+   "ref": "ఉత్తరాన ఈ ప్రాంతం సాహెల్ దక్షిణాన మరియు పశ్చిమాన అట్లాంటిక్ మహాసముద్రం ద్వారా సరిహద్దుగా ఉంది",
+   "hyp": "ஒத்தரானை இப்பு ராந்தம் சாہேல் தகிஞானமர்யும் பச்சிமான அக்லாண்டிக் மாத்தமுத்துரான் வரா சரியாதுகாமும் இருந்தே",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "రొమాంటిక్ వాదంలో సాంస్కృతిక నిర్ణయాల్లో పెద్ద అంశం కలదు గోతే ఫిచ్టే ష్లేగెల్ వంటి రచయితల నుండి తీసుకోబడింది",
+   "hyp": "رومایٹک واضم لو سامفسکوதکہ ننیای آلو پیدا آمشم کلادو گو تے پیچے فلگل وانٹے رچے دل اندی تیسکو بڑیں دی",
+   "wer": 0.9158878504672897,
+   "cer": 0.9158878504672897
+  },
+  {
+   "ref": "మేము మా ఇళ్ళు మొక్కలతోనే నిర్మిస్తాము మరియు మొక్కల నుండే బట్టలు తయారు చేస్తాము మేము తినే ఆహారం చాలా వరకు మొక్కలే మొక్కలు లేకుండా జంతువులు మనుగడ సాగించలేవు",
+   "hyp": "mēmumā illu mokkala tone nirmistamu maryu mokkala nunde batalu tehar chestamu mēmutine aharam caala varku mokkala mokkala lekun da jentul manugada sagin chaleu.",
+   "wer": 0.9805194805194806,
+   "cer": 0.9805194805194806
+  },
+  {
+   "ref": "డాక్యుమెంట్ లీక్ ప్రకారం సరిహద్దుల వివాదాన్ని సూచిస్తుంది ఇది 1967 మిడ్ఈస్ట్ యుద్ధానికి ముందు సరిహద్దుల ఆధారంగా పాలస్తీనా కోరుకుంది",
+   "hyp": "L'Aqyom & Leigh, Prakharam Sarhadal Vevaadani, Sustandhi. Kidi pandamna nal arva ilu midi siyodani kemundo Sarhadal Adhara nga palastina kor kunde.",
+   "wer": 0.9770992366412213,
+   "cer": 0.9770992366412213
+  },
+  {
+   "ref": "మీరు చర్య దగ్గరగా ఉండాలని అనుకుంటే మీరు సంగీతానికి దగ్గరగా ఒక క్యాంపింగ్ సైట్ పొందడానికి త్వరగా పొందుటకు గొన్న ఉంటాయి",
+   "hyp": "みぬちりがだくなったら、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャンギーとは、 スャ",
+   "wer": 0.9914529914529915,
+   "cer": 0.9914529914529915
+  },
+  {
+   "ref": "వంతెన కింద ఉన్న వర్టికల్ క్లియరెన్స్ 15 మీటర్లు నిర్మాణం ఆగస్టు 2011 లో పూర్తయింది ఇది మార్చి 2017 వరకు ట్రాఫిక్కు తెరవలేదు",
+   "hyp": "1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-",
+   "wer": 0.9186991869918699,
+   "cer": 0.9186991869918699
+  },
+  {
+   "ref": "తన కారుపై నియంత్రణ కోల్పోవడంతో జియాన్కార్లో ఫిసిచెల్లా రేసు ప్రారంభమైన వెంటనే ముగించాడు",
+   "hyp": "Commission",
+   "wer": 0.11494252873563218,
+   "cer": 0.11494252873563218
+  },
+  {
+   "ref": "కుండలినీ యోగాతో కుండలినీ శక్తిజ్ఞానోదయ శక్తి యోగా భంగిమలు శ్వాస వ్యాయామాలు మంత్రాలు మరియు దృశ్యాల ద్వారా జాగృతం చేయబడుతుంది",
+   "hyp": "கண்டலேனியாக் கண்டலேனி சைக்திக் நேன் அம்தே சைக்தியாக் கப்பம்புக்கிறோல, சுயாசை வேயாம் மந்த்ராலும் மரியும் இந்துருச் சியாலத்து வாரா, ஜாக்குரத்து சையாக் கடுத்துந்தே.",
+   "wer": 0.991869918699187,
+   "cer": 0.991869918699187
+  },
+  {
+   "ref": "ప్రతి ఒక్కరూ సమాజంలో భాగస్వాములుగా ఉంటారు ఇంకా రవాణా వ్యవస్థలను ఉపయోగిస్తారు రవాణా వ్యవస్థ గురించి దాదాపు ప్రతి ఒక్కరూ ఫిర్యాదు చేస్తారు",
+   "hyp": "Prati Okkaru samaaja mlo bhagasvaa mlega omtaarwinkaravana viyasthala nopipo gistaru. Ravana viyastha muni gurinchi dadaapu prati Okkaru firiyadu cheistaru.",
+   "wer": 0.9632352941176471,
+   "cer": 0.9632352941176471
+  },
+  {
+   "ref": "సింహాలు ఎక్కువగా సామాజిక పిల్లులు ఇవి ప్రైడ్స్ అని పిలిచే పెద్ద గుంపుల్లో నివసిస్తాయి",
+   "hyp": "Saamagikap pili lulu, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhālul, Ṭhāl",
+   "wer": 0.9882352941176471,
+   "cer": 0.9882352941176471
+  },
+  {
+   "ref": "మా సంస్థ యొక్క ధృవీకరణను ఉపసంహరించుకోడం కంటే మా క్రీడాకారులు మరియు క్లబ్ల ఆసక్తులు మరియు వారి క్రీడ ముందుకు సాగే విధంగా మా సంస్థలో అర్థవంతమైన మార్పులు చేయడం మంచిదని usoc వారు ఇచ్చిన ప్రకటనతో మేము అంగీకరిస్తున్నాము",
+   "hyp": "mā samosth yokka druvi karanan upa samosa rinchikodam kante mā kridākar lu maryu klabla asak tulu maryu vāri kridā mundu kusāge vidanga mā samosthalo ar dhavan tamainam arpulu chaidā mānchidhani us vosi vāru icchenap rekatanatho mēmu angi karistun nāmu",
+   "wer": 0.9953051643192489,
+   "cer": 0.9953051643192489
+  },
+  {
+   "ref": "డాక్యుమెంట్ లీక్ ప్రకారం సరిహద్దుల వివాదాన్ని సూచిస్తుంది ఇది 1967 మిడ్ఈస్ట్ యుద్ధానికి ముందు సరిహద్దుల ఆధారంగా పాలస్తీనా కోరుకుంది",
+   "hyp": "dhagumantli prakaram sarhyadal veva dhani sujis tundi.",
+   "wer": 0.40458015267175573,
+   "cer": 0.40458015267175573
+  },
+  {
+   "ref": "ఇది ఒంటరిగా కాకపోయినప్పటికి ప్రయోగీకరణం అలాగే ప్రయోగం అనేది ఒకటి లేదా అంతకంటే ఎక్కువ పరికల్పనలను తొలగించడానికి ప్రశ్నలు అడగడానికి పరిశీలనలు చేయడానికి శాస్త్రీయ పరిశోధనలకు మార్గనిర్దేశం చేసే ఒక పరీక్ష",
+   "hyp": "1°C nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd nd",
+   "wer": 0.9447236180904522,
+   "cer": 0.9447236180904522
+  },
+  {
+   "ref": "అగ్నిమాపక సిబ్బంది చివరికి రాత్రి 11:35 గంటల సమయంలో మంటలను అదుపు చేశారు",
+   "hyp": "ابنی مابق سب بندشی ورکے راتری پلکنڈا مبب پائی ایدو گنتل اصمائیم لوں منتل انا نو آجپیچے سیارو",
+   "wer": 0.9577464788732394,
+   "cer": 0.9577464788732394
+  },
+  {
+   "ref": "ఏరోస్మిత్ వారి పర్యటనలో మిగిలిన సంగీత కచేరీలను రద్దు చేసింది",
+   "hyp": "Aerosmith wari paryatana lo miglinal sangi te kacheri leno radhu chaisindi",
+   "wer": 0.9666666666666667,
+   "cer": 0.9666666666666667
+  },
+  {
+   "ref": "పారిసియన్లు ఉద్రేకంగా మొరటుగా మరియు అహంకారంతో కూడుకొని ఉంటారని పేరు ఉంది",
+   "hyp": "پرسینلو اُدھرے کنگا مردگا مریو آنکارامتا کود کنی ہنتارنی پیر ہندی",
+   "wer": 0.9027777777777778,
+   "cer": 0.9027777777777778
+  },
+  {
+   "ref": "హాంగ్ కాంగ్ ద్వీపం తన పేరు గల భూభాగాన్ని ఇస్తుంది ఇంకా అనేక మంది పర్యాటకులు ప్రధాన కేంద్రంగా భావించే భూభాగం",
+   "hyp": "hankang vippam tanapairu galabubha gani istundi Ṭhinkā aneqamandhi pariyataklū pradhanak yandranga pavinche bubha gam.",
+   "wer": 0.9906542056074766,
+   "cer": 0.9906542056074766
+  },
+  {
+   "ref": "ఉపగ్రహాన్ని రాకెట్ ద్వారా అంతరిక్షంలోకి పంపారు శాస్త్రవేత్తలు అంతరిక్షంలో టెలిస్కోపులను ఉపయోగిస్తున్నారు ఎందుకంటే భూమి వాతావరణం మన కాంతి వీక్షణను వక్రీకరిస్తుంది",
+   "hyp": "Uppagrahani Rakyatwaranthrakshamlod ki pampharu Saasravaethalanthrakshamlod teliskopalma upiyagisthanaar, indu kanti, boomi vatawarana manakhanthi viksana na vathilka suntundi.",
+   "wer": 0.9875776397515528,
+   "cer": 0.9875776397515528
+  },
+  {
+   "ref": "చంద్రుడి భూమిపై ఉన్నసముద్రాలలో ఆటుపోట్లు కలిగించినట్లు సాగిట్టారియస్ గెలాక్సీ పైన పాలపుంత ప్రభావం చూపుతుంది",
+   "hyp": "Chandradi Bhumi Pai vuna Samudharalala, Artoportal Kalaginjana, Sagittarius, Gellaxi, Pai na Palapurna Pravavam,",
+   "wer": 0.9813084112149533,
+   "cer": 0.9813084112149533
+  },
+  {
+   "ref": "సోషలైజేషన్ యొక్క ప్రాముఖ్యతను వివరించడానికి ఉపయోగించే అత్యంత సాధారణ విధానాల్లో ఒకటి పిల్లలు పెద్దవారు పెరుగుతున్నప్పుడు నిర్లక్ష్యం దురదృష్టం లేదా దుర్బలమైన వేధింపుల ద్వారా వారు సామాజికీకరించబడని దురదృష్టకరమైన దురదృష్టకరమైన వేధింపుల ద్వారా వారి యొక్క దురదృష్టకరమైన కేసులను గీయడం",
+   "hyp": "sosialisation, ھa pramakke tanu vivarinchadani ki pyavinch, ھaqyant saadharana vividana allu kati, pillalupaddavaru pergutunnappuru nilakshyam dhradrustam reyadha dhrbala maina vedim pula dwara vari samaji karinchabadinthan, padinni, dhradrustakara maina dhradrustakara maina vedim pula dwara variyakka dhradrustakara maina keesu lanu ki yadam.",
+   "wer": 0.9820143884892086,
+   "cer": 0.9820143884892086
+  },
+  {
+   "ref": "పా అంబ్ ఒలి అనేది ప్రత్యేకంగా వేసవి కాలంలో వండుకునే ప్రముఖ వంటకం ఆలివ్ ఆయిల్ చల్లిన బ్రెడ్ టమోటా మరియు అందుబాటులో ఉండే చీజ్ ట్యూనా చేప మొదలగు పదార్థాలు",
+   "hyp": "1 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個 個",
+   "wer": 0.9337748344370861,
+   "cer": 0.9337748344370861
+  },
+  {
+   "ref": "వ్యాధి పందుల ద్వారా వ్యాపిస్తుంది ఇది తరువాత దోమల ద్వారా మనుషులకి సోకుతుంది",
+   "hyp": "viyadi 15 la dvara viyapis tundi, i te ruvata 2 mala dvara manushilaki svok tundi.",
+   "wer": 0.96,
+   "cer": 0.96
+  },
+  {
+   "ref": "అట్లాంటిక్ హరికేన్ సీజన్లో పేరు పెట్టిన పదవ ఉపఉష్ణమండల తుఫాను jerry ఈ రోజు అట్లాంటిక్ మహాసముద్రంలో ఏర్పడింది",
+   "hyp": "8. ھکہری کین چیزنگلو پیر پیٹنہ ڈا باہوپا اُشنا مندالتفانو جرری ایروجو 8. ھکہری کین چیزنگلو پیر پیٹنہ ڈا باہوپا اُشنا مندالتفانو جرری ایروجو 8. ھکہری کین چیزنگلو پیر پیٹنہ ڈا باہوپا اُشنا مندالتفانو جرری ایروجو 8. ھکہری کین چیزنگلو پیر پیٹنہ ڈا باہوپا اُشنا مندالتفانو جرری ایروجو 8. ھکہری کین چیزنگلو پیر پیٹنہ ڈا باہوپا اُشنا مندالتفان",
+   "wer": 0.9907407407407407,
+   "cer": 0.9907407407407407
+  },
+  {
+   "ref": "వీడియో రికార్డింగ్ యొక్క ఉపయోగం సూక్ష్మ-వ్యక్తీకరణలు ముఖ కదలికల వ్యాఖ్యానంలో ముఖ్యమైన ఆవిష్కరణలకు దారితీసింది ఇవి కొన్ని మిల్లీ సెకన్ల పాటు ఉంటాయి",
+   "hyp": "vido recording lloqa । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । । ।",
+   "wer": 0.958904109589041,
+   "cer": 0.958904109589041
+  },
+  {
+   "ref": "తోటి మల్ల యుద్ధకారులు కూడా లూనాకు నివాళులు అర్పించారు",
+   "hyp": "توٹی ملیں یددھا کارلکوڑا لوناکوں نیوالیلوں ارپینچارل",
+   "wer": 0.9245283018867925,
+   "cer": 0.9245283018867925
+  },
+  {
+   "ref": "పాలు వెంట్రుకలు మాంసం చర్మాలు సులభంగా అందుబాటులో ఉండేవిధంగా ప్రాచీన సంస్కృతులు తెగలు వాటిని ఉంచడం ప్రారంభించాయి",
+   "hyp": "پالو, வینٹرکالو, مامسم, چرمالو, سلوبانگا, آندு باتلو, بندے ہو دنگا, پر آچینہ سمسکروتو لو, تگالو, واتنی اونچڈم پرارم بنچائی",
+   "wer": 0.972972972972973,
+   "cer": 0.972972972972973
+  },
+  {
+   "ref": "అదే నెలలో మషాద్ వద్ద రన్ వేపై మరో విమానం ఓవర్ రన్ వేపై పడి గోడను గుద్ది పదిహేడు మంది ప్రాణాలు కోల్పోయారు",
+   "hyp": "அதேனெல்லும மசாத வந்தரண்வைப் பயமரோ விமானம் ஓர்ண்வைப் படிக்குடனும் குத்திப் பதியடு மந்திப் பிரானாலும் கூழ்ப் பயாரு",
+   "wer": 0.9711538461538461,
+   "cer": 0.9711538461538461
+  },
+  {
+   "ref": "ఈ సిద్ధాంతాలు కొంతమంది వ్యక్తులు వారు చేసే పనులను కోరుకునేలా చేస్తాయి మరియు వారి చుట్టుపక్కల జరిగే ఏ విషయాలు వారు కొన్నినిర్దిష్ట పనులను చేసేలా లేదా చేయకుండా చేస్తాయి అనే వాటి గురించి వివారిస్తాయి",
+   "hyp": "Saadam talo kanta mande biyekthulu varyu chaisa panlana kuru koneela chastai mario varyu chuttu paklajariye yevi shiyalu varyu kune niddhistakarana chaisaela leida chayakunda chastai anevaati gurinchi vevaris thai",
+   "wer": 0.9897959183673469,
+   "cer": 0.9897959183673469
+  },
+  {
+   "ref": "ఒట్టావా కెనడా యొక్క మనోహరమైన ద్విభాషా రాజధాని మరియు కెనడా యొక్క గత మరియు వర్తమానాలను ప్రదర్శించే కళా ప్రదర్శనశాలలు మరియు వస్తుప్రదర్శనశాలల శ్రేణిని కలిగి ఉంది",
+   "hyp": "ずったわけなどよく manoharamena debaasharajadani, マリュウけなどよくがともももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももももも",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "falkland అధికారిక కరెన్సీ falkland pound fkp దీని విలువ ఒక బ్రిటిష్ పౌండ్ gbpకు సమానం",
+   "hyp": "Falkland Azikharika Katensi Falkland Pound FKP. Dini Vira Yaka British Found GBP Kusawanum.",
+   "wer": 0.8823529411764706,
+   "cer": 0.8823529411764706
+  },
+  {
+   "ref": "గాయపడిన వారిలో పందొమ్మిది మంది పోలీసు అధికారులు గలరని గవర్నర్ కార్యాలయం పేర్కొంది",
+   "hyp": "Gaya Badi na Vari lo Pando Midhimandhi Poli Sadhikar lo Kalagarani, Governor Karala Leam Pair Kondhi.",
+   "wer": 1.0,
+   "cer": 1.0
+  },
+  {
+   "ref": "\"\"\"ఇది వీడ్కోలు కాదు. ఇది ఒక అధ్యాయం ముగియడం మరియు కొత్త అధ్యాయానికి నాంది పలకడం.\"\"",
+   "hyp": "دیوید کولو گا دویدیو کچھا مونگی مگیییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییییی",
+   "wer": 0.9759036144578314,
+   "cer": 0.9759036144578314
+  },
+  {
+   "ref": "పర్యాటకులకు వాస్తవంగా అవి ఎలా ఉండేవో ఒక ఆలోచన ఇవ్వడానికి కాంప్లెక్స్ అంచులలోని చాలా భవనాలు పునర్నిర్మించబడ్డాయి",
+   "hyp": "1 tb kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula kula k",
+   "wer": 0.9819819819819819,
+   "cer": 0.9819819819819819
+  }
+ ]
+}

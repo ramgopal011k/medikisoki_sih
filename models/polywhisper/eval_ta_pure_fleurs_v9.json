@@ -1,0 +1,8 @@
+{
+  "lang": "ta",
+  "wer": 75.1,
+  "n_samples": 582,
+  "beam_size": 1,
+  "model": "polywhisper-ta-v9",
+  "note": "v9: per-language augmentation (augment only bn/mr)"
+}

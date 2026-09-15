@@ -78,6 +78,34 @@ export const chestPainTree: InterviewTree = {
         { value: 'months_ago', label: 'Weeks or months ago', label_hi: 'हफ्तों या महीनों पहले' }
       ],
       next: (_answer) => {
+        return 'cp_relieving';
+      }
+    },
+    cp_relieving: {
+      id: 'cp_relieving',
+      text: 'What makes the pain better?',
+      text_hi: 'किससे दर्द में आराम मिलता है?',
+      type: 'single_choice',
+      options: [
+        { value: 'rest', label: 'Resting', label_hi: 'आराम करना' },
+        { value: 'medication', label: 'Taking medication', label_hi: 'दवा लेना' },
+        { value: 'posture', label: 'Changing posture', label_hi: 'मुद्रा बदलना' },
+        { value: 'nothing', label: 'Nothing', label_hi: 'कुछ नहीं' }
+      ],
+      next: (_answer) => {
+        return 'cp_timing';
+      }
+    },
+    cp_timing: {
+      id: 'cp_timing',
+      text: 'Is the pain constant or does it come and go?',
+      text_hi: 'क्या दर्द लगातार है या आता-जाता रहता है?',
+      type: 'single_choice',
+      options: [
+        { value: 'constant', label: 'Constant', label_hi: 'लगातार' },
+        { value: 'intermittent', label: 'Comes and goes', label_hi: 'आता-जाता रहता है' }
+      ],
+      next: (_answer) => {
         return 'cp_severity';
       }
     },

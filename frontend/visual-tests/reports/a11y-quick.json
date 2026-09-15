@@ -1,0 +1,55 @@
+[
+  {
+    "route": "/",
+    "issues": [
+      "Input text missing label"
+    ]
+  },
+  {
+    "route": "/doctor/login",
+    "issues": [
+      "Button missing text/aria-label"
+    ]
+  },
+  {
+    "route": "/consent",
+    "issues": []
+  },
+  {
+    "route": "/interview",
+    "issues": [
+      "Page missing H1 heading"
+    ]
+  },
+  {
+    "route": "/medical-history",
+    "issues": [
+      "Button missing text/aria-label",
+      "Page missing H1 heading"
+    ]
+  },
+  {
+    "route": "/ayush-assessment",
+    "issues": [
+      "Button missing text/aria-label",
+      "Page missing H1 heading"
+    ]
+  },
+  {
+    "route": "/upload",
+    "issues": [
+      "Button missing text/aria-label",
+      "Input file missing label"
+    ]
+  },
+  {
+    "route": "/preview",
+    "issues": []
+  },
+  {
+    "route": "/doctor/dashboard",
+    "issues": [
+      "Page missing H1 heading"
+    ]
+  }
+]

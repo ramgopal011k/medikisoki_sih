@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS ayush_assessments (
     session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
     dimension TEXT NOT NULL,
     value TEXT NOT NULL,
+    reasoning JSONB,
     provenance TEXT CHECK (provenance IN ('patient_reported', 'doctor_entered', 'system_derived', 'ocr_extracted')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -126,6 +127,8 @@ CREATE TABLE IF NOT EXISTS summaries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
     content JSONB,
+    hindi_content JSONB,
+    icd_codes JSONB,
     doctor_verified BOOLEAN DEFAULT false,
     finalized BOOLEAN DEFAULT false,
     generated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -138,6 +141,16 @@ CREATE TABLE IF NOT EXISTS consent_logs (
     patient_id TEXT,
     consent_status TEXT DEFAULT 'granted',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 12. audit_logs
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+    actor_id UUID REFERENCES doctors(doctor_id),
+    action TEXT NOT NULL,
+    resource_type TEXT NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- REALTIME CONFIGURATION

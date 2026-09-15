@@ -1,11 +1,23 @@
 import { Router } from 'express';
 import { supabase } from '../supabase';
 import { generateTriageSummary } from '../summary';
+import { sessionSchema } from '../schemas';
 
 const router = Router();
 
 router.post('/', async (req, res) => {
-  const { hospital_id, patient_name, dummy_aadhaar, language, chief_complaint, age, gender, phone, patient_type } = req.body;
+  try {
+    sessionSchema.parse(req.body);
+  } catch (e: any) {
+    return res.status(400).json({ error: 'Invalid input', details: e.errors });
+  }
+
+  const { hospital_id, patient_name, dummy_aadhaar, language, chief_complaint, age, gender, phone, patient_type, consent, consents } = req.body;
+  
+  if (consents && consents.clinicalCare === false) {
+    return res.status(400).json({ error: 'Clinical care consent is mandatory' });
+  }
+
   const validHospitalId = hospital_id || '11111111-1111-1111-1111-111111111111';
   const validLanguage = language || 'en';
   const validComplaint = chief_complaint || 'General Consultation';
@@ -55,11 +67,12 @@ router.post('/', async (req, res) => {
         status: 'active',
         red_flag: false,
         locked: false,
-        dummy_aadhaar: validAbha,
-        age: age || null,
-        gender: gender || null,
-        phone: phone || null,
-        patient_type: validPatientType
+        // dummy_aadhaar: validAbha,
+        // age: age || null,
+        // gender: gender || null,
+        // phone: phone || null,
+        // patient_type: validPatientType
+        // consents: consents || null
       })
       .select()
       .single();
@@ -122,6 +135,21 @@ router.post('/', async (req, res) => {
       ]);
     } catch (e) {
       console.warn('Failed to insert initial answers:', e);
+    }
+
+    // Insert granular consent record
+    if (consents || consent) {
+      try {
+        await supabase.from('consent_logs').insert([
+          {
+            session_id: sessionResult.id,
+            patient_id: validAbha,
+            consent_status: JSON.stringify(consents || consent)
+          }
+        ]);
+      } catch (consentErr) {
+        console.warn('Failed to insert consent log:', consentErr);
+      }
     }
   }
 
@@ -231,6 +259,17 @@ router.get('/:id/triage', async (req, res) => {
 
     if (sessionErr || !session) {
       return res.status(404).json({ error: 'Session not found' });
+    }
+
+    // Insert audit log
+    try {
+      await supabase.from('audit_logs').insert({
+        session_id: id,
+        action: 'Viewed Triage Summary',
+        resource_type: 'sessions'
+      });
+    } catch (auditErr) {
+      console.warn('Failed to insert audit log:', auditErr);
     }
 
     // Fetch answers
@@ -414,7 +453,8 @@ router.get('/:id/triage', async (req, res) => {
       return {
         summary_id: s.id,
         generated_text: formattedText,
-        content: s.content
+        content: s.content,
+        hindi_content: s.hindi_content
       };
     });
 
@@ -450,6 +490,12 @@ router.get('/:id', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
+  try {
+    sessionSchema.parse(req.body);
+  } catch (e: any) {
+    return res.status(400).json({ error: 'Invalid input', details: e.errors });
+  }
+
   const { id } = req.params;
   const updates = req.body;
   try {

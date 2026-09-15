@@ -1,0 +1,8 @@
+{
+  "lang": "bn",
+  "wer": 130.2,
+  "n_samples": 911,
+  "beam_size": 1,
+  "model": "polywhisper-bn-v9",
+  "note": "v9: per-language augmentation (augment only bn/mr)"
+}

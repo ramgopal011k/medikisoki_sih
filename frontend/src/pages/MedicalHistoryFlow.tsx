@@ -10,6 +10,7 @@ import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
 import { cn } from '@/lib/utils';
 import { API_URL } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n';
 
 interface SessionState {
   id: string;
@@ -22,6 +23,16 @@ interface OfflineMedicalHistory {
 }
 
 const OFFLINE_MH_QUEUE_KEY = 'medikiosk_offline_medical_history';
+
+const ROS_SYSTEMS = [
+  { id: 'general', en: 'General', hi: 'सामान्य', symptoms: ['Fever', 'Weight loss', 'Fatigue', 'Night sweats', 'None'] },
+  { id: 'cardio', en: 'Cardiovascular', hi: 'हृदय रोग', symptoms: ['Chest pain', 'Palpitations', 'Swelling (Edema)', 'None'] },
+  { id: 'resp', en: 'Respiratory', hi: 'श्वसन', symptoms: ['Cough', 'Breathlessness (Dyspnea)', 'Wheezing', 'None'] },
+  { id: 'gi', en: 'Gastrointestinal', hi: 'पेट/पाचन', symptoms: ['Nausea/Vomiting', 'Abdominal pain', 'Diarrhea', 'None'] },
+  { id: 'gu', en: 'Genitourinary', hi: 'मूत्र संबंधी', symptoms: ['Urinary issues', 'Painful urination', 'None'] },
+  { id: 'neuro', en: 'Neurological', hi: 'तंत्रिका', symptoms: ['Headache', 'Dizziness', 'Numbness/Tingling', 'None'] },
+  { id: 'msk', en: 'Musculoskeletal', hi: 'मांसपेशियां/हड्डियां', symptoms: ['Joint pain', 'Muscle weakness', 'Back pain', 'None'] }
+];
 
 export default function MedicalHistoryFlow() {
   const navigate = useNavigate();
@@ -47,10 +58,12 @@ export default function MedicalHistoryFlow() {
   const [surgeries, setSurgeries] = useState('');
   const [familyHistory, setFamilyHistory] = useState<string[]>([]);
   const [personalHistory, setPersonalHistory] = useState<string[]>([]);
-  const [rosSymptoms, setRosSymptoms] = useState<string[]>([]);
+  const [rosSymptoms, setRosSymptoms] = useState<Record<string, string[]>>({});
+  const [activeRosTab, setActiveRosTab] = useState('general');
 
   const { speak, isPlaying } = useAudio();
   const { isListening, transcript, startListening, stopListening } = useAsr();
+  const { t } = useTranslation();
 
   const baseMedicationsRef = useRef('');
   const baseSurgeriesRef = useRef('');
@@ -184,14 +197,23 @@ export default function MedicalHistoryFlow() {
         if (lower.includes('sedentary') || lower.includes('गतिहीन')) toggleSelection('Sedentary lifestyle', personalHistory, setPersonalHistory);
       }
     } else if (step === 6) {
-      // ROS
+      // ROS categorized parsing
       if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं')) {
-        setRosSymptoms(['None']);
+        setRosSymptoms(prev => ({ ...prev, [activeRosTab]: ['None'] }));
       } else {
-        ['Weight loss', 'Night sweats', 'Palpitations', 'Breathlessness', 'Nausea/Vomiting', 'Urinary issues', 'Joint pain', 'Dizziness'].forEach(item => {
-          if (lower.includes(item.toLowerCase().split('/')[0].split(' ')[0])) {
-            toggleSelection(item, rosSymptoms, setRosSymptoms);
-          }
+        ROS_SYSTEMS.forEach(sys => {
+          sys.symptoms.forEach(sym => {
+            if (sym === 'None') return;
+            const kw = sym.toLowerCase().split('/')[0].split(' ')[0];
+            if (lower.includes(kw)) {
+              setRosSymptoms(prev => {
+                const current = prev[sys.id] || [];
+                let newList = current.filter(i => i !== 'None');
+                if (!newList.includes(sym)) newList.push(sym);
+                return { ...prev, [sys.id]: newList };
+              });
+            }
+          });
         });
       }
     }
@@ -237,7 +259,15 @@ export default function MedicalHistoryFlow() {
 
     const finalFamily = familyHistory.filter(f => f !== 'None').join(', ');
     const finalPersonal = personalHistory.filter(p => p !== 'None').join(', ');
-    const finalRos = rosSymptoms.filter(r => r !== 'None').join(', ');
+    let finalRosArray: string[] = [];
+    ROS_SYSTEMS.forEach(sys => {
+      const selected = rosSymptoms[sys.id] || [];
+      const valid = selected.filter(r => r !== 'None');
+      if (valid.length > 0) {
+        finalRosArray.push(`${sys.en}: ${valid.join(', ')}`);
+      }
+    });
+    const finalRos = finalRosArray.length > 0 ? finalRosArray.join('; ') : 'None reported';
 
     const items = [
       { category: 'Allergies', value: finalAllergies || 'None reported' },
@@ -278,18 +308,16 @@ export default function MedicalHistoryFlow() {
             <ShieldCheck className="w-8 h-8" />
           </div>
           <h1 className="font-display text-4xl text-charcoal mb-3">
-            {session?.language === 'hi' ? 'पंजीकरण पूरा हुआ' : 'Check-In Complete'}
+            {t('mh.completed.title')}
           </h1>
           <p className="font-body text-lg text-muted mb-8">
-            {session?.language === 'hi'
-              ? 'आपका संपूर्ण डेटा डॉक्टर के डैशबोर्ड पर भेज दिया गया है।'
-              : 'Your health history has been synced to the triage desk. The doctor will see you shortly.'}
+            {t('mh.completed.sub')}
           </p>
           <Button
             onClick={() => navigate('/preview')}
             className="w-full min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body"
           >
-            {session?.language === 'hi' ? 'विवरण की समीक्षा करें' : 'Review My Details'}
+            {t('mh.completed.btn')}
           </Button>
           {isSyncing && (
              <p className="text-primary text-sm font-body animate-pulse mt-4">Syncing offline data...</p>
@@ -301,26 +329,26 @@ export default function MedicalHistoryFlow() {
 
   const getStepTitle = () => {
     switch (step) {
-      case 0: return session?.language === 'hi' ? 'क्या आपको कोई एलर्जी है?' : 'Do you have any allergies?';
-      case 1: return session?.language === 'hi' ? 'क्या आप कोई दवा ले रहे हैं?' : 'Are you currently taking any medications?';
-      case 2: return session?.language === 'hi' ? 'क्या आपको पहले कोई बीमारी हुई है?' : 'Do you have any past medical conditions?';
-      case 3: return session?.language === 'hi' ? 'क्या आपकी कभी कोई सर्जरी हुई है?' : 'Have you had any past surgeries?';
-      case 4: return session?.language === 'hi' ? 'क्या आपके परिवार में कोई बीमारी रही है?' : 'Does anyone in your family have a medical condition?';
-      case 5: return session?.language === 'hi' ? 'आपकी जीवनशैली की आदतें क्या हैं?' : 'What are your lifestyle habits?';
-      case 6: return session?.language === 'hi' ? 'क्या आपको ये लक्षण हैं?' : 'Do you have any of these symptoms? (Review of Systems)';
+      case 0: return t('mh.title.0');
+      case 1: return t('mh.title.1');
+      case 2: return t('mh.title.2');
+      case 3: return t('mh.title.3');
+      case 4: return t('mh.title.4');
+      case 5: return t('mh.title.5');
+      case 6: return t('mh.title.6');
       default: return '';
     }
   };
 
   const getStepHint = () => {
     switch (step) {
-      case 0: return 'Say "None" or speak allergy names';
-      case 1: return 'Speak your medication names';
-      case 2: return 'Say "Diabetes", "Blood Pressure", "Asthma", or "None"';
-      case 3: return 'Speak surgery details or "None"';
-      case 4: return 'Say "Diabetes", "Heart Disease", "Cancer", or "None"';
-      case 5: return 'Say "Smoking", "Alcohol", "Vegetarian" or "None"';
-      case 6: return 'Say symptom names or "None"';
+      case 0: return t('mh.hint.0');
+      case 1: return t('mh.hint.1');
+      case 2: return t('mh.hint.2');
+      case 3: return t('mh.hint.3');
+      case 4: return t('mh.hint.4');
+      case 5: return t('mh.hint.5');
+      case 6: return t('mh.hint.6');
       default: return '';
     }
   };
@@ -354,7 +382,7 @@ export default function MedicalHistoryFlow() {
                 type="text"
                 value={otherAllergy}
                 onChange={e => setOtherAllergy(e.target.value)}
-                placeholder={session?.language === 'hi' ? 'कृपया निर्दिष्ट करें...' : 'Please specify...'}
+                placeholder={t('mh.other.specify')}
                 className="w-full text-center text-base p-3.5 mt-1 border-2 border-primary/40 rounded-xl bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary"
               />
             )}
@@ -364,12 +392,12 @@ export default function MedicalHistoryFlow() {
         return (
           <div className="flex flex-col gap-3 mt-4">
             <p className="text-muted text-xs -mt-1 font-body">
-              {session?.language === 'hi' ? '(यदि नहीं, तो खाली छोड़ दें या बोलें)' : '(Speak or type medication names, or leave blank if none)'}
+              {t('mh.meds.hint')}
             </p>
             <textarea
               value={medications}
               onChange={e => setMedications(e.target.value)}
-              placeholder={session?.language === 'hi' ? 'दवाओं के नाम टाइप करें या बोलें...' : 'Speak or type medication names...'}
+              placeholder={t('mh.meds.placeholder')}
               className="w-full text-base p-4 min-h-[110px] border-2 border-warmgray rounded-xl bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
           </div>
@@ -400,7 +428,7 @@ export default function MedicalHistoryFlow() {
                 type="text"
                 value={otherCondition}
                 onChange={e => setOtherCondition(e.target.value)}
-                placeholder={session?.language === 'hi' ? 'कृपया निर्दिष्ट करें...' : 'Please specify...'}
+                placeholder={t('mh.other.specify')}
                 className="w-full text-center text-base p-3.5 mt-1 border-2 border-primary/40 rounded-xl bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary"
               />
             )}
@@ -410,12 +438,12 @@ export default function MedicalHistoryFlow() {
         return (
           <div className="flex flex-col gap-3 mt-4">
             <p className="text-muted text-xs -mt-1 font-body">
-              {session?.language === 'hi' ? '(यदि नहीं, तो खाली छोड़ दें या बोलें)' : '(Speak or type past surgeries, or leave blank if none)'}
+              {t('mh.surg.hint')}
             </p>
             <textarea
               value={surgeries}
               onChange={e => setSurgeries(e.target.value)}
-              placeholder={session?.language === 'hi' ? 'सर्जरी का विवरण बोलें या लिखें...' : 'Speak or type surgery details...'}
+              placeholder={t('mh.surg.placeholder')}
               className="w-full text-base p-4 min-h-[110px] border-2 border-warmgray rounded-xl bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
           </div>
@@ -465,20 +493,59 @@ export default function MedicalHistoryFlow() {
           </div>
         );
       case 6:
+        const currentSystem = ROS_SYSTEMS.find(s => s.id === activeRosTab) || ROS_SYSTEMS[0];
+        const selectedSymptoms = rosSymptoms[activeRosTab] || [];
+        
         return (
-          <div className="flex flex-col gap-3 mt-4">
-            <p className="text-muted text-xs -mt-1 font-body">
-              {session?.language === 'hi' ? '(अपने लक्षण चुनें या बोलें)' : '(Select any symptoms you are currently experiencing)'}
+          <div className="flex flex-col gap-4 mt-2">
+            <p className="text-muted text-xs -mt-2 font-body">
+              {t('mh.ros.hint')}
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              {['Weight loss', 'Night sweats', 'Palpitations', 'Breathlessness', 'Nausea/Vomiting', 'Urinary issues', 'Joint pain', 'Dizziness', 'Skin rash', 'Blurred vision', 'None'].map(item => (
+            
+            {/* System Tabs */}
+            <div className="flex overflow-x-auto pb-2 gap-2 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
+              {ROS_SYSTEMS.map(sys => (
+                <button
+                  key={sys.id}
+                  onClick={() => setActiveRosTab(sys.id)}
+                  className={cn(
+                    "whitespace-nowrap px-4 py-2 rounded-full font-body text-sm font-semibold transition-colors snap-start",
+                    activeRosTab === sys.id
+                      ? "bg-primary text-white"
+                      : "bg-white text-muted border border-warmgray hover:bg-sand"
+                  )}
+                >
+                  {session?.language === 'hi' ? sys.hi : sys.en}
+                </button>
+              ))}
+            </div>
+
+            {/* Symptoms Grid */}
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              {currentSystem.symptoms.map(item => (
                 <button
                   key={item}
-                  onClick={() => toggleSelection(item, rosSymptoms, setRosSymptoms)}
+                  onClick={() => {
+                    setRosSymptoms(prev => {
+                      const current = prev[activeRosTab] || [];
+                      let newList;
+                      if (item === 'None') {
+                        newList = ['None'];
+                      } else {
+                        newList = current.filter(i => i !== 'None');
+                        if (newList.includes(item)) {
+                          newList = newList.filter(i => i !== item);
+                        } else {
+                          newList.push(item);
+                        }
+                      }
+                      return { ...prev, [activeRosTab]: newList };
+                    });
+                  }}
                   className={cn(
                     "min-h-[58px] px-4 py-3 flex items-center justify-center text-center",
                     "bg-white border-2 rounded-xl transition-all duration-300 font-body text-base font-semibold",
-                    rosSymptoms.includes(item)
+                    selectedSymptoms.includes(item)
                       ? "border-primary bg-primary/10 text-primary shadow-xs"
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
@@ -499,7 +566,7 @@ export default function MedicalHistoryFlow() {
     if (step === 2) return conditions.length === 0;
     if (step === 4) return familyHistory.length === 0;
     if (step === 5) return personalHistory.length === 0;
-    if (step === 6) return rosSymptoms.length === 0;
+    if (step === 6) return Object.keys(rosSymptoms).length === 0;
     return false;
   };
 
@@ -566,10 +633,10 @@ export default function MedicalHistoryFlow() {
             className="mt-6 w-full min-h-[58px] text-lg rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary hover:bg-primary/90 transition-colors shadow-xs"
           >
             {isSubmitting 
-              ? (session?.language === 'hi' ? 'सहेज रहा है...' : 'Saving...') 
+              ? t('common.loading') 
               : step === 6 
-                ? (session?.language === 'hi' ? 'समाप्त करें' : 'Finish & Submit') 
-                : (session?.language === 'hi' ? 'जारी रखें' : 'Continue')}
+                ? t('common.submit') 
+                : t('common.continue')}
           </Button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ClipboardList, AlertTriangle, Search, RefreshCw, Activity,
   User, ShieldCheck, HeartPulse, Building2, LogOut,
-  Clock, Zap, ChevronDown, TrendingUp
+  Clock, Zap, ChevronDown, TrendingUp, X
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/api';
@@ -42,21 +42,47 @@ export default function DoctorDashboard() {
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const urlHospitalId = queryParams.get('h');
 
-  const [doctorInfo] = useState<DoctorInfo | null>(() => {
+  const DEV_DOCTOR: DoctorInfo = {
+    doctor_id: 'd1111111-1111-1111-1111-111111111111',
+    name: 'Dev Bypass',
+    email: 'doctor@demo.com',
+    hospital_id: '11111111-1111-1111-1111-111111111111',
+    uid: 'dev'
+  };
+
+  const [doctorInfo, setDoctorInfo] = useState<DoctorInfo | null>(() => {
     const info = localStorage.getItem('doctor_info');
     const token = localStorage.getItem('doctor_token');
     if (!token || !info) return null;
     try { return JSON.parse(info) as DoctorInfo; } catch { return null; }
   });
 
+  const handleDevBypass = () => {
+    localStorage.setItem('doctor_token', 'dev-bypass-token');
+    localStorage.setItem('doctor_info', JSON.stringify(DEV_DOCTOR));
+    setDoctorInfo(DEV_DOCTOR);
+  };
+
   const [patients, setPatients] = useState<PatientSession[]>([]);
   const [hospitals, setHospitals] = useState<HospitalItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'urgent' | 'normal'>('all');
   const [view, setView] = useState<'pending' | 'verified'>('pending');
-  const [selectedHospital, setSelectedHospital] = useState<string>(urlHospitalId || 'all');
+  // Always default to 'all' so every patient shows regardless of hospital filter
+  const [selectedHospital, setSelectedHospital] = useState<string>('all');
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+  const [isOnline, setIsOnline] = useState(true);
+  const [showOfflineBanner, setShowOfflineBanner] = useState(true);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (!isOnline && !showOfflineBanner) {
+      timeout = setTimeout(() => setShowOfflineBanner(true), 30000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isOnline, showOfflineBanner]);
 
   useEffect(() => {
     fetch(`${API_URL}/api/hospitals`)
@@ -67,34 +93,65 @@ export default function DoctorDashboard() {
 
   const fetchPatients = useCallback(async (hId: string, silent = false) => {
     if (!silent) setIsLoading(true);
+    setHasError(false);
     try {
       const url = hId === 'all' ? `${API_URL}/api/sessions` : `${API_URL}/api/sessions?hospital_id=${hId}`;
       const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       if (data.data) { setPatients(data.data); setLastRefreshed(new Date()); }
     } catch (err) {
       console.error('Failed to fetch patients:', err);
+      setHasError(true);
     } finally {
       if (!silent) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (!doctorInfo) { navigate('/doctor/login'); return; }
+    if (!doctorInfo) return; // Show dev bypass panel instead of redirecting
     fetchPatients(selectedHospital);
   }, [doctorInfo, navigate, selectedHospital, fetchPatients]);
 
   useEffect(() => {
     if (!doctorInfo) return;
-    const interval = setInterval(() => fetchPatients(selectedHospital, true), 6000);
+    
+    let fallbackInterval: ReturnType<typeof setInterval> | null = null;
+    
+    const startFallbackPolling = () => {
+      if (!fallbackInterval) {
+        fallbackInterval = setInterval(() => fetchPatients(selectedHospital, true), 5000);
+      }
+    };
+    
+    const stopFallbackPolling = () => {
+      if (fallbackInterval) {
+        clearInterval(fallbackInterval);
+        fallbackInterval = null;
+      }
+    };
+
     const channel = supabase
       .channel('doctor-dashboard-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'sessions' }, () => fetchPatients(selectedHospital, true))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'answers' }, () => fetchPatients(selectedHospital, true))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'medical_history' }, () => fetchPatients(selectedHospital, true))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'red_flags' }, () => fetchPatients(selectedHospital, true))
-      .subscribe();
-    return () => { clearInterval(interval); supabase.removeChannel(channel); };
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setIsOnline(true);
+          setShowOfflineBanner(true);
+          stopFallbackPolling();
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          setIsOnline(false);
+          startFallbackPolling();
+        }
+      });
+      
+    return () => { 
+      stopFallbackPolling();
+      supabase.removeChannel(channel); 
+    };
   }, [doctorInfo, selectedHospital, fetchPatients]);
 
   const handleLogout = () => {
@@ -103,7 +160,35 @@ export default function DoctorDashboard() {
     navigate('/doctor/login');
   };
 
-  if (!doctorInfo) return null;
+  if (!doctorInfo) return (
+    <div className="min-h-screen bg-sand font-body flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl border border-warmgray shadow-lg p-8 max-w-sm w-full text-center space-y-6">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+          <HeartPulse className="w-8 h-8 text-primary" />
+        </div>
+        <div>
+          <h2 className="font-display text-2xl font-bold text-charcoal">Doctor Portal</h2>
+          <p className="text-muted text-sm mt-1">MediKiosk Triage Console</p>
+        </div>
+        <div className="space-y-3">
+          <button
+            onClick={() => navigate('/doctor/login')}
+            className="w-full py-3 px-4 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors"
+          >
+            Login with Credentials
+          </button>
+          <button
+            onClick={handleDevBypass}
+            className="w-full py-3 px-4 rounded-xl bg-sand border border-warmgray text-charcoal font-bold text-sm hover:border-primary/40 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
+          >
+            <Zap className="w-4 h-4 text-primary" />
+            Quick Dev Access (Demo)
+          </button>
+        </div>
+        <p className="text-xs text-muted">For SIH Demo: Use Quick Dev Access to bypass login</p>
+      </div>
+    </div>
+  );
 
   const activePatients = patients.filter(p => p.status !== 'verified');
   const verifiedPatients = patients.filter(p => p.status === 'verified');
@@ -129,7 +214,18 @@ export default function DoctorDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-sand font-body text-charcoal">
+    <div className="min-h-screen bg-sand font-body text-charcoal flex flex-col relative">
+      {!isOnline && showOfflineBanner && (
+        <div className="bg-danger text-white px-4 py-2.5 flex items-center justify-between z-50">
+          <div className="flex items-center gap-2 text-sm font-bold w-full max-w-7xl mx-auto">
+            <AlertTriangle className="w-4 h-4" />
+            Offline — Reconnecting... (Polling every 5s)
+          </div>
+          <button onClick={() => setShowOfflineBanner(false)} className="text-white hover:text-white/80 p-1">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-warmgray sticky top-0 z-30 shadow-sm">
@@ -307,17 +403,29 @@ export default function DoctorDashboard() {
             <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-muted font-medium text-sm">Fetching triage queue…</p>
           </div>
+        ) : hasError ? (
+          <div className="flex flex-col items-center justify-center py-24 bg-white border border-dashed border-danger/40 rounded-2xl text-center p-6">
+            <div className="w-16 h-16 rounded-2xl bg-danger/10 border border-danger/20 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-8 h-8 text-danger" />
+            </div>
+            <h3 className="text-xl font-display font-bold text-charcoal mb-1">Failed to load queue</h3>
+            <p className="text-danger text-sm max-w-sm">Failed to load queue. Retrying...</p>
+          </div>
+        ) : patients.length === 0 && !isLoading ? (
+          <div className="flex flex-col items-center justify-center py-24 bg-white border border-dashed border-warmgray rounded-2xl text-center p-6">
+            <div className="w-16 h-16 rounded-2xl bg-sand border border-warmgray flex items-center justify-center mb-4">
+              <Clock className="w-8 h-8 text-muted" />
+            </div>
+            <h3 className="text-xl font-display font-bold text-charcoal mb-1">No patients in queue</h3>
+            <p className="text-muted text-sm max-w-sm">No patients in queue. Waiting for new sessions...</p>
+          </div>
         ) : filteredPatients.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 bg-white border border-dashed border-warmgray rounded-2xl text-center p-6">
             <div className="w-16 h-16 rounded-2xl bg-sand border border-warmgray flex items-center justify-center mb-4">
               <ClipboardList className="w-8 h-8 text-muted" />
             </div>
-            <h3 className="text-xl font-display font-bold text-charcoal mb-1">Queue is empty</h3>
-            <p className="text-muted text-sm max-w-sm">
-              {patients.length === 0
-                ? 'When patients complete intake at the kiosk, their triage cards will appear here in real time.'
-                : 'No matches found. Try adjusting your search or filters.'}
-            </p>
+            <h3 className="text-xl font-display font-bold text-charcoal mb-1">No matches found</h3>
+            <p className="text-muted text-sm max-w-sm">No matches found. Try adjusting your search or filters.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

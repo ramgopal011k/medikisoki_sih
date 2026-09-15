@@ -21,9 +21,9 @@ export default function WelcomeScreen() {
   const handleStart = (lang: string) => {
     localStorage.setItem('patient_language', lang);
     if (hospitalId) {
-      navigate(`/hospital/${hospitalId}/consent?lang=${lang}`);
+      navigate(`/hospital/${hospitalId}/notice`);
     } else {
-      navigate(`/consent?lang=${lang}`);
+      navigate(`/notice`);
     }
   };
 

@@ -1,4 +1,7 @@
 import { supabase } from './supabase';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function generateTriageSummary(sessionId: string) {
   // Fetch session data
@@ -123,11 +126,55 @@ export async function generateTriageSummary(sessionId: string) {
       .eq('session_id', sessionId)
       .maybeSingle();
 
+    let hindiContent = null;
+    try {
+      if (process.env.GEMINI_API_KEY) {
+        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const prompt = `
+          Translate this clinical summary into professional clinical Hindi. Keep medical terms in English but written in Devanagari script or translated where appropriate, maintaining clinical accuracy. Return ONLY a valid JSON object matching the input structure exactly, with translated values (arrays of strings, and a narrative string).
+          
+          Input:
+          ${JSON.stringify(summaryContent)}
+        `;
+        const result = await model.generateContent(prompt);
+        let rawJson = result.response.text().replace(/```json\n?|\n?```/g, '').trim();
+        hindiContent = JSON.parse(rawJson);
+      }
+    } catch (aiErr) {
+      console.warn("Failed to generate Hindi translation:", aiErr);
+    }
+
+    let icdCodes = null;
+    try {
+      if (process.env.GEMINI_API_KEY) {
+        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const prompt = `
+          Analyze the following clinical summary and return a list of likely ICD-10 diagnosis codes.
+          Return ONLY a valid JSON array of objects, with each object having "code" (the ICD-10 code), "description" (short string), and "confidence" (must be one of: "low", "medium", "high").
+          
+          Summary:
+          ${JSON.stringify(summaryContent)}
+        `;
+        const result = await model.generateContent(prompt);
+        let rawJson = result.response.text().replace(/```json\n?|\n?```/g, '').trim();
+        let parsedCodes = JSON.parse(rawJson);
+        icdCodes = parsedCodes.map((item: any) => ({
+          code: item.code,
+          description: `AI-suggested — verify before use: ${item.description}`,
+          confidence: item.confidence || 'low'
+        }));
+      }
+    } catch (icdErr) {
+      console.warn("Failed to generate ICD codes:", icdErr);
+    }
+
     if (existing && existing.id) {
       await supabase
         .from('summaries')
         .update({ 
           content: summaryContent,
+          hindi_content: hindiContent,
+          icd_codes: icdCodes,
           doctor_verified: false
         })
         .eq('id', existing.id);
@@ -137,6 +184,8 @@ export async function generateTriageSummary(sessionId: string) {
         .insert({ 
           session_id: sessionId,
           content: summaryContent,
+          hindi_content: hindiContent,
+          icd_codes: icdCodes,
           doctor_verified: false
         });
     }

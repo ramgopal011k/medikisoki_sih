@@ -6,6 +6,7 @@ import { useAudio } from '../../hooks/useAudio';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { API_URL } from '@/lib/api';
 import { useAsr } from '@/hooks/useAsr';
+import { useTranslation } from '@/lib/i18n';
 
 const complaintsMap: Record<string, string> = {
   'Fever': 'fever',
@@ -23,6 +24,7 @@ export default function ChiefComplaint() {
   const [loading, setLoading] = useState(false);
   const { speak, isPlaying } = useAudio();
   const { isListening, isProcessing, transcript, startListening, stopListening } = useAsr();
+  const { t } = useTranslation();
 
   const handleVoiceInput = () => {
     if (isListening) {
@@ -95,9 +97,7 @@ export default function ChiefComplaint() {
     }
   };
 
-  const questionTitle = localStorage.getItem('patient_language') === 'hi' 
-    ? 'आज आप यहाँ किस कारण आए हैं?' 
-    : 'What brings you here today?';
+  const questionTitle = t('complaint.title');
 
   return (
     <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-6 relative overflow-hidden font-body text-charcoal">

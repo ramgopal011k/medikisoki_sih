@@ -19,3 +19,8 @@ backend/src/**/*.map
 .DS_Store
 Thumbs.db
 .vercel
+playwright-report/
+test-results/
+frontend/playwright-report/
+frontend/test-results/
+frontend/reports/

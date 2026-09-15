@@ -1,0 +1,41 @@
+{
+  "routesInAppTsx": [
+    "/",
+    "/doctor/login",
+    "/patient/login",
+    "/admin/hospitals",
+    "/consent",
+    "/interview",
+    "/medical-history",
+    "/ayush-assessment",
+    "/records-upload (upload)",
+    "/preview (patient-preview)",
+    "/doctor/dashboard"
+  ],
+  "desktopScreenshots": 11,
+  "mobileScreenshots": 11,
+  "tabletScreenshots": 11,
+  "journeySteps": {
+    "1_landing": "PASS",
+    "2_launch_kiosk": "PASS",
+    "3_language": "PASS",
+    "4_notice": "PASS",
+    "5_patient_type": "PASS",
+    "6_abha_entry": "PASS",
+    "7_otp_verify": "PASS",
+    "8_consent": "PASS",
+    "9_chief_complaint": "PASS",
+    "10_interview_red_flag": "PASS",
+    "11_medical_history": "PASS",
+    "12_ayush_assessment": "PASS",
+    "13_document_upload": "PASS",
+    "14_patient_preview": "PASS",
+    "15_patient_submitted": "PASS"
+  },
+  "realtimeRedFlag": true,
+  "citationsVisible": true,
+  "doctorEditProvenance": true,
+  "fhirDownload": true,
+  "consoleErrors": [],
+  "blockers": []
+}

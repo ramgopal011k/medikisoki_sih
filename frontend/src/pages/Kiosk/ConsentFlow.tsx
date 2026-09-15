@@ -623,26 +623,27 @@ export default function ConsentFlow() {
              onClick={playAudioConsent} 
              isSpeaking={isPlaying} 
              className="mb-6"
+             aria-label="Listen to consent explanation"
            />
            
            <div className="w-full space-y-4">
               <div className="flex items-start gap-4 p-4 border-b border-warmgray bg-white rounded-xl border">
-                 <input type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
+                 <input id="consent-share-info" type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
                  <div className="text-left">
-                   <div className="font-body text-base font-semibold text-charcoal">
+                   <label htmlFor="consent-share-info" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
                      {language === 'hi' ? 'मैं अपनी जानकारी साझा करने के लिए सहमत हूँ' : 'I agree to share my information'}
-                   </div>
+                   </label>
                    <div className="text-muted text-sm mt-0.5 font-body">
                      {language === 'hi' ? 'आपके डेटा का उपयोग केवल आपके इलाज के लिए किया जाएगा।' : 'Your data will only be used for your treatment.'}
                    </div>
                  </div>
               </div>
               <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-warmgray">
-                 <input type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
+                 <input id="consent-voice-recording" type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
                  <div className="text-left">
-                   <div className="font-body text-base font-semibold text-charcoal">
+                   <label htmlFor="consent-voice-recording" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
                      {language === 'hi' ? 'आवाज़ रिकॉर्डिंग' : 'Voice Recording'}
-                   </div>
+                   </label>
                    <div className="text-muted text-sm mt-0.5 font-body">
                      {language === 'hi' ? 'हम बातचीत रिकॉर्ड करेंगे।' : 'We will record conversation.'}
                    </div>

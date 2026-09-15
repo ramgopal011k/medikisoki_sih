@@ -1,4 +1,6 @@
-// Hardcoded interaction map for the hackathon
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Hardcoded interaction map as fallback
 const DRUG_INTERACTIONS: Record<string, string[]> = {
   'amlodipine': ['simvastatin', 'clarithromycin'],
   'simvastatin': ['amlodipine', 'diltiazem', 'amiodarone'],
@@ -6,7 +8,58 @@ const DRUG_INTERACTIONS: Record<string, string[]> = {
   'aspirin': ['warfarin', 'ibuprofen']
 };
 
-export function analyzeText(text: string) {
+export async function analyzeText(text: string, patientAllergies: string[] = []) {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+
+  if (GEMINI_API_KEY) {
+    try {
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+      
+      const prompt = `You are an expert clinical pharmacist and pathologist. Analyze the following medical text (which may be OCR output from a prescription or lab report).
+      
+Output MUST be a valid JSON object matching exactly this schema:
+{
+  "drugsDetected": ["drug 1", "drug 2"],
+  "interactions": [
+    {
+      "drugA": "drug 1",
+      "drugB": "drug 2",
+      "risk": "Description of the risk/interaction"
+    }
+  ],
+  "abnormalLabs": ["Description of abnormal lab value with reference range context"]
+}
+
+Rules:
+1. "interactions" should contain known severe or moderate drug-drug interactions between the detected drugs.
+2. "abnormalLabs" should contain any lab values in the text that are outside of standard healthy reference ranges (e.g. HbA1c > 6.5, Fasting Glucose > 100, BP > 120/80). Include the value and the reason it is abnormal.
+
+Medical Text:
+"""
+${text}
+"""
+
+Patient Reported Allergies: ${patientAllergies.length > 0 ? patientAllergies.join(', ') : 'None'}
+If the Medical Text contains a drug the patient is allergic to, add an interaction with drugB as "Patient Allergy: <Allergy>" and high risk.`;
+
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: 'application/json',
+        }
+      });
+
+      const responseText = result.response.text().trim();
+      return JSON.parse(responseText);
+    } catch (err) {
+      console.error('Gemini clinical analysis failed, falling back to regex:', err);
+      // Fall through to regex
+    }
+  }
+
+  // Fallback to regex-based analysis
   const normalizedText = text.toLowerCase();
   
   const findings = {
@@ -40,8 +93,6 @@ export function analyzeText(text: string) {
   }
 
   // 2. Parse mock abnormal labs (regex matching common patterns)
-  // E.g., "HbA1c 7.2" or "Glucose 130"
-  
   const hba1cMatch = text.match(/HbA1c\s*(?:of|is|:)?\s*(\d+\.?\d*)/i);
   if (hba1cMatch && parseFloat(hba1cMatch[1]) > 6.5) {
     findings.abnormalLabs.push(`HbA1c is elevated at ${hba1cMatch[1]}% (Normal < 5.7%)`);
@@ -58,6 +109,19 @@ export function analyzeText(text: string) {
     const dia = parseInt(bpMatch[2]);
     if (sys > 130 || dia > 80) {
       findings.abnormalLabs.push(`Blood Pressure is elevated at ${sys}/${dia} mmHg`);
+    }
+  }
+
+  // 3. Cross-reference with patient allergies
+  for (const drug of findings.drugsDetected) {
+    for (const allergy of patientAllergies) {
+      if (allergy.trim().length > 2 && (drug.toLowerCase().includes(allergy.toLowerCase().trim()) || allergy.toLowerCase().trim().includes(drug.toLowerCase()))) {
+        findings.interactions.push({
+          drugA: drug,
+          drugB: `Patient Allergy: ${allergy}`,
+          risk: `SEVERE ALLERGY ALERT: Detected ${drug} conflicts with reported allergy to ${allergy}.`
+        });
+      }
     }
   }
 

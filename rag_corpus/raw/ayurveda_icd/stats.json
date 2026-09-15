@@ -1,0 +1,7 @@
+{
+  "task": "ayurveda_icd",
+  "total": 3002,
+  "train": 2401,
+  "validation": 300,
+  "test": 301
+}

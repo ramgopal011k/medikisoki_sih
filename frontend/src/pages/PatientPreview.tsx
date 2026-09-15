@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MandalaBackground } from '@/components/MandalaBackground';
@@ -719,6 +719,19 @@ export default function PatientPreview() {
             </div>
           )}
         </div>
+
+
+        {/* AYUSH Assessment Disclaimer */}
+        {localStorage.getItem('ayush_mode') === 'true' && (
+          <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 text-sm">
+            <span className="text-amber-500 text-base mt-0.5 shrink-0">\u24d8</span>
+            <p className="text-amber-800 font-medium leading-relaxed">
+              {isHindi
+                ? '\u092f\u0939 \u0906\u092f\u0941\u0930\u094d\u0935\u0947\u0926\u093f\u0915 \u092e\u0942\u0932\u094d\u092f\u093e\u0902\u0915\u0928 \u0936\u093e\u0938\u094d\u0924\u094d\u0930\u0940\u092f \u0917\u094d\u0930\u0902\u0925\u094b\u0902 \u092a\u0930 \u0906\u0927\u093e\u0930\u093f\u0924 \u090f\u0915 \u0938\u0939\u093e\u092f\u0915 \u0909\u092a\u0915\u0930\u0923 \u0939\u0948\u0964 \u0907\u0938\u0947 \u090f\u0915 \u092f\u094b\u0917\u094d\u092f \u0906\u092f\u0941\u0930\u094d\u0935\u0947\u0926\u093f\u0915 \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u0915 \u0926\u094d\u0935\u093e\u0930\u093e \u0938\u092e\u0940\u0915\u094d\u0937\u093e \u0915\u0940 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u0948\u0964'
+                : 'This is an Ayurvedic assessment aid based on classical texts. Requires review by a qualified Ayurvedic physician.'}
+            </p>
+          </div>
+        )}
 
         {/* ── Action Footnote & Submit ── */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">

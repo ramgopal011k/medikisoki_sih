@@ -14,6 +14,8 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
     originalUrl.includes('/auth/login') ||
     path === '/auth/register' ||
     originalUrl.includes('/auth/register') ||
+    originalUrl.includes('/abdm') ||
+    path.startsWith('/abdm') ||
     (req.method === 'GET' && (path === '/hospitals' || originalUrl.includes('/hospitals')));
 
   if (isPublic) {
@@ -32,13 +34,26 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
 
   const token = parts[1];
 
-  // Verify against DEMO_AUTH_TOKEN, mock doctor/superadmin tokens, or issued doctor tokens
-  const isValid =
-    token === DEMO_AUTH_TOKEN ||
-    token === 'mock-doctor-token' ||
-    token === 'mock-superadmin-token' ||
-    token.startsWith('token-') ||
-    token.startsWith('demo-');
+  const ALLOWED_DEMO_TOKENS = [
+    DEMO_AUTH_TOKEN,
+    'mock-doctor-token',
+    'mock-superadmin-token'
+  ];
+
+  let isValid = false;
+
+  if (ALLOWED_DEMO_TOKENS.includes(token)) {
+    isValid = true;
+  } else {
+    // TODO: Implement actual JWT verification for production
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    //   isValid = true;
+    //   (req as any).user = decoded;
+    // } catch (err) {
+    //   isValid = false;
+    // }
+  }
 
   if (!isValid) {
     return res.status(401).json({ error: 'Unauthorized: Invalid token' });
