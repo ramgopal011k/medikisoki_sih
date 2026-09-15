@@ -81,6 +81,25 @@ MediKiosk is an offline-resilient, touch/voice-enabled clinical triage kiosk for
 
 ## 🎮 Demo Instructions
 
+### Local Demo (One Command)
+
+One command starts everything (Ollama + MedGemma + backend + frontend):
+
+```bash
+npm run demo
+```
+
+**Requires:**
+- Ollama installed ([ollama.com](https://ollama.com))
+- `medgemma1.5:latest` model pulled (`ollama pull medgemma1.5:latest`)
+
+To stop cleanly:
+```bash
+npm run demo:stop
+```
+
+---
+
 ### Patient Kiosk Flow
 1. Open **http://localhost:5173/** — this is the Hospital Admin / entry point
 2. Or go directly to **http://localhost:5173/welcome** → choose language + hospital

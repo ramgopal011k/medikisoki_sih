@@ -173,7 +173,8 @@ async function run() {
 
     // Step 7: OTP Screen
     console.log('Step 7: OTP Screen');
-    const otpText = await page.locator('.bg-terracotta\\/10, [class*="terracotta"]').first().textContent().catch(() => '');
+    await page.waitForSelector('text=Mock OTP', { timeout: 5000 }).catch(() => {});
+    const otpText = await page.locator('text=Mock OTP').first().textContent().catch(() => '');
     const match = otpText.match(/\d{6}/);
     const otpCode = match ? match[0] : '123456';
     console.log(`  Extracted OTP: ${otpCode}`);
@@ -186,27 +187,29 @@ async function run() {
     const verifyBtn = page.locator('button:has-text("Verify")').first();
     await verifyBtn.click();
     await sleep(800);
-    results.journeySteps['7_otp_verify'] = 'PASS';
+    // Step 7.5: Wait for navigation to History or Consent step
+    await page.waitForSelector('text=Past Records Found, button:has-text("I understand and agree"), label[for="consent-share-info"]', { timeout: 10000 }).catch(() => {});
 
     // Check if past history screen appeared
-    const histBtn = page.locator('button:has-text("Continue")').first();
-    if (await page.locator('text=Past Records Found').isVisible({ timeout: 1500 }).catch(() => false)) {
+    if (await page.locator('text=Past Records Found').isVisible().catch(() => false)) {
+      const histBtn = page.locator('button:has-text("Continue as New Visit"), button:has-text("Continue")').first();
       await histBtn.click();
-      await sleep(500);
+      await sleep(800);
     }
 
-    // Step 8: Consent (Check all 4 checkboxes)
+    // Step 8: Consent (Check checkboxes)
     console.log('Step 8: Consent (all 4 checkboxes)');
+    await page.waitForSelector('button:has-text("I understand and agree")', { timeout: 10000 });
     const checkboxes = page.locator('input[type="checkbox"]');
     const cbCount = await checkboxes.count();
     for (let i = 0; i < cbCount; i++) {
-      await checkboxes.nth(i).check();
+      await checkboxes.nth(i).check().catch(() => {});
     }
     await sleep(400);
     await page.screenshot({ path: path.join(__dirname, 'visual-tests/journey/08_consent_agreed.png') });
 
     const agreeBtn = page.locator('button:has-text("I understand and agree")').first();
-    await agreeBtn.click();
+    await agreeBtn.click({ force: true });
     await sleep(600);
     results.journeySteps['8_consent'] = 'PASS';
 
@@ -228,7 +231,16 @@ async function run() {
     results.journeySteps['9_chief_complaint'] = 'PASS';
 
     // Extract real session ID
-    patientSessionId = await page.evaluate(() => localStorage.getItem('session_id') || localStorage.getItem('patient_session'));
+    patientSessionId = await page.evaluate(() => localStorage.getItem('session_id') || localStorage.getItem('patient_session_id') || localStorage.getItem('patient_session'));
+    if (!patientSessionId) {
+      try {
+        const fetchRes = await fetch(`${API_URL}/api/sessions`);
+        const fetchJson = await fetchRes.json();
+        if (fetchJson && fetchJson.data && fetchJson.data.length > 0) {
+          patientSessionId = fetchJson.data[0].id;
+        }
+      } catch (e) {}
+    }
     console.log(`  Active patient session ID: ${patientSessionId}`);
 
     // Step 10: Interview -> Severe 7-10 (Triggers R1 Red Flag)

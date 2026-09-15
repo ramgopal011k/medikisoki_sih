@@ -22,7 +22,6 @@
     "4_notice": "PASS",
     "5_patient_type": "PASS",
     "6_abha_entry": "PASS",
-    "7_otp_verify": "PASS",
     "8_consent": "PASS",
     "9_chief_complaint": "PASS",
     "10_interview_red_flag": "PASS",

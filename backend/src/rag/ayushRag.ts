@@ -163,7 +163,7 @@ Return valid JSON with these EXACT keys:
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const modelNames = ['gemini-3.6-flash'];
+  const modelNames = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.1-flash-lite'];
 
   let parsedResponse: any = null;
   let lastError: any = null;
@@ -205,7 +205,7 @@ Return valid JSON with these EXACT keys:
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-3.6-flash' });
+      const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
       const retryPrompt = `${prompt}\n\nCRITICAL: Output ONLY valid, raw JSON. No markdown code blocks, no explanation.`;
       const res = await fallbackModel.generateContent({
         contents: [{ role: 'user', parts: [{ text: retryPrompt }] }],

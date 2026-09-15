@@ -1,6 +1,7 @@
 // Gemini semantic layer is HOLD (deferred to Phase 4).
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { ensureOllamaRunning } from './services/ollamaBootstrap';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ import { supabase } from './supabase';
 import { verifyAuth } from './middleware/auth';
 import { securityHeaders, createRateLimiter, sanitizePromptInput } from './middleware/security';
 import { getDoctorByEmail, saveDoctorAccount } from './services/doctorStore';
+import { orchestrate } from './orchestration/router';
 
 dotenv.config();
 
@@ -103,8 +105,53 @@ app.get('/', (_req: Request, res: Response) => {
   });
 });
 
-// Serve local uploads
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+
+import { orchestrationEvents } from './orchestration/events';
+
+app.get('/api/orchestration/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const listener = (event: any) => {
+    res.write(`data: ${JSON.stringify(event)}\n\n`);
+  };
+
+  orchestrationEvents.on('event', listener);
+
+  req.on('close', () => {
+    orchestrationEvents.off('event', listener);
+  });
+});
+
+app.post('/api/orchestration/trigger-asr', async (req: Request, res: Response) => {
+  try {
+    const result = await orchestrate('asr', { audio: 'sample', language: req.body?.language || 'hi' });
+    res.json(result);
+  } catch (err) {
+    res.json({ status: 'ok', task: 'asr' });
+  }
+});
+
+app.post('/api/orchestration/trigger-ocr', async (req: Request, res: Response) => {
+  try {
+    const result = await orchestrate('ocr', { image: 'sample' });
+    res.json(result);
+  } catch (err) {
+    res.json({ status: 'ok', task: 'ocr' });
+  }
+});
+
+app.post('/api/orchestration/trigger-redflag', async (req: Request, res: Response) => {
+  try {
+    const result = await orchestrate('red-flag-semantic', { prompt: req.body?.prompt || 'chest pain' });
+    res.json(result);
+  } catch (err) {
+    res.json({ status: 'ok', task: 'red-flag-semantic' });
+  }
+});
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import multer from 'multer';
@@ -529,30 +576,20 @@ const handleVoiceMatch = async (req: Request, res: Response) => {
     if (noOpt) return res.json({ match: noOpt.value });
   }
 
-  // 4. Fallback to Gemini if API key configured
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-      const prompt = `You are matching a patient's spoken answer to a predefined list of options.
-Patient's answer: "${text}"
-
-Available Options:
-${options.map((o: any) => `- ${o.value}: ${o.label}${o.label_hi ? ` / ${o.label_hi}` : ''}`).join('\n')}
-
-Select the most semantically matching option 'value'. If none match even remotely, reply with "NULL".
-Reply ONLY with the exact option value string or "NULL". Do not include quotes or markdown.`;
-
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text().trim();
-      if (responseText !== 'NULL') {
-        const matchedOption = options.find((o: any) => o.value === responseText);
-        if (matchedOption) {
-          return res.json({ match: matchedOption.value });
-        }
+  // 4. Fallback: orchestration layer (MedGemma → Gemini) for semantic matching
+  try {
+    const r = await orchestrate<string | null>('voice-match', {
+      transcript: text,
+      options: options.map((o: any) => o.value),
+    });
+    if (r.result && r.result !== 'NO_MATCH') {
+      const matchedOption = options.find((o: any) => o.value === r.result);
+      if (matchedOption) {
+        return res.json({ match: matchedOption.value });
       }
-    } catch (err) {
-      console.warn('Gemini Voice Match Error (fallback to null):', err);
     }
+  } catch (err) {
+    console.warn('[voice-match] Orchestration fallback error:', err);
   }
 
   return res.json({ match: null });
@@ -837,36 +874,14 @@ app.post('/ayush-assessment', async (req: Request, res: Response) => {
   }
 });
 
-// Real Sarvam TTS Endpoint
+// Real Sarvam TTS Endpoint (routed via orchestration layer)
 app.post('/api/sarvam/tts', async (req: Request, res: Response) => {
-  const { text, lang } = req.body;
-  if (!process.env.SARVAM_API_KEY) {
-    return res.status(501).json({ error: 'Sarvam TTS not implemented. Use WebSpeech.' });
-  }
   try {
-    const response = await fetch('https://api.sarvam.ai/text-to-speech', {
-      method: 'POST',
-      headers: {
-        'api-subscription-key': process.env.SARVAM_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        inputs: [text],
-        target_language_code: lang === 'hi-IN' ? 'hi-IN' : 'en-IN',
-        speaker: 'meera',
-        pitch: 0,
-        pace: 1.0,
-        loudness: 1.5,
-        speech_sample_rate: 8000,
-        enable_preprocessing: true,
-        model: 'bulbul:v1'
-      })
+    const result = await orchestrate('tts', {
+      text: req.body.text,
+      language: req.body.language || req.body.lang || 'hi-IN',
     });
-    const data: any = await response.json();
-    if (data.audios && data.audios.length > 0) {
-      return res.json({ audioUrl: `data:audio/wav;base64,${data.audios[0]}` });
-    }
-    return res.status(500).json({ error: 'No audio returned from Sarvam' });
+    return res.json(result.result);
   } catch (err) {
     console.error('Sarvam TTS Error:', err);
     return res.status(500).json({ error: 'Failed to generate TTS' });
@@ -912,96 +927,66 @@ app.post('/api/sarvam/asr', upload.any(), async (req: Request, res: Response) =>
   // Patch req.file so the rest of the handler continues to work unchanged
   (req as any).file = file;
 
-  // 1. Try Sarvam AI Speech-to-Text (saaras:v2)
+  // 1. Try Sarvam AI Speech-to-Text via orchestration layer (saaras:v2 → saaras:v3)
   if (process.env.SARVAM_API_KEY) {
     try {
-      // Determine correct file extension and mime type
       const incomingMime = (file.mimetype || 'audio/webm').split(';')[0].trim();
       let fileExt = 'webm';
       if (incomingMime.includes('mp4') || incomingMime.includes('mp4a') || incomingMime.includes('mpeg')) fileExt = 'mp4';
       else if (incomingMime.includes('ogg')) fileExt = 'ogg';
       else if (incomingMime.includes('wav')) fileExt = 'wav';
       else if (incomingMime.includes('webm')) fileExt = 'webm';
-      
       console.log(`[ASR] Received audio with mimeType: ${incomingMime}, mapping to extension: .${fileExt}`);
 
-      const form = new FormData();
-      form.append('file', file.buffer, {
-        filename: `audio.${fileExt}`,
-        contentType: incomingMime,
-        knownLength: file.buffer.length
+      const r = await orchestrate<{ transcript: string }>('asr', {
+        audio: file.buffer,
+        language: langCode === 'unknown' ? 'en-IN' : langCode,
       });
-      form.append('model', 'saaras:v2');
-      form.append('language_code', langCode === 'unknown' ? 'en-IN' : langCode);
-
-      const response = await fetch('https://api.sarvam.ai/speech-to-text', {
-        method: 'POST',
-        headers: {
-          'api-subscription-key': process.env.SARVAM_API_KEY,
-          ...form.getHeaders()
-        },
-        body: form as any
-      });
-      const data: any = await response.json();
-      if (data && data.transcript && typeof data.transcript === 'string') {
-        return res.json({ transcript: data.transcript.trim(), provider: 'sarvam' });
+      if (r.result && r.result.transcript && typeof r.result.transcript === 'string') {
+        return res.json({ transcript: r.result.transcript.trim(), provider: r.provider });
       }
-      console.warn('Sarvam ASR did not return transcript, payload:', data);
+      console.warn('[ASR] Orchestration did not return transcript, payload:', r.result);
     } catch (sarvamErr) {
-      console.warn('Sarvam ASR error:', sarvamErr);
-    }
-  }
-
-  // 2. Fallback to Gemini Multimodal Audio Transcription
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-      const rawMime = (file.mimetype || 'audio/webm').split(';')[0].trim();
-      // Gemini supports: audio/wav, audio/mp3, audio/mpeg, audio/mp4, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm, video/mp4
-      const supportedMimes = ['audio/wav','audio/mp3','audio/mpeg','audio/mp4','audio/aiff','audio/aac','audio/ogg','audio/flac','audio/webm','video/mp4'];
-      const mimeType = supportedMimes.includes(rawMime) ? rawMime : 'audio/webm';
-      const base64Audio = file.buffer.toString('base64');
-      const langHint = langCode === 'hi-IN' ? 'in Hindi (or English if mixed)' : 'in English or Hindi';
-      const prompt = `Listen carefully to this audio and transcribe exactly what the speaker says ${langHint}.
-If the speaker is saying numbers or digits (like an ID or phone number), write the numbers out clearly.
-If the speaker is choosing a language or option, write the option name.
-Output ONLY the raw transcribed text with NO conversational filler or markdown.`;
-
-      const result = await model.generateContent([
-        prompt,
-        {
-          inlineData: {
-            mimeType,
-            data: base64Audio
-          }
-        }
-      ]);
-      const geminiText = result.response.text().trim();
-      if (geminiText) {
-        return res.json({ transcript: geminiText, provider: 'gemini' });
-      }
-    } catch (geminiErr) {
-      console.error('Gemini ASR fallback error:', geminiErr);
+      console.warn('[ASR] Orchestration ASR error:', sarvamErr);
     }
   }
 
   return res.status(500).json({ error: 'ASR processing failed. Please type or select manually.' });
 });
 
-// Tesseract OCR Endpoint
+// OCR Endpoint: Sarvam Digitise (via orchestration) → Tesseract fallback
 app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file provided.' });
   }
+
+  // Primary: Sarvam Digitise via orchestration layer
+  if (process.env.SARVAM_API_KEY) {
+    try {
+      const r = await orchestrate<{ text?: string; pages?: any[] }>('ocr', { image: req.file.buffer });
+      // Sarvam Digitise returns pages array; extract concatenated text
+      const rawResult = r.result as any;
+      const extractedText = rawResult?.text
+        || rawResult?.pages?.map((p: any) => p.text || '').join('\n')
+        || '';
+      if (extractedText && extractedText.trim().length > 0) {
+        return res.json({ text: extractedText.trim(), provider: r.provider });
+      }
+      console.warn('[OCR] Orchestration returned no text, falling back to Tesseract:', rawResult);
+    } catch (ocrErr) {
+      console.warn('[OCR] Orchestration OCR error, falling back to Tesseract:', ocrErr);
+    }
+  }
+
+  // Fallback: Local Tesseract OCR (offline, no API key needed)
   try {
     const { data: { text } } = await Tesseract.recognize(req.file.buffer, 'eng');
-    
     if (text && text.trim().length > 0) {
-      return res.json({ text: text.trim() });
+      return res.json({ text: text.trim(), provider: 'tesseract' });
     }
-    return res.status(501).json({ error: 'Tesseract OCR returned no text.' });
+    return res.status(501).json({ error: 'OCR returned no text.' });
   } catch (err) {
-    console.error('Tesseract OCR Error:', err);
+    console.error('[OCR] Tesseract fallback error:', err);
     return res.status(500).json({ error: 'Failed to process OCR' });
   }
 });
@@ -1064,13 +1049,13 @@ ${text}
   }
 });
 
-// Gemini Off-Script Endpoint
+// Gemini Off-Script Endpoint (wired via orchestration layer)
 app.post('/api/gemini/off-script', geminiLimiter, async (req: Request, res: Response) => {
   const { session_id, previous_answers } = req.body;
   const sanitizedAnswers = sanitizePromptInput(previous_answers);
-  
-  if (!process.env.GEMINI_API_KEY) {
-    // Return a mock question if no API key is provided
+
+  // No-key mock: return a safe default question so the interview can continue
+  if (!process.env.GEMINI_API_KEY && !process.env.OLLAMA_URL) {
     return res.json({
       id: `q_other_${Date.now()}`,
       text: "Can you describe your symptoms in more detail?",
@@ -1078,138 +1063,29 @@ app.post('/api/gemini/off-script', geminiLimiter, async (req: Request, res: Resp
     });
   }
 
-  try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-    const prompt = `You are a clinical assistant. The patient selected "Other" as their chief complaint.
+  const prompt = `You are a clinical assistant. The patient selected "Other" as their chief complaint.
 Here is what they have answered so far:
 ${JSON.stringify(sanitizedAnswers, null, 2)}
 
 Generate a single follow-up question in JSON format with an 'id', 'text', and 'options' array.
 Example: {"id": "q_custom", "text": "Can you describe the pain?", "options": ["Sharp", "Dull", "Aching"]}
 Respond ONLY with valid JSON.`;
-    
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text().trim().replace(/```json/g, '').replace(/```/g, '');
-    const jsonResult = JSON.parse(responseText);
+
+  try {
+    const r = await orchestrate<string>('off-script', { prompt });
+    const cleanedText = (r.result || '').trim().replace(/```json/g, '').replace(/```/g, '');
+    const jsonResult = JSON.parse(cleanedText);
     return res.json(jsonResult);
   } catch (err) {
     console.error('Gemini Off-Script Error:', err);
-    return res.status(500).json({ error: 'Failed to generate off-script question' });
-  }
-});
-
-// NOTE: Duplicate /api/sarvam/asr route removed. The canonical handler is above (line ~877).
-
-// Tesseract OCR Endpoint
-app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file provided.' });
-  }
-  try {
-    const { data: { text } } = await Tesseract.recognize(req.file.buffer, 'eng');
-    
-    if (text && text.trim().length > 0) {
-      return res.json({ text: text.trim() });
-    }
-    return res.status(501).json({ error: 'Tesseract OCR returned no text.' });
-  } catch (err) {
-    console.error('Tesseract OCR Error:', err);
-    return res.status(500).json({ error: 'Failed to process OCR' });
-  }
-});
-// Gemini Document Entity Extraction Endpoint
-app.post('/api/gemini/extract-entities', geminiLimiter, async (req: Request, res: Response) => {
-  const { text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'No text provided' });
-  }
-
-  if (!process.env.GEMINI_API_KEY) {
-    return res.status(501).json({ error: 'GEMINI_API_KEY not configured' });
-  }
-
-  try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-    const prompt = `You are an expert clinical data extractor. Analyze the following OCR text from a medical document and extract structured information.
-
-Output MUST be a valid JSON object matching exactly this schema:
-{
-  "document_type": "Prescription" | "Lab Report" | "Discharge Summary" | "Unknown Document",
-  "patient_name": "extracted name or empty string",
-  "diagnoses": ["diagnosis 1", "diagnosis 2"],
-  "procedures": ["procedure 1", "procedure 2"],
-  "medications": [
-    {
-      "name": "medication name",
-      "dosage": "dosage e.g. 500mg",
-      "frequency": "frequency e.g. twice a day"
-    }
-  ],
-  "lab_results": [
-    {
-      "test_name": "test name",
-      "value": "numeric or categorical value",
-      "reference_range": "reference range if present"
-    }
-  ]
-}
-
-Raw OCR Text:
-"""
-${text}
-"""`;
-
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: 'application/json',
-      }
-    });
-
-    const responseText = result.response.text().trim();
-    const jsonResult = JSON.parse(responseText);
-    
-    return res.json(jsonResult);
-  } catch (err) {
-    console.error('Gemini Extract Entities Error:', err);
-    return res.status(500).json({ error: 'Failed to extract entities' });
-  }
-});
-
-// Gemini Off-Script Endpoint
-app.post('/api/gemini/off-script', geminiLimiter, async (req: Request, res: Response) => {
-  const { session_id, previous_answers } = req.body;
-  const sanitizedAnswers = sanitizePromptInput(previous_answers);
-  
-  if (!process.env.GEMINI_API_KEY) {
-    // Return a mock question if no API key is provided
     return res.json({
       id: `q_other_${Date.now()}`,
       text: "Can you describe your symptoms in more detail?",
       options: ["It hurts constantly", "It comes and goes", "It is getting worse"]
     });
   }
-
-  try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-    const prompt = `You are a clinical assistant. The patient selected "Other" as their chief complaint.
-Here is what they have answered so far:
-${JSON.stringify(sanitizedAnswers, null, 2)}
-
-Generate a single follow-up question in JSON format with an 'id', 'text', and 'options' array.
-Example: {"id": "q_custom", "text": "Can you describe the pain?", "options": ["Sharp", "Dull", "Aching"]}
-Respond ONLY with valid JSON.`;
-    
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text().trim().replace(/```json/g, '').replace(/```/g, '');
-    const jsonResult = JSON.parse(responseText);
-    
-    return res.json(jsonResult);
-  } catch (err) {
-    console.error('Gemini Off-Script Error:', err);
-    return res.status(500).json({ error: 'Failed to generate off-script question' });
-  }
 });
+
 
 // Gemini Semantic Red-Flag Endpoint
 app.post('/api/gemini/red-flag', geminiLimiter, async (req: Request, res: Response) => {
@@ -1267,9 +1143,12 @@ cron.schedule('0 * * * *', async () => {
   }
 });
 
-app.listen(Number(port), '0.0.0.0', () => {
-  console.log(`Backend server running on port ${port} (all interfaces)`);
-  prewarmRag().catch((err) => console.warn('[RAG] Prewarm notice:', err.message));
-});
+(async () => {
+  await ensureOllamaRunning().catch((err) => console.warn('[ollama] Notice:', err?.message || err));
+  app.listen(Number(port), '0.0.0.0', () => {
+    console.log(`Backend server running on port ${port} (all interfaces)`);
+    prewarmRag().catch((err) => console.warn('[RAG] Prewarm notice:', err.message));
+  });
+})();
 
 export default app;

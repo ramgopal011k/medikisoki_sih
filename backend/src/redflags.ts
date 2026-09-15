@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { orchestrate } from './orchestration/router';
 
 const RED_FLAG_RULES = [
   { id: 'R1', condition: (answerText: string, _: any[], questionId: string) => (answerText === '7-10 Severe' && questionId === 'q_chest_severity') || (answerText === 'Worst headache of my life' && questionId === 'q_headache_severity') },
@@ -65,26 +66,35 @@ export async function evaluateAnswer(answer: any) {
       throw flagError;
     }
   } else if (answer.question_id !== 'chief_complaint') {
-    console.log(`No deterministic red flag triggered for session ${answer.session_id}. Semantic fallback is currently disabled.`);
-    // DEFERRED: Gemini semantic red flag logic is disabled for now to remove cloud dependency
-    /*
+    // Secondary: semantic red-flag via orchestration layer (MedGemma → Gemini fallback)
+    // Deterministic rules already ran above — this is additive only.
+    // NEVER let orchestration failure crash the interview.
     try {
-      const res = await fetch('http://localhost:3001/api/gemini/red-flag', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: allAnswers })
-      });
-      const data: any = await res.json();
-      if (data.isFlagged) {
-        console.log(`SEMANTIC FLAG! Updating session ${answer.session_id} to red_flag=true`);
+      const allAnswerTexts = allAnswers.map((a) => `${a.question_id}: ${a.answer_text}`).join('\n');
+      const prompt = `You are a triage nurse evaluating a patient's answers. Does the patient require IMMEDIATE medical attention (e.g. signs of heart attack, stroke, severe bleeding, suicidal intent, anaphylaxis)?
+Patient answers:
+${allAnswerTexts}
+
+Reply with ONLY "YES" or "NO".`;
+      const semanticResult = await orchestrate<string>('red-flag-semantic', { prompt });
+      const verdict = semanticResult.result.trim().toUpperCase();
+      if (verdict.includes('YES')) {
+        console.log(`[red-flag-semantic] Semantic flag triggered for session ${answer.session_id} (provider: ${semanticResult.provider})`);
         await supabase
           .from('sessions')
           .update({ red_flag: true })
           .eq('id', answer.session_id);
+        await supabase
+          .from('red_flags')
+          .insert({
+            session_id: answer.session_id,
+            rule_id: 'SEMANTIC',
+            triggered_fact_id: answer.id,
+            created_at: new Date().toISOString(),
+          });
       }
     } catch (err) {
-      console.error('Semantic Red-Flag evaluation failed:', err);
+      console.warn('[red-flag-semantic] Orchestration failed — deterministic rules still active:', err);
     }
-    */
   }
 }

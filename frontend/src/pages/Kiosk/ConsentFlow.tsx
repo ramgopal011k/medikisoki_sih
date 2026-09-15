@@ -7,6 +7,7 @@ import { LeafStepIndicator } from '../../components/LeafStepIndicator';
 import { AudioExplanationButton } from '../../components/AudioExplanationButton';
 import { QuestionCard } from '../../components/QuestionCard';
 import { useAsr } from '@/hooks/useAsr';
+import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
 import { extractDigitsFromSpokenText, matchSpokenLanguage } from '@/lib/speechUtils';
 
@@ -38,6 +39,7 @@ export default function ConsentFlow() {
   const navigate = useNavigate();
 
   const { isListening, isProcessing, transcript, startListening, stopListening } = useAsr();
+  const { speak, stop } = useAudio();
 
   const baseAbhaIdRef = useRef('');
 
@@ -114,14 +116,14 @@ export default function ConsentFlow() {
 
         // If all 14 digits reached or user says continue, advance to OTP
         if (nextId.length >= 14 || lower.includes('continue') || lower.includes('next') || lower.includes('आगे')) {
-          window.speechSynthesis?.cancel();
+          stop();
           const code = Math.floor(100000 + Math.random() * 900000).toString();
           setMockOtp(code);
           setStep('otp');
         }
       } else if (lower.includes('continue') || lower.includes('next') || lower.includes('आगे')) {
         if (abhaId.length >= 14) {
-          window.speechSynthesis?.cancel();
+          stop();
           const code = Math.floor(100000 + Math.random() * 900000).toString();
           setMockOtp(code);
           setStep('otp');
@@ -135,7 +137,7 @@ export default function ConsentFlow() {
         lower.includes('नई') ||
         lower.includes('new')
       ) {
-        window.speechSynthesis?.cancel();
+        stop();
         setStep('consent');
       }
     } else if (step === 'consent') {
@@ -147,7 +149,7 @@ export default function ConsentFlow() {
         lower.includes('ok') ||
         lower.includes('continue')
       ) {
-        window.speechSynthesis?.cancel();
+        stop();
         setStep('complaint');
       }
     } else if (step === 'complaint') {
@@ -222,18 +224,14 @@ export default function ConsentFlow() {
     setStep('patient_type');
   };
 
-  const playAudioConsent = () => {
+  const playAudioConsent = async () => {
     const text = language === 'hi' 
       ? 'क्या आप अपना डेटा साझा करने के लिए सहमत हैं?' 
       : 'Do you consent to share your data for clinical assessment?';
     
-    if ('speechSynthesis' in window) {
-      setIsPlaying(true);
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'hi' ? 'hi-IN' : 'en-US';
-      utterance.onend = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
-    }
+    setIsPlaying(true);
+    await speak(text, language === 'hi' ? 'hi-IN' : 'en-US');
+    setIsPlaying(false);
   };
 
   const startSession = async () => {
@@ -682,13 +680,13 @@ export default function ConsentFlow() {
               </div>
            </div>
            
-           <Button 
-             className="w-full min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body mt-6" 
-             onClick={() => {
-                window.speechSynthesis.cancel();
-                setStep('complaint');
-             }}
-           >
+            <Button 
+              className="w-full min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body mt-6" 
+              onClick={() => {
+                 stop();
+                 setStep('complaint');
+              }}
+            >
              {language === 'hi' ? 'मैं समझता/समझती हूँ और सहमत हूँ' : 'I understand and agree'}
            </Button>
            <VoiceActionBar hint='Say "I agree" or "हाँ / सहमत हूँ"' />

@@ -1,11 +1,17 @@
 {
-  "name": "medikisoki-root",
+  "name": "medikiosk",
   "version": "1.0.0",
-  "description": "Root package.json for Railway deployment",
+  "description": "Root package.json for MediKiosk demo and Railway deployment",
   "scripts": {
     "build": "cd backend && npm install && npm run build",
     "build:frontend": "cd frontend && npm install && npm run build",
     "build:backend": "cd backend && npm install && npm run build",
-    "start": "cd backend && npm start"
+    "start": "cd backend && npm start",
+    "demo": "concurrently -n BACKEND,FRONTEND -c blue,green \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "demo:docker": "docker compose up -d",
+    "demo:stop": "docker compose down 2>nul & taskkill /F /IM node.exe /T 2>nul & taskkill /F /IM ollama.exe /T 2>nul & exit 0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }

@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 
+
 const DEMO_AUTH_TOKEN = process.env.DEMO_AUTH_TOKEN || 'medikiosk-demo-token';
 
 export function verifyAuth(req: Request, res: Response, next: NextFunction) {
   // Allow public health, auth, and read-only hospital listing routes
   const path = req.path;
   const originalUrl = req.originalUrl || req.url || '';
-  
+
   const isPublic =
     path === '/health' ||
     originalUrl.includes('/health') ||

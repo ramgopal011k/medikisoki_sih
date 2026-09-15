@@ -24,12 +24,15 @@ import AdminHospitals from './pages/Admin/AdminHospitals';
 import LandingPage from './pages/LandingPage';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import { AccessibilityToggle } from './components/AccessibilityToggle';
+import OrchestrationMonitor from './components/OrchestrationMonitor';
 
 function AppRoutes() {
   const location = useLocation();
   const [showTimeout, setShowTimeout] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const showMonitor = location.pathname !== '/' && !location.pathname.startsWith('/admin');
 
   useEffect(() => {
     let warningTimeoutId: ReturnType<typeof setTimeout>;
@@ -90,6 +93,7 @@ function AppRoutes() {
 
   return (
     <>
+      {showMonitor && <OrchestrationMonitor />}
       {showTimeout && (
         <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl animate-fade-in">
