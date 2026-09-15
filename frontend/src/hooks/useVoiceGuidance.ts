@@ -15,9 +15,21 @@ export function useVoiceGuidance() {
       if (data.audios?.[0]) {
         const audio = new Audio(`data:audio/wav;base64,${data.audios[0]}`);
         await audio.play();
+      } else {
+        console.warn('[voiceGuidance] No audio from Sarvam, using browser TTS');
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = language;
+          window.speechSynthesis.speak(utterance);
+        }
       }
     } catch (err) {
       console.warn('Voice guidance TTS notice:', err);
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language;
+        window.speechSynthesis.speak(utterance);
+      }
     }
   };
   return { speak };
