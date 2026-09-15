@@ -93,11 +93,21 @@ export default function TriageSummary() {
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
 
+  const getAuthHeaders = (extra: Record<string, string> = {}) => {
+    const token = localStorage.getItem('doctor_token') || 'medikiosk-demo-token';
+    return {
+      'Authorization': `Bearer ${token}`,
+      ...extra
+    };
+  };
+
   useEffect(() => {
     let ignore = false;
     const loadData = async () => {
       try {
-        const triageRes = await fetch(`${API_URL}/sessions/${sessionId}/triage`);
+        const triageRes = await fetch(`${API_URL}/sessions/${sessionId}/triage`, {
+          headers: getAuthHeaders()
+        });
         const triageData = await triageRes.json();
         if (!ignore && triageData.session) {
           setSession(triageData.session);
@@ -119,13 +129,15 @@ export default function TriageSummary() {
           
           fetch(`${API_URL}/api/analyze-records`, { 
             method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }), 
             body: JSON.stringify({ text: combinedText }) 
           }).then(r => r.json()).then(data => {
             if (!ignore) setClinicalAlerts(data);
           }).catch(() => {});
 
-          fetch(`${API_URL}/sessions/${sessionId}/history`)
+          fetch(`${API_URL}/sessions/${sessionId}/history`, {
+            headers: getAuthHeaders()
+          })
             .then(r => r.json())
             .then(hd => {
               if (!ignore && hd.data) setPastVisits(hd.data);
@@ -157,20 +169,20 @@ export default function TriageSummary() {
     setVerifyingFactId(factId);
     try {
       const doctorInfo = JSON.parse(localStorage.getItem('doctor_info') || '{}');
-      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ verified: true, doctor_id: doctorInfo.doctor_id }) });
+      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'PATCH', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ verified: true, doctor_id: doctorInfo.doctor_id }) });
       if (res.ok) setFacts(prev => prev.map(f => f.fact_id === factId ? { ...f, verified: 1 } : f));
     } catch (err) { console.error('Verify fact error:', err); } finally { setVerifyingFactId(null); }
   };
   const handleSaveFact = async (factId: string) => {
     try {
       const doctorInfo = JSON.parse(localStorage.getItem('doctor_info') || '{}');
-      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ verified: true, corrected_value: editValue, doctor_id: doctorInfo.doctor_id }) });
+      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'PATCH', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ verified: true, corrected_value: editValue, doctor_id: doctorInfo.doctor_id }) });
       if (res.ok) setFacts(prev => prev.map(f => f.fact_id === factId ? { ...f, answer_value: editValue, verified: 1, provenance: 'doctor_entered' } : f));
     } catch (err) { console.error('Save fact error:', err); } finally { setEditingFactId(null); }
   };
   const handleRejectFact = async (factId: string) => {
     try {
-      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/history-facts/${factId}`, { method: 'DELETE', headers: getAuthHeaders() });
       if (res.ok) setFacts(prev => prev.filter(f => f.fact_id !== factId));
     } catch (err) { console.error('Reject fact error:', err); }
   };
@@ -179,7 +191,7 @@ export default function TriageSummary() {
     setIsSavingNotes(true);
     try {
       const doctorInfo = JSON.parse(localStorage.getItem('doctor_info') || '{}');
-      await fetch(`${API_URL}/api/sessions/${sessionId}/verify`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doctor_id: doctorInfo.doctor_id, notes: doctorNotes }) });
+      await fetch(`${API_URL}/api/sessions/${sessionId}/verify`, { method: 'POST', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ doctor_id: doctorInfo.doctor_id, notes: doctorNotes }) });
       setNotesSaved(true);
       setTimeout(() => { setNotesSaved(false); navigate('/doctor'); }, 1500);
     } catch (err) { console.error('Save notes error:', err); } finally { setIsSavingNotes(false); }
@@ -190,7 +202,7 @@ export default function TriageSummary() {
     if (!sessionId) return;
     setIsRouting(true);
     try {
-      const res = await fetch(`${API_URL}/sessions/${sessionId}/route`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'HIS' }) });
+      const res = await fetch(`${API_URL}/sessions/${sessionId}/route`, { method: 'POST', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ destination: 'HIS' }) });
       if (res.ok) {
         alert('Successfully routed to HIS');
       }
@@ -199,7 +211,7 @@ export default function TriageSummary() {
   const handleAcknowledgeRedFlags = async () => {
     if (!sessionId) return;
     try {
-      const res = await fetch(`${API_URL}/sessions/${sessionId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ red_flag: false }) });
+      const res = await fetch(`${API_URL}/sessions/${sessionId}`, { method: 'PATCH', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ red_flag: false }) });
       if (res.ok) { setRedFlags([]); }
     } catch (err) { console.error('Acknowledge red flags error:', err); }
   };

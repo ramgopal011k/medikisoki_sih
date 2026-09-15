@@ -1,11 +1,13 @@
 function resolveApiUrl(): string {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
+      return import.meta.env.VITE_API_URL;
+    }
+  } catch {}
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host !== 'localhost' && host !== '127.0.0.1') {
-      return 'https://medikisoki-sih-backend.onrender.com';
+      return 'https://medikisoki-production.up.railway.app';
     }
   }
   return 'http://localhost:3001';

@@ -447,20 +447,74 @@ const handleVoiceMatch = async (req: Request, res: Response) => {
   const sanitizedText = sanitizePromptInput(text);
   const cleanText = sanitizedText.toLowerCase().trim();
 
-  // 1. Fast direct keyword / substring matching
+  // 1. Check Duration / Timeline special rule (e.g. "3 to 8 weeks", "< 3 weeks")
+  const isSubacute = (
+    /\b(?:3\s*(?:to|-|se)\s*8\s*weeks?|3\s*to\s*8|3-8|3\s*se\s*8\s*hafte|3\s*se\s*8|month|1\s*month|one\s*month|4\s*weeks?|5\s*weeks?|6\s*weeks?|7\s*weeks?)\b/i.test(cleanText) ||
+    (cleanText.includes('3') && cleanText.includes('8'))
+  );
+  if (isSubacute) {
+    const subOpt = options.find((o: any) => 
+      (o.value || '').toLowerCase().includes('subacute') || 
+      (o.label || '').toLowerCase().includes('subacute') || 
+      (o.label || '').toLowerCase().includes('3 to 8')
+    );
+    if (subOpt) return res.json({ match: subOpt.value });
+  }
+
+  const isAcute = (
+    /\b(?:acute|less\s*than\s*3\s*weeks?|under\s*3\s*weeks?|<3|< 3|few\s*days|recent|just\s*started|1\s*week|2\s*weeks?)\b/i.test(cleanText)
+  );
+  if (isAcute) {
+    const acuteOpt = options.find((o: any) => 
+      (o.value || '').toLowerCase().includes('acute') || 
+      (o.label || '').toLowerCase().includes('acute') || 
+      (o.label || '').toLowerCase().includes('less than 3')
+    );
+    if (acuteOpt) return res.json({ match: acuteOpt.value });
+  }
+
+  const isChronic = (
+    /\b(?:chronic|more\s*than\s*8\s*weeks?|>8|> 8|long\s*standing|long\s*time|years|months|2\s*months|3\s*months|bahut\s*purani)\b/i.test(cleanText)
+  );
+  if (isChronic) {
+    const chronicOpt = options.find((o: any) => 
+      (o.value || '').toLowerCase().includes('chronic') || 
+      (o.label || '').toLowerCase().includes('chronic') || 
+      (o.label || '').toLowerCase().includes('more than 8')
+    );
+    if (chronicOpt) return res.json({ match: chronicOpt.value });
+  }
+
+  // 2. Fast direct keyword / substring / sub-phrase matching (both directions)
   for (const opt of options) {
     const val = (opt.value || '').toLowerCase();
     const lbl = (opt.label || '').toLowerCase();
     const hi = (opt.label_hi || '').toLowerCase();
+
     if (cleanText === val || cleanText === lbl || (hi && cleanText === hi)) {
       return res.json({ match: opt.value });
     }
-    if (cleanText.includes(lbl) || (hi && cleanText.includes(hi))) {
+    // Clean text contains label OR label contains clean text (e.g. "Subacute (3 to 8 weeks)" contains "3 to 8 weeks")
+    if (cleanText.includes(lbl) || (lbl.includes(cleanText) && cleanText.length >= 3)) {
       return res.json({ match: opt.value });
+    }
+    if (hi && (cleanText.includes(hi) || (hi.includes(cleanText) && cleanText.length >= 3))) {
+      return res.json({ match: opt.value });
+    }
+
+    // Check text inside parentheses e.g. "(3 to 8 weeks)"
+    const parenMatches = lbl.match(/\((.*?)\)/g);
+    if (parenMatches) {
+      for (const pm of parenMatches) {
+        const inside = pm.replace(/[()]/g, '').trim();
+        if (inside && (cleanText.includes(inside) || inside.includes(cleanText))) {
+          return res.json({ match: opt.value });
+        }
+      }
     }
   }
 
-  // 2. Common affirmative / negative colloquial words (English + Hindi)
+  // 3. Common affirmative / negative colloquial words (English + Hindi)
   const affirmatives = ['haan', 'yes', 'yeah', 'yep', 'yup', 'bilkul haan', 'bilkul sahi', 'true', 'sahi', 'sahi hai', 'ha', 'हाँ', 'जी हाँ', 'जी'];
   const negatives = ['nahi', 'no', 'nah', 'nope', 'false', 'galat', 'na', 'नहीं', 'जी नहीं', 'बिल्कुल नहीं'];
 
@@ -475,7 +529,7 @@ const handleVoiceMatch = async (req: Request, res: Response) => {
     if (noOpt) return res.json({ match: noOpt.value });
   }
 
-  // 3. Fallback to Gemini if API key configured
+  // 4. Fallback to Gemini if API key configured
   if (process.env.GEMINI_API_KEY) {
     try {
       const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
@@ -820,25 +874,49 @@ app.post('/api/sarvam/tts', async (req: Request, res: Response) => {
 });
 
 // Multilingual ASR Endpoint with Sarvam AI and Gemini Audio Fallback
-app.post('/api/sarvam/asr', upload.single('file'), async (req: Request, res: Response) => {
-  if (!req.file) {
+// Accepts field name 'audio' (MediaRecorder path) OR 'file' (legacy path)
+// This route is intentionally PUBLIC (no auth required — kiosk patients are unauthenticated)
+app.post('/api/sarvam/asr', upload.any(), async (req: Request, res: Response) => {
+  // Resolve uploaded file from either field name
+  const files = (req as any).files as Express.Multer.File[] | undefined;
+  const uploadedFile: Express.Multer.File | undefined =
+    req.file ||
+    (files && (files.find((f: Express.Multer.File) => f.fieldname === 'audio') ||
+               files.find((f: Express.Multer.File) => f.fieldname === 'file')));
+
+  if (!uploadedFile) {
     return res.status(400).json({ error: 'No audio file provided' });
   }
 
-  const requestedLang = String(req.body.language || req.query.language || 'unknown').toLowerCase();
-  let langCode = 'unknown';
+  // Support language_code (new) or language (legacy) field
+  const requestedLang = String(
+    req.body.language_code || req.body.language || req.query.language || 'en-IN'
+  ).toLowerCase();
+  let langCode = 'en-IN';
   if (requestedLang.startsWith('hi')) langCode = 'hi-IN';
   else if (requestedLang.startsWith('en')) langCode = 'en-IN';
   else if (requestedLang.startsWith('ta')) langCode = 'ta-IN';
   else if (requestedLang.startsWith('te')) langCode = 'te-IN';
+  else if (requestedLang.startsWith('kn')) langCode = 'kn-IN';
+  else if (requestedLang.startsWith('ml')) langCode = 'ml-IN';
+  else if (requestedLang.startsWith('mr')) langCode = 'mr-IN';
+  else if (requestedLang.startsWith('gu')) langCode = 'gu-IN';
+  else if (requestedLang.startsWith('pa')) langCode = 'pa-IN';
   else if (requestedLang.startsWith('bn')) langCode = 'bn-IN';
+  else if (requestedLang.startsWith('or')) langCode = 'or-IN';
+  else if (requestedLang.startsWith('as')) langCode = 'as-IN';
   else langCode = requestedLang;
+
+  // Alias for clarity in the rest of the handler
+  const file = uploadedFile;
+  // Patch req.file so the rest of the handler continues to work unchanged
+  (req as any).file = file;
 
   // 1. Try Sarvam AI Speech-to-Text (saaras:v2)
   if (process.env.SARVAM_API_KEY) {
     try {
       // Determine correct file extension and mime type
-      const incomingMime = (req.file.mimetype || 'audio/webm').split(';')[0].trim();
+      const incomingMime = (file.mimetype || 'audio/webm').split(';')[0].trim();
       let fileExt = 'webm';
       if (incomingMime.includes('mp4') || incomingMime.includes('mp4a') || incomingMime.includes('mpeg')) fileExt = 'mp4';
       else if (incomingMime.includes('ogg')) fileExt = 'ogg';
@@ -848,10 +926,10 @@ app.post('/api/sarvam/asr', upload.single('file'), async (req: Request, res: Res
       console.log(`[ASR] Received audio with mimeType: ${incomingMime}, mapping to extension: .${fileExt}`);
 
       const form = new FormData();
-      form.append('file', req.file.buffer, {
+      form.append('file', file.buffer, {
         filename: `audio.${fileExt}`,
         contentType: incomingMime,
-        knownLength: req.file.buffer.length
+        knownLength: file.buffer.length
       });
       form.append('model', 'saaras:v2');
       form.append('language_code', langCode === 'unknown' ? 'en-IN' : langCode);
@@ -878,11 +956,11 @@ app.post('/api/sarvam/asr', upload.single('file'), async (req: Request, res: Res
   if (process.env.GEMINI_API_KEY) {
     try {
       const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-      const rawMime = (req.file.mimetype || 'audio/webm').split(';')[0].trim();
+      const rawMime = (file.mimetype || 'audio/webm').split(';')[0].trim();
       // Gemini supports: audio/wav, audio/mp3, audio/mpeg, audio/mp4, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm, video/mp4
       const supportedMimes = ['audio/wav','audio/mp3','audio/mpeg','audio/mp4','audio/aiff','audio/aac','audio/ogg','audio/flac','audio/webm','video/mp4'];
       const mimeType = supportedMimes.includes(rawMime) ? rawMime : 'audio/webm';
-      const base64Audio = req.file.buffer.toString('base64');
+      const base64Audio = file.buffer.toString('base64');
       const langHint = langCode === 'hi-IN' ? 'in Hindi (or English if mixed)' : 'in English or Hindi';
       const prompt = `Listen carefully to this audio and transcribe exactly what the speaker says ${langHint}.
 If the speaker is saying numbers or digits (like an ID or phone number), write the numbers out clearly.
@@ -1020,96 +1098,7 @@ Respond ONLY with valid JSON.`;
   }
 });
 
-// Multilingual ASR Endpoint with Sarvam AI and Gemini Audio Fallback
-app.post('/api/sarvam/asr', upload.single('file'), async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No audio file provided' });
-  }
-
-  const requestedLang = String(req.body.language || req.query.language || 'unknown').toLowerCase();
-  let langCode = 'unknown';
-  if (requestedLang.startsWith('hi')) langCode = 'hi-IN';
-  else if (requestedLang.startsWith('en')) langCode = 'en-IN';
-  else if (requestedLang.startsWith('ta')) langCode = 'ta-IN';
-  else if (requestedLang.startsWith('te')) langCode = 'te-IN';
-  else if (requestedLang.startsWith('bn')) langCode = 'bn-IN';
-  else langCode = requestedLang;
-
-  // 1. Try Sarvam AI Speech-to-Text (saaras:v2)
-  if (process.env.SARVAM_API_KEY) {
-    try {
-      // Determine correct file extension and mime type
-      const incomingMime = (req.file.mimetype || 'audio/webm').split(';')[0].trim();
-      let fileExt = 'webm';
-      if (incomingMime.includes('mp4') || incomingMime.includes('mp4a') || incomingMime.includes('mpeg')) fileExt = 'mp4';
-      else if (incomingMime.includes('ogg')) fileExt = 'ogg';
-      else if (incomingMime.includes('wav')) fileExt = 'wav';
-      else if (incomingMime.includes('webm')) fileExt = 'webm';
-      
-      console.log(`[ASR] Received audio with mimeType: ${incomingMime}, mapping to extension: .${fileExt}`);
-
-      const form = new FormData();
-      form.append('file', req.file.buffer, {
-        filename: `audio.${fileExt}`,
-        contentType: incomingMime,
-        knownLength: req.file.buffer.length
-      });
-      form.append('model', 'saaras:v2');
-      form.append('language_code', langCode === 'unknown' ? 'en-IN' : langCode);
-
-      const response = await fetch('https://api.sarvam.ai/speech-to-text', {
-        method: 'POST',
-        headers: {
-          'api-subscription-key': process.env.SARVAM_API_KEY,
-          ...form.getHeaders()
-        },
-        body: form as any
-      });
-      const data: any = await response.json();
-      if (data && data.transcript && typeof data.transcript === 'string') {
-        return res.json({ transcript: data.transcript.trim(), provider: 'sarvam' });
-      }
-      console.warn('Sarvam ASR did not return transcript, payload:', data);
-    } catch (sarvamErr) {
-      console.warn('Sarvam ASR error:', sarvamErr);
-    }
-  }
-
-  // 2. Fallback to Gemini Multimodal Audio Transcription
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-      const rawMime = (req.file.mimetype || 'audio/webm').split(';')[0].trim();
-      // Gemini supports: audio/wav, audio/mp3, audio/mpeg, audio/mp4, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm, video/mp4
-      const supportedMimes = ['audio/wav','audio/mp3','audio/mpeg','audio/mp4','audio/aiff','audio/aac','audio/ogg','audio/flac','audio/webm','video/mp4'];
-      const mimeType = supportedMimes.includes(rawMime) ? rawMime : 'audio/webm';
-      const base64Audio = req.file.buffer.toString('base64');
-      const langHint = langCode === 'hi-IN' ? 'in Hindi (or English if mixed)' : 'in English or Hindi';
-      const prompt = `Listen carefully to this audio and transcribe exactly what the speaker says ${langHint}.
-If the speaker is saying numbers or digits (like an ID or phone number), write the numbers out clearly.
-If the speaker is choosing a language or option, write the option name.
-Output ONLY the raw transcribed text with NO conversational filler or markdown.`;
-
-      const result = await model.generateContent([
-        prompt,
-        {
-          inlineData: {
-            mimeType,
-            data: base64Audio
-          }
-        }
-      ]);
-      const geminiText = result.response.text().trim();
-      if (geminiText) {
-        return res.json({ transcript: geminiText, provider: 'gemini' });
-      }
-    } catch (geminiErr) {
-      console.error('Gemini ASR fallback error:', geminiErr);
-    }
-  }
-
-  return res.status(500).json({ error: 'ASR processing failed. Please type or select manually.' });
-});
+// NOTE: Duplicate /api/sarvam/asr route removed. The canonical handler is above (line ~877).
 
 // Tesseract OCR Endpoint
 app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Response) => {

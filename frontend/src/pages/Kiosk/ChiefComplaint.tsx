@@ -35,11 +35,15 @@ export default function ChiefComplaint() {
         lang: patientLang === 'hi' ? 'hi-IN' : 'en-IN',
         onResult: (text) => {
           const lower = text.toLowerCase();
-          if (lower.includes('fever') || lower.includes('बुखार')) handleSelect('Fever');
-          else if (lower.includes('chest') || lower.includes('pain') || lower.includes('छाती')) handleSelect('Chest Pain');
+          if (lower.includes('ayush') || lower.includes('ayurveda') || lower.includes('आयुष')) {
+            localStorage.setItem('ayush_mode', 'true');
+          }
+          if (lower.includes('fever') || lower.includes('temperature') || lower.includes('बुखार')) handleSelect('Fever');
+          else if (lower.includes('chest') || lower.includes('heart') || lower.includes('छाती') || lower.includes('सीना')) handleSelect('Chest Pain');
           else if (lower.includes('head') || lower.includes('सिर')) handleSelect('Headache');
-          else if (lower.includes('stomach') || lower.includes('abdomen') || lower.includes('पेट')) handleSelect('Stomach Pain');
-          else if (lower.includes('cough') || lower.includes('खांसी')) handleSelect('Cough');
+          else if (lower.includes('stomach') || lower.includes('abdomen') || lower.includes('abdominal') || lower.includes('पेट')) handleSelect('Stomach Pain');
+          else if (lower.includes('back') || lower.includes('spine') || lower.includes('पीठ') || lower.includes('कमर')) handleSelect('Other');
+          else if (lower.includes('cough') || lower.includes('खांसी') || lower.includes('बलगम')) handleSelect('Cough');
           else handleSelect('Other');
         }
       });

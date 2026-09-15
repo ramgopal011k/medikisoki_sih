@@ -16,6 +16,8 @@ declare global {
   }
 }
 
+import { smartMatchOption } from '@/lib/smartVoiceMatch';
+
 interface InterviewQuestionProps {
   question: QuestionType;
   totalSteps: number;
@@ -74,7 +76,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
     }
   }, [selectedMulti, augmentedOptions, language, onAnswer]);
 
-  // Process voice transcript match via a callback
+  // Process voice transcript match via a smart matching engine
   const processTranscriptMatch = useCallback(async () => {
     if (!transcript) return;
 
@@ -98,31 +100,10 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
       }
     }
 
-    const match = augmentedOptions.find(opt =>
-      lowerTranscript.includes(opt.label.toLowerCase()) ||
-      (opt.label_hi && lowerTranscript.includes(opt.label_hi.toLowerCase()))
-    );
-
-    if (match) {
-      pendingMatchRef.current = { value: match.value, label: match.label };
-    } else {
-      // Fallback to Gemini semantic matching
-      try {
-        const res = await fetch(`${API_URL}/match-voice`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: transcript, options: augmentedOptions })
-        });
-        const data = await res.json();
-        if (data.match) {
-          const geminiMatch = augmentedOptions.find(opt => opt.value === data.match);
-          if (geminiMatch) {
-            pendingMatchRef.current = { value: geminiMatch.value, label: geminiMatch.label };
-          }
-        }
-      } catch (err) {
-        console.error('Failed to match voice via Gemini:', err);
-      }
+    // Run smart multi-tier natural language voice matching
+    const result = await smartMatchOption(transcript, augmentedOptions);
+    if (result.matched) {
+      pendingMatchRef.current = { value: result.value, label: result.label };
     }
     
     if (pendingMatchRef.current) {
@@ -136,7 +117,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
         onAnswer(value, label);
       }
     }
-  }, [transcript, question, onAnswer, selectedMulti, handleOptionTap, submitMultiChoice, setTranscript]);
+  }, [transcript, question, onAnswer, selectedMulti, handleOptionTap, submitMultiChoice, setTranscript, augmentedOptions]);
 
   // When listening stops, check for a match and fire onAnswer
   useEffect(() => {

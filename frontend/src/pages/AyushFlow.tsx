@@ -8,6 +8,7 @@ import { useAudio } from '@/hooks/useAudio';
 import { get, set } from 'idb-keyval';
 import { API_URL } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { smartMatchOption } from '@/lib/smartVoiceMatch';
 
 const OFFLINE_QUEUE_KEY = 'medikiosk_offline_ayush';
 
@@ -216,43 +217,15 @@ export default function AyushFlow() {
     if (!transcript || !content) return;
     
     const matchTranscript = async () => {
-      const lower = transcript.toLowerCase();
+      const optionsToMatch = content.options.map(opt => ({
+        value: opt.id,
+        label: opt.en,
+        label_hi: opt.hi
+      }));
 
-      // Check if spoken text matches any option label or keyword
-      for (const opt of content.options) {
-        const optEn = opt.en.toLowerCase();
-        const optHi = opt.hi.toLowerCase();
-        const optId = opt.id.toLowerCase();
-
-        if (
-          lower.includes(optId) ||
-          lower.includes(optEn.split(' ')[0]) ||
-          lower.includes(optHi.split(' ')[0]) ||
-          lower.includes(optEn)
-        ) {
-          handleAnswer(opt.id);
-          return;
-        }
-      }
-
-      // Fallback to Gemini semantic matching
-      try {
-        const optionsForGemini = content.options.map(opt => ({
-          value: opt.id,
-          label: `${opt.en} / ${opt.hi}`
-        }));
-        
-        const res = await fetch(`${API_URL}/match-voice`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: transcript, options: optionsForGemini })
-        });
-        const data = await res.json();
-        if (data.match) {
-          handleAnswer(data.match);
-        }
-      } catch (err) {
-        console.error('Failed to match voice via Gemini:', err);
+      const result = await smartMatchOption(transcript, optionsToMatch);
+      if (result.matched) {
+        handleAnswer(result.value);
       }
     };
     

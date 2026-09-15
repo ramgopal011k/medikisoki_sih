@@ -1,0 +1,14 @@
+node_modules/
+*/node_modules/
+.env
+.env.*
+*/.env
+*/.env.*
+models/
+rag_corpus/
+frontend/visual-tests/
+frontend/playwright-report/
+frontend/test-results/
+.git/
+eng.traineddata
+*/eng.traineddata

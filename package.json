@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Root package.json for Railway deployment",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd backend && npm install && npm run build",
     "build:frontend": "cd frontend && npm install && npm run build",
     "build:backend": "cd backend && npm install && npm run build",
     "start": "cd backend && npm start"

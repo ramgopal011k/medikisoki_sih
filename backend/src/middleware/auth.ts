@@ -16,6 +16,15 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
     originalUrl.includes('/auth/register') ||
     originalUrl.includes('/abdm') ||
     path.startsWith('/abdm') ||
+    originalUrl.includes('/match-voice') ||
+    path === '/match-voice' ||
+    // ASR endpoints are intentionally public: kiosk patients are unauthenticated.
+    // Audio is processed server-side (Sarvam / Gemini) and only the transcript is returned.
+    // No patient PII is stored at the ASR layer.
+    path === '/sarvam/asr' ||
+    originalUrl.includes('/sarvam/asr') ||
+    path === '/api/sarvam/asr' ||
+    originalUrl.includes('/api/sarvam/asr') ||
     (req.method === 'GET' && (path === '/hospitals' || originalUrl.includes('/hospitals')));
 
   if (isPublic) {

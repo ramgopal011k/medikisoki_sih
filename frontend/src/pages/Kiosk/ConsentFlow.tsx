@@ -151,20 +151,51 @@ export default function ConsentFlow() {
         setStep('complaint');
       }
     } else if (step === 'complaint') {
-      if (lower.includes('chest') || lower.includes('छाती')) setComplaint('Chest pain');
-      else if (lower.includes('fever') || lower.includes('बुखार')) setComplaint('Fever');
+      const clean = transcript.toLowerCase().trim();
+
+      // Check AYUSH Assessment toggle (e.g. "Ayush", "Ayurveda", "Traditional medicine", "आयुष")
+      if (
+        clean.includes('ayush') ||
+        clean.includes('ayurveda') ||
+        clean.includes('ayurvedic') ||
+        clean.includes('traditional') ||
+        clean.includes('आयुष') ||
+        clean.includes('आयुर्वेद') ||
+        clean.includes('पारंपरिक')
+      ) {
+        setAyushMode(true);
+      }
+
+      // Check Start / Begin command
+      if (
+        clean === 'start' ||
+        clean === 'begin' ||
+        clean.includes('start interview') ||
+        clean.includes('begin interview') ||
+        clean.includes('start assessment') ||
+        clean.includes('shuru') ||
+        clean.includes('शुरू')
+      ) {
+        startSession();
+        return;
+      }
+
+      // Check complaints with conversational filler handling
+      if (clean.includes('chest') || clean.includes('heart') || clean.includes('छाती') || clean.includes('सीना')) setComplaint('Chest pain');
+      else if (clean.includes('fever') || clean.includes('temperature') || clean.includes('bukhar') || clean.includes('बुखार')) setComplaint('Fever');
       else if (
-        lower.includes('stomach') ||
-        lower.includes('abdomen') ||
-        lower.includes('abdominal') ||
-        lower.includes('पेट')
+        clean.includes('stomach') ||
+        clean.includes('abdomen') ||
+        clean.includes('abdominal') ||
+        clean.includes('belly') ||
+        clean.includes('पेट')
       )
         setComplaint('Abdominal pain');
-      else if (lower.includes('head') || lower.includes('headache') || lower.includes('सिर'))
+      else if (clean.includes('head') || clean.includes('headache') || clean.includes('सिर'))
         setComplaint('Headache');
-      else if (lower.includes('back') || lower.includes('पीठ')) setComplaint('Back pain');
-      else if (lower.includes('cough') || lower.includes('खांसी')) setComplaint('Cough');
-      else if (lower.includes('other') || lower.includes('अन्य')) setComplaint('Other');
+      else if (clean.includes('back') || clean.includes('spine') || clean.includes('पीठ') || clean.includes('कमर')) setComplaint('Back pain');
+      else if (clean.includes('cough') || clean.includes('coughing') || clean.includes('khansi') || clean.includes('खांसी')) setComplaint('Cough');
+      else if (clean.includes('other') || clean.includes('अन्य') || clean.includes('दूसरा')) setComplaint('Other');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript, step, hospitals]);
