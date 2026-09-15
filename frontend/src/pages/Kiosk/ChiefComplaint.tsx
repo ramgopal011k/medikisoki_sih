@@ -7,6 +7,7 @@ import { MandalaBackground } from '../../components/MandalaBackground';
 import { API_URL } from '@/lib/api';
 import { useAsr } from '@/hooks/useAsr';
 import { useTranslation } from '@/lib/i18n';
+import { VoiceGuidanceButton } from '../../components/VoiceGuidanceButton';
 
 const complaintsMap: Record<string, string> = {
   'Fever': 'fever',

@@ -6,6 +6,7 @@ import { MandalaBackground } from '../../components/MandalaBackground';
 import { LeafStepIndicator } from '../../components/LeafStepIndicator';
 import { AudioExplanationButton } from '../../components/AudioExplanationButton';
 import { QuestionCard } from '../../components/QuestionCard';
+import { VoiceGuideButton } from '../../components/VoiceGuideButton';
 import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
@@ -17,9 +18,9 @@ export default function ConsentFlow() {
   const { hospitalId: urlHospitalId } = useParams();
   const [searchParams] = useSearchParams();
   const urlLang = searchParams.get('lang');
-  
-  const [step, setStep] = useState<Step>(urlLang ? (urlHospitalId ? 'patient_type' : 'hospital') : 'language');
-  const [language, setLanguage] = useState(urlLang || '');
+  const savedLang = localStorage.getItem('patient_language') || urlLang || '';
+  const [step, setStep] = useState<Step>(savedLang ? (urlHospitalId ? 'patient_type' : 'hospital') : 'language');
+  const [language, setLanguage] = useState(savedLang);
   const [hospitals, setHospitals] = useState<any[]>([]);
   const [hospitalId, setHospitalId] = useState(urlHospitalId || '');
   const [abhaId, setAbhaId] = useState('');
@@ -42,6 +43,11 @@ export default function ConsentFlow() {
   const { speak, stop } = useAudio();
 
   const baseAbhaIdRef = useRef('');
+
+  const [consentClinicalCare, setConsentClinicalCare] = useState(true);
+  const [consentDataAnalytics, setConsentDataAnalytics] = useState(true);
+  const [consentABDM, setConsentABDM] = useState(true);
+  const [consentResearch, setConsentResearch] = useState(true);
 
   const wasListeningRef = useRef(false);
 
@@ -259,7 +265,13 @@ export default function ConsentFlow() {
         dummy_aadhaar: validAbha,
         language: validLang,
         chief_complaint: validComplaint,
-        patient_type: patientType
+        patient_type: patientType,
+        consents: {
+          clinicalCare: consentClinicalCare,
+          dataAnalytics: consentDataAnalytics,
+          research: consentABDM,
+          communications: consentResearch
+        }
       };
       
       if (patientType === 'new') {
@@ -655,30 +667,76 @@ export default function ConsentFlow() {
              aria-label="Listen to consent explanation"
            />
            
-           <div className="w-full space-y-4">
-              <div className="flex items-start gap-4 p-4 border-b border-warmgray bg-white rounded-xl border">
-                 <input id="consent-share-info" type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
-                 <div className="text-left">
-                   <label htmlFor="consent-share-info" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
-                     {language === 'hi' ? 'मैं अपनी जानकारी साझा करने के लिए सहमत हूँ' : 'I agree to share my information'}
-                   </label>
-                   <div className="text-muted text-sm mt-0.5 font-body">
-                     {language === 'hi' ? 'आपके डेटा का उपयोग केवल आपके इलाज के लिए किया जाएगा।' : 'Your data will only be used for your treatment.'}
-                   </div>
-                 </div>
-              </div>
-              <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-warmgray">
-                 <input id="consent-voice-recording" type="checkbox" className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" defaultChecked />
-                 <div className="text-left">
-                   <label htmlFor="consent-voice-recording" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
-                     {language === 'hi' ? 'आवाज़ रिकॉर्डिंग' : 'Voice Recording'}
-                   </label>
-                   <div className="text-muted text-sm mt-0.5 font-body">
-                     {language === 'hi' ? 'हम बातचीत रिकॉर्ड करेंगे।' : 'We will record conversation.'}
-                   </div>
-                 </div>
-              </div>
-           </div>
+            <div className="w-full space-y-3">
+               <div className="flex items-start gap-4 p-3.5 bg-white rounded-xl border border-warmgray">
+                  <input 
+                    id="consent-clinical-care" 
+                    type="checkbox" 
+                    checked={consentClinicalCare} 
+                    onChange={e => setConsentClinicalCare(e.target.checked)}
+                    className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" 
+                  />
+                  <div className="text-left">
+                    <label htmlFor="consent-clinical-care" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
+                      {language === 'hi' ? '1. प्रत्यक्ष चिकित्सीय देखभाल एवं उपचार (अनिवार्य)' : '1. Clinical Care & Treatment (Required)'}
+                    </label>
+                    <div className="text-muted text-xs mt-0.5 font-body">
+                      {language === 'hi' ? 'चिकित्सकों द्वारा आपकी जांच एवं उपचार के लिए डेटा उपयोग।' : 'Your health data will be used by attending physicians for diagnosis and care.'}
+                    </div>
+                  </div>
+               </div>
+               <div className="flex items-start gap-4 p-3.5 bg-white rounded-xl border border-warmgray">
+                  <input 
+                    id="consent-ai-analytics" 
+                    type="checkbox" 
+                    checked={consentDataAnalytics} 
+                    onChange={e => setConsentDataAnalytics(e.target.checked)}
+                    className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" 
+                  />
+                  <div className="text-left">
+                    <label htmlFor="consent-ai-analytics" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
+                      {language === 'hi' ? '2. एआई ट्राइएज सहायता एवं डेटा विश्लेषण (ऐच्छिक)' : '2. AI Analysis & Triage Assistance (Optional)'}
+                    </label>
+                    <div className="text-muted text-xs mt-0.5 font-body">
+                      {language === 'hi' ? 'त्वरित लक्षण मूल्यांकन के लिए एआई मॉडल का उपयोग।' : 'AI algorithms assist in symptom categorization and preliminary clinical summaries.'}
+                    </div>
+                  </div>
+               </div>
+               <div className="flex items-start gap-4 p-3.5 bg-white rounded-xl border border-warmgray">
+                  <input 
+                    id="consent-abdm-sharing" 
+                    type="checkbox" 
+                    checked={consentABDM} 
+                    onChange={e => setConsentABDM(e.target.checked)}
+                    className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" 
+                  />
+                  <div className="text-left">
+                    <label htmlFor="consent-abdm-sharing" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
+                      {language === 'hi' ? '3. आभा / एबीडीएम स्वास्थ्य डेटा साझाकरण (ऐच्छिक)' : '3. ABDM Health Record Sharing (Optional)'}
+                    </label>
+                    <div className="text-muted text-xs mt-0.5 font-body">
+                      {language === 'hi' ? 'राष्ट्रीय स्वास्थ्य नेटवर्क के साथ सुरक्षित लिंक।' : 'Secure interoperability with Ayushman Bharat Digital Mission healthcare providers.'}
+                    </div>
+                  </div>
+               </div>
+               <div className="flex items-start gap-4 p-3.5 bg-white rounded-xl border border-warmgray">
+                  <input 
+                    id="consent-research" 
+                    type="checkbox" 
+                    checked={consentResearch} 
+                    onChange={e => setConsentResearch(e.target.checked)}
+                    className="w-6 h-6 mt-1 accent-primary border-warmgray rounded shrink-0" 
+                  />
+                  <div className="text-left">
+                    <label htmlFor="consent-research" className="font-body text-base font-semibold text-charcoal cursor-pointer block">
+                      {language === 'hi' ? '4. अनामित चिकित्सा अनुसंधान एवं सुधार (ऐच्छिक)' : '4. Anonymized Research & Quality Improvement (Optional)'}
+                    </label>
+                    <div className="text-muted text-xs mt-0.5 font-body">
+                      {language === 'hi' ? 'स्वास्थ्य सेवा सुधार के लिए केवल पहचान-रहित डेटा।' : 'Anonymized de-identified data used to improve clinical safety and healthcare outcomes.'}
+                    </div>
+                  </div>
+               </div>
+            </div>
            
             <Button 
               className="w-full min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body mt-6" 
@@ -784,6 +842,10 @@ export default function ConsentFlow() {
       )}
 
       </div>
+      <VoiceGuideButton 
+        text={language === 'hi' ? 'कृपया अपनी जानकारी एवं सहमति भरें।' : 'Please review and select your health data consent choices.'} 
+        language={language === 'hi' ? 'hi-IN' : 'en-IN'} 
+      />
     </div>
   );
 }

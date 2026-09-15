@@ -9,6 +9,7 @@ import { QuestionCard } from '../components/QuestionCard';
 import { get, set } from 'idb-keyval';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/api';
+import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
 interface SessionState {
   id: string;
@@ -273,6 +274,10 @@ export default function InterviewFlow() {
           Syncing offline data...
         </div>
       )}
+      <VoiceGuideButton 
+        text={currentQ ? (session?.language === 'hi' ? (currentQ.text_hi || currentQ.text) : currentQ.text) : 'Please answer the clinical interview question.'} 
+        language={session?.language === 'hi' ? 'hi-IN' : 'en-IN'} 
+      />
     </div>
   );
 }

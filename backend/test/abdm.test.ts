@@ -1,6 +1,6 @@
 import { ABDMService } from '../src/services/abdm';
 import request from 'supertest';
-import app from '../src/index';
+import app from '../src/app';
 
 describe('ABDM V3 Service & Gateway Integration', () => {
   let abdmService: ABDMService;

@@ -1,11 +1,12 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MandalaBackground } from '@/components/MandalaBackground';
 import { QuestionCard } from '@/components/QuestionCard';
+import { VoiceGuideButton } from '@/components/VoiceGuideButton';
 import {
   ClipboardList, ArrowRight, User, ChevronDown, ChevronUp,
-  Edit2, Check, X, FileText, HeartPulse, Activity, Sparkles, Plus, Trash2
+  Edit2, Check, X, FileText, HeartPulse, Activity, Sparkles, Plus
 } from 'lucide-react';
 import { API_URL } from '@/lib/api';
 
@@ -115,7 +116,7 @@ export default function PatientPreview() {
 
     // Fetch live data from backend if session ID exists
     if (sId && sId !== 'active-session') {
-      fetch(`${API_URL}/sessions/${sId}/triage`)
+      fetch(`${API_URL}/api/sessions/${sId}/triage`)
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && data.session) {
@@ -753,6 +754,10 @@ export default function PatientPreview() {
         </div>
 
       </div>
+      <VoiceGuideButton 
+        text={isHindi ? 'कृपया डॉक्टर को सबमिट करने से पहले अपनी जानकारी की समीक्षा करें।' : 'Please review your information before submitting to the doctor.'} 
+        language={isHindi ? 'hi-IN' : 'en-IN'} 
+      />
     </div>
   );
 }

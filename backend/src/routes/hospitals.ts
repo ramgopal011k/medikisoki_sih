@@ -107,7 +107,7 @@ function parseHospital(row: any): HospitalRecord {
 let hospitalCache: HospitalRecord[] = DEFAULT_HOSPITALS.map(parseHospital);
 
 // GET /api/hospitals - List all registered hospitals
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const { data: rows, error } = await supabase
       .from('hospitals')

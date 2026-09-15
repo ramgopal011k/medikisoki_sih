@@ -58,7 +58,7 @@ export default function DoctorDashboard() {
   });
 
   const handleDevBypass = () => {
-    localStorage.setItem('doctor_token', 'dev-bypass-token');
+    localStorage.setItem('doctor_token', 'mock-doctor-token');
     localStorage.setItem('doctor_info', JSON.stringify(DEV_DOCTOR));
     setDoctorInfo(DEV_DOCTOR);
   };
@@ -299,6 +299,12 @@ export default function DoctorDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        {/* Clinical Liability Disclaimer Banner */}
+        <div className="bg-amber-50 border-2 border-amber-200 text-amber-900 text-sm p-3.5 rounded-xl font-medium flex items-center gap-2.5 shadow-sm">
+          <span className="text-amber-600 text-base font-bold shrink-0">⚠</span>
+          <span>This is a clinical decision-support tool. All AI-generated content requires verification by a qualified physician. Not a diagnosis.</span>
+        </div>
 
         {/* ── Stats Row ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

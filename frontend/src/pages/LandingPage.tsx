@@ -53,7 +53,7 @@ export default function LandingPage() {
             aria-label="Enter as Patient (Demo)"
           >
             <User className="w-7 h-7 text-sand group-hover:scale-110 transition-transform" />
-            <span>Enter as Patient (Demo)</span>
+            <span>Enter Patient Kiosk (Demo)</span>
             <ArrowRight className="w-6 h-6 text-sand/80 group-hover:translate-x-1 transition-transform" />
           </button>
 

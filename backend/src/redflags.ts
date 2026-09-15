@@ -7,16 +7,16 @@ const RED_FLAG_RULES = [
   { id: 'R3', condition: (answerText: string, _: any[], questionId: string) => answerText === 'Yes' && questionId === 'q_chest_breath' },
   { id: 'R4', condition: (answerText: string, _: any[], questionId: string) => answerText === 'Yes' && questionId === 'q_cough_blood' },
   { id: 'R5', condition: (answerText: string, _: any[], questionId: string) => answerText === 'High >103' && questionId === 'q_fever_temp' },
-  { id: 'R6', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /facial droop|arm weakness|speech difficulty|slurred speech/i.test(all); } },
-  { id: 'R7', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /anaphylaxis|throat closing|can't breathe/i.test(all) && /allergy|rash/i.test(all); } },
-  { id: 'R8', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /vomiting blood|black tarry stool|blood in stool/i.test(all); } },
-  { id: 'R9', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /suicid|kill myself|end my life/i.test(all); } },
-  { id: 'R10', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /pregnant|pregnancy/i.test(all) && /bleeding|severe abdominal pain/i.test(all); } },
-  { id: 'R11', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /child|baby|infant/i.test(all) && /lethargic|unresponsive|high fever|rash/i.test(all); } },
-  { id: 'R12', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /diarrhea|vomit/i.test(all) && /dizz|no urination|extreme thirst/i.test(all); } },
-  { id: 'R13', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /diabet/i.test(all) && /vomit|confusion|deep breathing/i.test(all); } },
-  { id: 'R14', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /fever/i.test(all) && /neck stiffness|stiff neck|photophobia/i.test(all); } },
-  { id: 'R15', condition: (text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /sudden breathlessness|chest pain/i.test(all) && /leg swelling/i.test(all); } }
+  { id: 'R6', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /facial droop|arm weakness|speech difficulty|slurred speech/i.test(all); } },
+  { id: 'R7', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /anaphylaxis|throat closing|can't breathe/i.test(all) && /allergy|rash/i.test(all); } },
+  { id: 'R8', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /vomiting blood|black tarry stool|blood in stool/i.test(all); } },
+  { id: 'R9', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /suicid|kill myself|end my life/i.test(all); } },
+  { id: 'R10', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /pregnant|pregnancy/i.test(all) && /bleeding|severe abdominal pain/i.test(all); } },
+  { id: 'R11', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /child|baby|infant/i.test(all) && /lethargic|unresponsive|high fever|rash/i.test(all); } },
+  { id: 'R12', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /diarrhea|vomit/i.test(all) && /dizz|no urination|extreme thirst/i.test(all); } },
+  { id: 'R13', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /diabet/i.test(all) && /vomit|confusion|deep breathing/i.test(all); } },
+  { id: 'R14', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /fever/i.test(all) && /neck stiffness|stiff neck|photophobia/i.test(all); } },
+  { id: 'R15', condition: (_text: string, ans: any[]) => { const all = ans.map(a => a.answer_text).join(' '); return /sudden breathlessness|chest pain/i.test(all) && /leg swelling/i.test(all); } }
 ];
 
 export async function evaluateAnswer(answer: any) {

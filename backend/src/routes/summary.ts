@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { supabase } from '../supabase';
-import { generateTriageSummary } from '../summary';
 
 const router = Router();
 

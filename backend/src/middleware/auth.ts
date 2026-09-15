@@ -19,13 +19,17 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
     path.startsWith('/abdm') ||
     originalUrl.includes('/match-voice') ||
     path === '/match-voice' ||
-    // ASR endpoints are intentionally public: kiosk patients are unauthenticated.
-    // Audio is processed server-side (Sarvam / Gemini) and only the transcript is returned.
-    // No patient PII is stored at the ASR layer.
-    path === '/sarvam/asr' ||
-    originalUrl.includes('/sarvam/asr') ||
-    path === '/api/sarvam/asr' ||
-    originalUrl.includes('/api/sarvam/asr') ||
+    // Kiosk anonymous patient intake endpoints (POST only for sessions)
+    (req.method === 'POST' && (path === '/sessions' || path === '/api/sessions' || originalUrl.includes('/sessions'))) ||
+    originalUrl.includes('/history-facts') ||
+    originalUrl.includes('/medical-history') ||
+    originalUrl.includes('/ayush-assessment') ||
+    originalUrl.includes('/answers') ||
+    originalUrl.includes('/documents') ||
+    originalUrl.includes('/sarvam') ||
+    originalUrl.includes('/gemini') ||
+    originalUrl.includes('/summary') ||
+    originalUrl.includes('/fhir') ||
     (req.method === 'GET' && (path === '/hospitals' || originalUrl.includes('/hospitals')));
 
   if (isPublic) {

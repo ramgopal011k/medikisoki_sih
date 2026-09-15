@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../src/index'; // export app from index.ts is assumed or we might need to change it
+import app from '../src/app';
 
 // Ensure the auth bypass works or we need to send the demo auth token.
 // The app uses token-based auth for /api routes.

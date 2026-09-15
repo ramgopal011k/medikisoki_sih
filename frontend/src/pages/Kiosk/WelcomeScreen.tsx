@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { MediKioskLogo } from '../../components/MediKioskLogo';
 import { AccessibilityToggle } from '../../components/AccessibilityToggle';
+import { VoiceGuidanceButton } from '../../components/VoiceGuidanceButton';
 
 export default function WelcomeScreen() {
   const navigate = useNavigate();
@@ -21,9 +22,9 @@ export default function WelcomeScreen() {
   const handleStart = (lang: string) => {
     localStorage.setItem('patient_language', lang);
     if (hospitalId) {
-      navigate(`/hospital/${hospitalId}/notice`);
+      navigate(`/hospital/${hospitalId}/notice?lang=${lang}`);
     } else {
-      navigate(`/notice`);
+      navigate(`/notice?lang=${lang}`);
     }
   };
 
@@ -32,7 +33,8 @@ export default function WelcomeScreen() {
       <MandalaBackground />
       
       {/* Top Bar for Accessibility */}
-      <div className="absolute top-0 right-0 p-4 z-50">
+      <div className="absolute top-0 right-0 p-4 z-50 flex items-center gap-3">
+        <VoiceGuidanceButton text="Welcome to MediKiosk. Please select your preferred language to begin." />
         <AccessibilityToggle />
       </div>
 

@@ -105,7 +105,7 @@ export default function TriageSummary() {
     let ignore = false;
     const loadData = async () => {
       try {
-        const triageRes = await fetch(`${API_URL}/sessions/${sessionId}/triage`, {
+        const triageRes = await fetch(`${API_URL}/api/sessions/${sessionId}/triage`, {
           headers: getAuthHeaders()
         });
         const triageData = await triageRes.json();
@@ -135,7 +135,7 @@ export default function TriageSummary() {
             if (!ignore) setClinicalAlerts(data);
           }).catch(() => {});
 
-          fetch(`${API_URL}/sessions/${sessionId}/history`, {
+          fetch(`${API_URL}/api/sessions/${sessionId}/history`, {
             headers: getAuthHeaders()
           })
             .then(r => r.json())
@@ -202,7 +202,7 @@ export default function TriageSummary() {
     if (!sessionId) return;
     setIsRouting(true);
     try {
-      const res = await fetch(`${API_URL}/sessions/${sessionId}/route`, { method: 'POST', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ destination: 'HIS' }) });
+      const res = await fetch(`${API_URL}/api/sessions/${sessionId}/route`, { method: 'POST', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ destination: 'HIS' }) });
       if (res.ok) {
         alert('Successfully routed to HIS');
       }
@@ -211,7 +211,7 @@ export default function TriageSummary() {
   const handleAcknowledgeRedFlags = async () => {
     if (!sessionId) return;
     try {
-      const res = await fetch(`${API_URL}/sessions/${sessionId}`, { method: 'PATCH', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ red_flag: false }) });
+      const res = await fetch(`${API_URL}/api/sessions/${sessionId}`, { method: 'PATCH', headers: getAuthHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ red_flag: false }) });
       if (res.ok) { setRedFlags([]); }
     } catch (err) { console.error('Acknowledge red flags error:', err); }
   };
@@ -254,6 +254,12 @@ export default function TriageSummary() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4">
+
+        {/* Clinical Liability Disclaimer Banner */}
+        <div className="bg-amber-50 border-2 border-amber-200 text-amber-900 text-sm p-3.5 rounded-xl font-medium flex items-center gap-2.5 shadow-sm">
+          <span className="text-amber-600 text-base font-bold shrink-0">⚠</span>
+          <span>This is a clinical decision-support tool. All AI-generated content requires verification by a qualified physician. Not a diagnosis.</span>
+        </div>
 
         {/* ── Urgent Banner ── */}
         {isUrgent && (

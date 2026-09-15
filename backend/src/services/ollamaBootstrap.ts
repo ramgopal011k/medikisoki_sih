@@ -37,8 +37,10 @@ export async function ensureOllamaRunning(): Promise<void> {
       console.log(`[ollama] Started in ${i + 1}s`);
       // Verify MedGemma model is loaded
       try {
-        const tags = await fetch(`${OLLAMA_URL}/api/tags`).then(r => r.json());
-        const hasModel = tags.models?.some((m: any) => m.name.includes('medgemma'));
+        const tags = await fetch(`${OLLAMA_URL}/api/tags`).then(r => r.json()) as {
+          models?: Array<{ name: string }>;
+        };
+        const hasModel = tags.models?.some((m) => m.name.includes('medgemma'));
         if (!hasModel) {
           console.warn(`[ollama] WARNING: ${MEDGEMMA_MODEL} not found. Run: ollama pull ${MEDGEMMA_MODEL}`);
         } else {

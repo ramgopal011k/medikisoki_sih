@@ -1,3 +1,29 @@
+## Phase 1 Static Analysis Notes (2026-09-15)
+
+### Intentional Orphan Files
+
+The following RAG utility scripts are standalone and not imported by application code:
+
+- `build_full_corpus.ts` — offline corpus builder
+- `check_conditions.ts` — corpus QA
+- `index_full.ts` — full corpus indexer
+- `measure_latency.ts` — RAG latency benchmark
+- `scale_corpus.ts` — corpus scaling script
+- `test-mini.ts` — mini corpus validator
+- `test-rag.ts` — full RAG test
+- `test-scale.ts` — scaled corpus test
+
+These are intentional, not dead code.
+
+### Architectural Debt (Future Work)
+
+- `backend/src/index.ts` is 1,024 lines. Consider extracting routes into modules such as sessions and documents after the hackathon.
+
+### Test Isolation (2026-09-15)
+
+- Express app construction now lives in `backend/src/app.ts`; `backend/src/index.ts` only owns server startup, scheduled maintenance, and non-test warmup.
+- Jest imports `app.ts` and mocks Supabase plus AYUSH RAG reasoning, preventing network calls during unit tests.
+
 ### Phase 2 Audit Findings (Swasthya Design System)
 
 - **AudioExplanationButton**: Initially used `VoiceButton` directly; explicitly created `AudioExplanationButton.tsx` (64px) for the consent screen.
@@ -73,3 +99,7 @@ These items were identified in the Phase 4 council audit and are intentionally l
 | 1293-line index.ts monolith | Architectural debt. Full extraction is a multi-sprint refactor. |
 | ABDM simulated mode not labeled in patient UI | Add Demo Mode watermark before production. |
 | Right to Erasure mentioned but no backend endpoint | Demo scope. Add DELETE /sessions/:id with cascade delete in production. |
+
+## Known Limitation: PII in localStorage
+Patient name, phone, age, gender are stored in browser localStorage for session continuity. In production deployment on shared kiosks, this should migrate to sessionStorage or encrypted IndexedDB with auto-clear on session end. Demo limitation only.
+

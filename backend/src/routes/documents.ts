@@ -29,7 +29,7 @@ router.post('/upload', upload.single('file'), async (req: any, res: any) => {
 
     let publicUrl = '';
 
-    const { data: storageData, error: storageError } = await supabase.storage
+    const { error: storageError } = await supabase.storage
       .from('medical_records')
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,

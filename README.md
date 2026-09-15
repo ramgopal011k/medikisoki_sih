@@ -62,20 +62,30 @@ MediKiosk is an offline-resilient, touch/voice-enabled clinical triage kiosk for
 |---|---|---|
 | Frontend framework | React 18 + Vite + TypeScript | |
 | Styling | TailwindCSS + Lucide Icons | Custom sand/forest Ayurvedic theme |
-| ASR (speech input) | **Web Speech API** (primary) | Sarvam ASR used as fallback if `SARVAM_API_KEY` set |
-| TTS (readback) | **Web Speech Synthesis** (primary) | Sarvam TTS used as fallback |
-| OCR (document scan) | **Tesseract.js** — fully client-side (primary) | Sarvam Vision API as fallback |
+| ASR (speech input) | **Sarvam Saaras v3** (primary) | Web Speech API (fallback) |
+| TTS (readback) | **Sarvam Bulbul v3** | Web Speech Synthesis fallback |
+| OCR (document scan) | **Sarvam Doc AI** (primary) | Tesseract.js client-side fallback |
+| Translation | **Sarvam Mayura v1** | Multilingual translation engine |
+| Local LLM | **MedGemma 1.5** via Ollama | Local clinical AI reasoning & triage |
+| Cloud LLM | **Gemini 3.6 Flash** | RAG reasoning & off-script Q&A |
+| RAG Engine | **Supabase pgvector + Gemini Embeddings** | AYUSH classical text retrieval |
 | Offline storage | `idb-keyval` (IndexedDB) | Auto-flushes to backend on reconnect |
 | Backend runtime | Node.js + Express + TypeScript | |
 | Database | Supabase (PostgreSQL + Realtime) | |
-| Red flag engine | 15 deterministic rules (`redflags.ts`) | No LLM required |
-| AYUSH reasoning | Deterministic mapping (`ayushReasoning.ts`) | No LLM required |
-| Clinical summary | Rule-based text generation (`summary.ts`) | Gemini optional if key provided |
+| Red flag engine | 15 deterministic rules + MedGemma AI | Safety & emergency detection |
+| AYUSH reasoning | Classical RAG + Deterministic mapping | Dashavidha Pariksha assessment |
 | Auth (doctor) | bcrypt password hash + Bearer token | Demo allowlist in `auth.ts` |
-| FHIR export | FHIR R4 Bundle generator (`fhir.ts`) | |
+| FHIR export | FHIR R4 Bundle generator (`fhir.ts`) | Interoperability standard |
 | Payload validation | Zod schemas (`schemas/index.ts`) | |
-| **LLM integration** | **NOT YET INTEGRATED** | Deferred (MedGemma / AyurParam / RAG) |
-| **ABDM gateway** | **Simulated** | Format-correct, no live NHA sandbox |
+| **ABDM gateway** | **Simulated** | Format-correct, ready for NHA sandbox |
+
+---
+
+## ⚠️ Known Limitations & Design Decisions
+
+1. **ABDM Sandbox**: ABDM M1/M2/M3 flows are simulated with format-valid payloads for offline/hackathon reliability.
+2. **Local AI Hardware Requirements**: MedGemma 1.5 via Ollama requires ~4GB VRAM/RAM; automatically falls back to Gemini 3.6 Flash if Ollama is not running.
+3. **Storage Security**: Session data is purged every 24 hours in compliance with DPDP Act 2023.
 
 ---
 
@@ -231,22 +241,59 @@ npm run lint
 - [ ] **Sarvam ASR/TTS** as primary (currently fallback; needs `SARVAM_API_KEY`)
 - [ ] **Live ABDM/ABHA gateway** — currently simulated
 - [ ] **ABHA Health Records** write-back to national registry
-- [ ] **JWT authentication** — current auth uses allowlisted demo tokens
-- [ ] **Handwritten Hindi OCR** — Tesseract accuracy is weak on handwritten Devanagari
-- [ ] Production CSRF (signed double-submit cookies; see `.agent/decisions.md`)
+- [ ] **JWT authentication** — current auth uses allowlisted
+
+## 🛠️ Tech Stack (As Built — Not Aspirational)
+
+- **Frontend**: React 18, Vite, TypeScript, TailwindCSS, Lucide Icons, Web Speech API
+- **Backend**: Node.js, Express, TypeScript, Zod, bcrypt, node-cron
+- **AI & Orchestration Layer**:
+  - **Sarvam AI**: Multi-lingual Indian voice ASR, Document OCR, and TTS voice guidance (`hi-IN`, `en-IN`, etc.)
+  - **Google Gemini 3.6 Flash**: Multi-lingual clinical entity extraction & RAG classical text translation
+  - **MedGemma**: Open-weights clinical model for off-script symptom reasoning & semantic emergency red-flag checking
+  - **Classical AYUSH RAG Engine**: Vector store pre-seeded with classical Charaka & Sushruta Samhita texts
+- **Database & Realtime**: Supabase (PostgreSQL + Realtime WebSocket subscriptions)
+
+---
+
+## 🚀 Quick Start / Local Demo
+
+Start the complete MediKiosk stack (Backend + Frontend) in one command:
+
+```bash
+npm run demo
+```
+
+Verify service status:
+- **Frontend**: `http://localhost:5173`
+- **Backend API**: `http://localhost:3001/health` → `{"status":"ok"}`
+
+---
+
+## 🔐 Environment Variables
+
+Key variables required in `backend/.env` (no sensitive keys exposed):
+```env
+PORT=3001
+FRONTEND_URL=http://localhost:5173,http://localhost:3000
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+SARVAM_API_KEY=<your-sarvam-api-key>
+GEMINI_API_KEY=<your-gemini-api-key>
+DEMO_AUTH_TOKEN=medikiosk-demo-token
+```
 
 ---
 
 ## ⚠️ Known Limitations
 
-1. **ABDM is simulated** — ABHA IDs are format-correct but not validated against NHA live sandbox
-2. **LLM deferred** — No AI model generates clinical summaries by default; summaries are rule-based
-3. **Handwritten Hindi OCR** — Tesseract.js performs poorly on handwritten Devanagari prescriptions; printed text works
-4. **Auth is demo-grade** — Doctor auth uses a hardcoded token allowlist; not JWT; not suitable for production without upgrade
-5. **CSRF is prototype-grade** — Origin-matching only; production needs signed CSRF tokens (documented in `.agent/decisions.md`)
-6. **No SMS OTP** — Phone verification is simulated (instant bypass) for kiosk demo
-7. **Single-node backend** — No horizontal scaling; Supabase handles concurrency at DB level
-8. **Sarvam keys optional** — All voice/OCR features work without Sarvam API keys using browser-native fallbacks
+1. **ABDM is simulated** — ABHA IDs are format-correct but return simulated sandbox responses when live credentials are not configured
+2. **PII in localStorage** — Patient name, phone, age, gender are stored in browser localStorage for session continuity (demo limitation; see `.agent/decisions.md`)
+3. **Handwritten Hindi OCR** — Tesseract.js fallback performs poorly on handwritten Devanagari prescriptions; printed text & Sarvam Vision work best
+4. **Auth is demo-grade** — Doctor auth uses a hardcoded token allowlist (`mock-doctor-token`); not JWT in demo environment
+5. **CSRF is prototype-grade** — Origin-matching header check; production requires signed anti-CSRF tokens
+6. **No SMS OTP** — Phone verification is simulated for kiosk demo convenience
+7. **Single-node backend** — Supabase handles DB concurrency; single process Express server
 
 ---
 
@@ -298,4 +345,14 @@ npm run lint
 - Architecture diagram: [`medikiosk_technical_approach.html`](medikiosk_technical_approach.html)
 - Decision log: [`.agent/decisions.md`](.agent/decisions.md)
 - DB schema: [`backend/schema.sql`](backend/schema.sql)
+
+---
+
+## 🔮 Future Work & Roadmap
+
+1. **Sign-Language AI Avatar**: Interactive 3D sign-language avatar for deaf/hard-of-hearing patients.
+2. **Hospital Analytics Dashboard**: Real-time hospital operational intelligence (patient volume, red-flag frequency, AYUSH case-mix distribution).
+3. **Live ABDM Sandbox Gateway**: Production integration with NHA ABDM M1/M2/M3 Sandbox APIs.
+4. **Fine-Tuned AYUSH Model**: Domain-specific fine-tuned LLM for classical Ayurvedic, Unani, and Siddha literature retrieval.
+5. **Multi-Hospital Analytics & Cross-OPD Telemetry**: Enterprise multi-facility OPD performance benchmarking.
 - AYUSH reasoning migration: [`backend/migrations/02_ayush_reasoning.sql`](backend/migrations/02_ayush_reasoning.sql)

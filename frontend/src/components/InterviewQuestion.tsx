@@ -5,7 +5,7 @@ import { LeafStepIndicator } from './LeafStepIndicator';
 import { VoiceButton } from './VoiceButton';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { API_URL } from '@/lib/api';
+import { VoiceGuidanceButton } from './VoiceGuidanceButton';
 
 import { useAsr } from '@/hooks/useAsr';
 
@@ -211,9 +211,15 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
       </div>
 
       <QuestionCard className="w-full text-center flex flex-col items-center pt-8 pb-10 px-6 sm:px-10">
-        <h2 className="font-display text-3xl sm:text-4xl text-charcoal mb-2 leading-tight">
-          {language === 'hi' && question.text_hi ? question.text_hi : question.text}
-        </h2>
+        <div className="flex items-center justify-center gap-3 mb-2 flex-wrap">
+          <h2 className="font-display text-3xl sm:text-4xl text-charcoal leading-tight">
+            {language === 'hi' && question.text_hi ? question.text_hi : question.text}
+          </h2>
+          <VoiceGuidanceButton
+            text={language === 'hi' && question.text_hi ? question.text_hi : question.text}
+            language={language === 'hi' ? 'hi-IN' : 'en-IN'}
+          />
+        </div>
 
         {renderInput()}
 

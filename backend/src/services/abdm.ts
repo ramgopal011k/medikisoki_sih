@@ -70,13 +70,11 @@ export class ABDMService {
   private clientId: string;
   private clientSecret: string;
   private baseUrl: string;
-  private useSandbox: boolean;
 
   constructor(config?: ABDMConfig) {
     this.clientId = config?.clientId || process.env.ABDM_CLIENT_ID || '';
     this.clientSecret = config?.clientSecret || process.env.ABDM_CLIENT_SECRET || '';
     this.baseUrl = config?.baseUrl || (config?.useSandbox !== false ? 'https://dev.abdm.gov.in/api' : 'https://abdm.gov.in/api');
-    this.useSandbox = config?.useSandbox !== false;
   }
 
   public isLiveConfigured(): boolean {

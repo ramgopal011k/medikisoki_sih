@@ -264,6 +264,18 @@ export default function AyushFlow() {
     }
   };
 
+  const handleSkip = () => {
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
+    } else {
+      setIsFinished(true);
+    }
+  };
+
+  const handleSkipAll = () => {
+    setIsFinished(true);
+  };
+
   if (!session) return null;
 
   if (isFinished) {
@@ -370,6 +382,24 @@ export default function AyushFlow() {
                 "{transcript}"
               </p>
             )}
+          </div>
+
+          {/* Skip Controls */}
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-warmgray/60 w-full">
+            <button
+              type="button"
+              onClick={handleSkipAll}
+              className="text-xs font-semibold text-muted hover:text-terracotta underline transition-colors focus:outline-none"
+            >
+              {session.language === 'hi' ? 'आयुष मूल्यांकन छोड़ें (Skip AYUSH)' : 'Skip Entire AYUSH Assessment'}
+            </button>
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="px-4 py-2 rounded-xl bg-warmgray/50 hover:bg-warmgray/80 text-charcoal text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-terracotta/40"
+            >
+              {session.language === 'hi' ? 'यह प्रश्न छोड़ें (Skip) ➔' : 'Skip Question ➔'}
+            </button>
           </div>
 
         </div>

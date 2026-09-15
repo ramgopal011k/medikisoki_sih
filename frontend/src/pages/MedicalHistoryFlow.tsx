@@ -11,6 +11,7 @@ import { useAudio } from '@/hooks/useAudio';
 import { cn } from '@/lib/utils';
 import { API_URL } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
 interface SessionState {
   id: string;
@@ -640,6 +641,10 @@ export default function MedicalHistoryFlow() {
           </Button>
         </div>
       </div>
+      <VoiceGuideButton 
+        text={session?.language === 'hi' ? 'अब अपनी पुरानी बीमारियों और मेडिकल इतिहास की समीक्षा करें।' : 'Now let us review your past medical history and conditions.'} 
+        language={session?.language === 'hi' ? 'hi-IN' : 'en-IN'} 
+      />
     </div>
   );
 }

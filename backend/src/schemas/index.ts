@@ -37,10 +37,15 @@ export const medicalHistorySchema = z.object({
   }))
 });
 
+export const dashavidhaDimensions = [
+  'prakriti', 'vikriti', 'agni', 'koshtha', 'sara', 'samhanana',
+  'pramana', 'satmya', 'sattva', 'ahara_shakti', 'vyayama_shakti', 'vaya'
+] as const;
+
 export const ayushAssessmentSchema = z.object({
   session_id: z.string(),
-  dimension: z.string(),
-  value: z.string()
+  dimension: z.string().min(1, 'Dimension name required'),
+  value: z.string().min(1, 'Dimension value required')
 });
 
 export const authSchema = z.object({

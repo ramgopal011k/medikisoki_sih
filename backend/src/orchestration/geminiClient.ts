@@ -10,8 +10,6 @@ export async function geminiReason(prompt: string): Promise<string> {
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  let lastError: any = null;
-
   for (const modelName of MODEL_FALLBACKS) {
     try {
       const model = genAI.getGenerativeModel({ model: modelName });
@@ -19,7 +17,6 @@ export async function geminiReason(prompt: string): Promise<string> {
       const txt = result.response.text();
       if (txt) return txt;
     } catch (err: any) {
-      lastError = err;
       console.warn(`[geminiReason] Model ${modelName} failed (${err?.status || err?.message}), trying next fallback...`);
     }
   }
