@@ -24,7 +24,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
   const isTranscribing = status === 'processing' || isProcessing;
   const isError        = status === 'error';
   const isUnsupported  = status === 'unsupported';
-  const isDisabled     = isError || isUnsupported || isTranscribing;
+  const isDisabled     = isUnsupported || isTranscribing;
 
   const getStatusText = () => {
     if (label) return label;
