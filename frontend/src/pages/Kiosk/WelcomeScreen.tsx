@@ -34,7 +34,7 @@ export default function WelcomeScreen() {
       
       {/* Top Bar for Accessibility */}
       <div className="absolute top-0 right-0 p-4 z-50 flex items-center gap-3">
-        <VoiceGuidanceButton clipId="welcome" fallbackText="Welcome to MediKiosk. Please select your preferred language to begin." />
+        <VoiceGuidanceButton variant="inline" clipId="welcome" fallbackText="Welcome to MediKiosk. Please select your preferred language to begin." />
         <AccessibilityToggle />
       </div>
 
@@ -80,6 +80,8 @@ export default function WelcomeScreen() {
       <footer className="absolute bottom-4 w-full text-center z-10 opacity-60">
         <p className="text-xs font-semibold text-charcoal">Secure & Confidential • Powered by Swasthya Network</p>
       </footer>
+
+      <VoiceGuidanceButton clipId="welcome" fallbackText="Welcome to MediKiosk. Please select your preferred language to begin." />
     </div>
   );
 }

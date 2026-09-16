@@ -8,6 +8,7 @@ import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
 interface ExtractedField {
   field_name: string;
@@ -499,6 +500,7 @@ export default function DocumentUploadFlow() {
         )}
 
       </div>
+      <VoiceGuideButton clipId="document_upload" language={session?.language || 'en'} />
     </div>
   );
 }

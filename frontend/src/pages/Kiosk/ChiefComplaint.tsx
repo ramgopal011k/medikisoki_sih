@@ -181,6 +181,11 @@ export default function ChiefComplaint() {
 
         </div>
       </div>
+      <VoiceGuidanceButton
+        clipId="chief_complaint"
+        fallbackText="Please select your primary health concern or symptom to start your assessment."
+        language={localStorage.getItem('patient_language') || 'en'}
+      />
     </div>
   );
 }

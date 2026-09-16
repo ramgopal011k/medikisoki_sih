@@ -61,7 +61,7 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
       type="button"
       onClick={handleListen}
       disabled={loading}
-      className={`fixed bottom-6 left-6 z-50 px-4 py-3 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${className}`}
+      className={`fixed bottom-6 left-6 z-[9999] px-4 py-3 rounded-full bg-primary text-white shadow-xl hover:bg-primary/90 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${className}`}
       title="Listen to page instructions"
       aria-label="Listen to page instructions"
     >

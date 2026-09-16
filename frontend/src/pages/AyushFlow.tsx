@@ -9,6 +9,7 @@ import { get, set } from 'idb-keyval';
 import { API_URL } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { smartMatchOption } from '@/lib/smartVoiceMatch';
+import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
 const OFFLINE_QUEUE_KEY = 'medikiosk_offline_ayush';
 
@@ -425,6 +426,10 @@ export default function AyushFlow() {
           Syncing offline data...
         </div>
       )}
+      <VoiceGuideButton
+        clipId={ayushClipMap[currentStepId]}
+        language={session?.language || 'en'}
+      />
     </div>
   );
 }
