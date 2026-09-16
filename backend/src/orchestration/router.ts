@@ -20,12 +20,18 @@ export async function orchestrate<T>(
 
     switch (task) {
       case 'asr': {
-        const result = (await sarvam.transcribe(payload.audio, payload.language)) as T;
+        const result = (await sarvam.transcribe(
+          payload.audio,
+          payload.language,
+          payload.mimeType || 'audio/webm',
+          payload.originalName || 'audio.webm'
+        )) as T;
         finalProvider = 'sarvam';
         wasFallback = false;
         resultObj = { result, provider: finalProvider, wasFallback, latencyMs: Date.now() - start };
         break;
       }
+
 
       case 'ocr': {
         const result = (await sarvam.ocrDocument(payload.image)) as T;

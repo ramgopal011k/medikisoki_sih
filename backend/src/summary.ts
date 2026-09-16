@@ -101,8 +101,13 @@ export async function generateTriageSummary(sessionId: string) {
   if (hasAllergies) completeness.score += 20;
   else completeness.missing_fields.push('Allergies');
 
-  if (ayushData.length >= 6) completeness.score += 20;
-  else completeness.missing_fields.push(`AYUSH Assessment (${ayushData.length}/12 dimensions)`);
+  const isAyushOptIn = ayushData.length > 0 || (answers || []).some((a: any) => (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') && (a.answer_text === 'true' || a.answer_value === 'true'));
+  if (isAyushOptIn) {
+    if (ayushData.length >= 6) completeness.score += 20;
+    else completeness.missing_fields.push(`AYUSH Assessment (${ayushData.length}/12 dimensions)`);
+  } else {
+    completeness.score += 20;
+  }
 
   const summaryContent = {
     chief_complaint: chiefComplaint,

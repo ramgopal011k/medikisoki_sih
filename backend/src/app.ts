@@ -956,7 +956,10 @@ app.post('/api/sarvam/asr', upload.any(), async (req: Request, res: Response) =>
       const r = await orchestrate<{ transcript: string }>('asr', {
         audio: file.buffer,
         language: langCode === 'unknown' ? 'en-IN' : langCode,
+        mimeType: incomingMime,
+        originalName: `audio.${fileExt}`,
       });
+
       if (r.result && r.result.transcript && typeof r.result.transcript === 'string') {
         return res.json({ transcript: r.result.transcript.trim(), provider: r.provider });
       }

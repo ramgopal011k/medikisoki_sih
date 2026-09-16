@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "doctor_id": "de10d8fc-e258-409b-a71c-b4e365604ef6",
+    "name": "ram",
+    "email": "ram@gmail.com",
+    "password_hash": "$2b$10$RABZFPFWL7H3254dbYiIx.8H2.XXbm7eWj/XM46XRfH/1WEYlsP1u",
+    "hospital_id": null,
+    "role": "doctor",
+    "created_at": "2026-09-15T15:56:55.128Z"
+  }
+]

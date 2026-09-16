@@ -122,12 +122,13 @@ function AppRoutes() {
         <Route path="/" element={<LandingPage />} />
         
         {/* Hospital-specific entry points */}
+        <Route path="/hospital/:hospitalId" element={<WelcomeScreen />} />
         <Route path="/hospital/:hospitalId/kiosk" element={<WelcomeScreen />} />
         <Route path="/hospital/:hospitalId/notice" element={<DataFiduciaryNotice />} />
         <Route path="/hospital/:hospitalId/consent" element={<ConsentFlow />} />
         <Route path="/hospital/:hospitalId/doctor" element={<DoctorLogin />} />
         
-        {/* Generic fallbacks */}
+        {/* Generic patient kiosk flow */}
         <Route path="/welcome" element={<WelcomeScreen />} />
         <Route path="/notice" element={<DataFiduciaryNotice />} />
         <Route path="/consent" element={<ConsentFlow />} />
@@ -156,6 +157,9 @@ function AppRoutes() {
         {/* Admin Routes */}
         <Route path="/admin" element={<Navigate to="/admin/hospitals" replace />} />
         <Route path="/admin/hospitals" element={<AdminHospitals />} />
+
+        {/* Catch-all wildcard redirect to eliminate dead/404 pages */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

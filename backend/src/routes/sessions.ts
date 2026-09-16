@@ -119,7 +119,7 @@ router.post('/', async (req, res) => {
   // Store chief complaint and dummy_aadhaar as answers
   if (sessionResult && sessionResult.id) {
     try {
-      await supabase.from('answers').insert([
+      const initialAnswers: any[] = [
         {
           session_id: sessionResult.id,
           question_id: 'chief_complaint',
@@ -132,7 +132,16 @@ router.post('/', async (req, res) => {
           answer_text: validAbha,
           provenance: 'system_derived'
         }
-      ]);
+      ];
+      if (req.body.ayush_opt_in === true || req.body.ayush_mode === true) {
+        initialAnswers.push({
+          session_id: sessionResult.id,
+          question_id: 'ayush_opt_in',
+          answer_text: 'true',
+          provenance: 'patient_reported'
+        });
+      }
+      await supabase.from('answers').insert(initialAnswers);
     } catch (e) {
       console.warn('Failed to insert initial answers:', e);
     }
@@ -169,20 +178,12 @@ router.get('/', async (req, res) => {
   try {
     let query = supabase.from('sessions').select('*').order('created_at', { ascending: false }).limit(100);
     
-    // If a specific hospital_id is provided and is not 'all', filter by it
+    // If a specific hospital_id is provided and is not 'all', strictly filter by it
     if (hospital_id && hospital_id !== 'all') {
       query = query.eq('hospital_id', hospital_id);
     }
     
     let { data: sessions, error } = await query;
-    
-    // If filtering by hospital_id returned no rows, fallback to querying all sessions so queue is visible
-    if ((!sessions || sessions.length === 0) && hospital_id && hospital_id !== 'all') {
-      const { data: allSessions } = await supabase.from('sessions').select('*').order('created_at', { ascending: false }).limit(100);
-      if (allSessions && allSessions.length > 0) {
-        sessions = allSessions;
-      }
-    }
 
     if (error || !sessions) {
       console.warn('Supabase sessions query warning:', error?.message);
@@ -458,8 +459,15 @@ router.get('/:id/triage', async (req, res) => {
       };
     });
 
+    const hasAyushOptIn = ayushData.length > 0 ||
+      (answersData || []).some((a: any) => (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') && (a.answer_text === 'true' || a.answer_text === true));
+
     res.json({
-      session: mappedSession,
+      session: {
+        ...mappedSession,
+        ayush_opt_in: hasAyushOptIn
+      },
+      ayush_opt_in: hasAyushOptIn,
       answers,
       facts,
       ayush: ayushData,

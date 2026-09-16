@@ -4,6 +4,7 @@ import { Stethoscope, User, ShieldCheck, ArrowRight, Activity, Sparkles, Buildin
 import { MediKioskLogo } from '../components/MediKioskLogo';
 import { MandalaBackground } from '../components/MandalaBackground';
 import { AccessibilityToggle } from '../components/AccessibilityToggle';
+import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -115,6 +116,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <VoiceGuideButton clipId="welcome" fallbackText="Welcome to MediKiosk. AI-Assisted Clinical History for Indian OPDs. Please enter the Patient Kiosk to begin." />
     </div>
   );
 }

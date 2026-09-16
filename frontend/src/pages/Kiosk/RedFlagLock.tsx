@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { MandalaBackground } from '../../components/MandalaBackground';
+import { VoiceGuideButton } from '../../components/VoiceGuideButton';
 
 export default function RedFlagLock() {
   return (
@@ -15,6 +16,8 @@ export default function RedFlagLock() {
           Please notify hospital staff or wait for assistance.
         </p>
       </div>
+
+      <VoiceGuideButton clipId="red_flag_message" fallbackText="Important information has been identified. Please notify hospital staff or wait for assistance." />
     </div>
   );
 }
