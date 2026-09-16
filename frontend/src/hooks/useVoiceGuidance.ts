@@ -6,6 +6,20 @@ export interface SpeakOptions {
   language?: string;
 }
 
+const audioCache = new Map<string, HTMLAudioElement>();
+
+function getCachedAudio(path: string): HTMLAudioElement {
+  let audio = audioCache.get(path);
+  if (!audio) {
+    audio = new Audio(path);
+    audio.preload = 'auto';
+    audioCache.set(path, audio);
+  } else {
+    audio.currentTime = 0;
+  }
+  return audio;
+}
+
 export function useVoiceGuidance() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -13,6 +27,7 @@ export function useVoiceGuidance() {
   const stop = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -65,7 +80,7 @@ export function useVoiceGuidance() {
       if (clipId) {
         const audioPath = `/audio/v1/${langFolder}/${clipId}.mp3`;
         try {
-          const audio = new Audio(audioPath);
+          const audio = getCachedAudio(audioPath);
           audioRef.current = audio;
           setIsPlaying(true);
 

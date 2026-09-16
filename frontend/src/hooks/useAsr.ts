@@ -184,7 +184,12 @@ export function useAsr() {
       // onend will clean up state
     } else if (strategyRef.current === 'mediarecorder' && mediaRecorderRef.current) {
       if (mediaRecorderRef.current.state !== 'inactive') {
-        try { mediaRecorderRef.current.stop(); } catch {
+        try {
+          if (typeof mediaRecorderRef.current.requestData === 'function') {
+            try { mediaRecorderRef.current.requestData(); } catch { /* ignore */ }
+          }
+          mediaRecorderRef.current.stop();
+        } catch {
           cleanupMedia();
           if (isMountedRef.current) {
             setIsListening(false);
