@@ -5,6 +5,7 @@ import { LeafStepIndicator } from './LeafStepIndicator';
 import { VoiceButton } from './VoiceButton';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 import { VoiceGuidanceButton } from './VoiceGuidanceButton';
 
 import { useAsr } from '@/hooks/useAsr';
@@ -243,6 +244,24 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
                 : (language === 'hi' ? 'उत्तर बोलने के लिए टैप करें' : 'Tap to speak answer')
             }
           />
+          {isListening && (
+            <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-4 py-1.5 rounded-full animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+              <span>{language === 'hi' ? 'आपकी आवाज रिकॉर्ड हो रही है... बोलें' : 'Recording voice... Speak now'}</span>
+            </div>
+          )}
+          {isProcessing && (
+            <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-amber-700 bg-amber-100 px-4 py-1.5 rounded-full animate-pulse">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>{language === 'hi' ? 'सरवम AI द्वारा स्पीच प्रोसेस हो रही है...' : 'Transcribing speech via Sarvam AI...'}</span>
+            </div>
+          )}
+          {transcript && (
+            <div className="mt-3 flex items-center gap-2 text-xs font-bold text-primary bg-primary/15 border border-primary/30 px-4 py-1.5 rounded-full shadow-xs">
+              <span>{language === 'hi' ? 'पहचाना गया:' : 'Recognized:'}</span>
+              <span className="italic">"{transcript}"</span>
+            </div>
+          )}
           {status === 'error' && (
             <p className="mt-2 text-danger text-sm font-body text-center max-w-sm">
               {language === 'hi' ? 'माइक्रोफ़ोन त्रुटि या अनुमति अस्वीकृत। आप सीधे विकल्प चुन सकते हैं।' : 'Microphone error or permission denied. You can tap an option directly.'}
@@ -251,11 +270,6 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
           {status === 'unsupported' && (
             <p className="mt-2 text-warning-dark text-sm font-body">
               {language === 'hi' ? 'आवाज़ समर्थित नहीं है। कृपया विकल्प टैप करें।' : 'Voice not supported. Please tap an option.'}
-            </p>
-          )}
-          {transcript && (
-            <p className="mt-4 text-charcoal font-body text-lg animate-pulse">
-              "{transcript}"
             </p>
           )}
           {!isListening && !isProcessing && transcript && (

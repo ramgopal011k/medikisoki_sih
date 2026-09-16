@@ -178,9 +178,13 @@ router.get('/', async (req, res) => {
   try {
     let query = supabase.from('sessions').select('*').order('created_at', { ascending: false }).limit(100);
     
-    // If a specific hospital_id is provided and is not 'all', strictly filter by it
+    // If a specific hospital_id is provided and is not 'all', filter by it
     if (hospital_id && hospital_id !== 'all') {
-      query = query.eq('hospital_id', hospital_id);
+      if (hospital_id === 'demo' || hospital_id === '11111111-1111-1111-1111-111111111111') {
+        query = query.in('hospital_id', ['demo', '11111111-1111-1111-1111-111111111111']);
+      } else {
+        query = query.eq('hospital_id', hospital_id);
+      }
     }
     
     let { data: sessions, error } = await query;

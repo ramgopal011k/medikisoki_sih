@@ -276,7 +276,7 @@ export default function ConsentFlow() {
 
   const startSession = async () => {
     setIsStarting(true);
-    const validHospitalId = hospitalId || '11111111-1111-1111-1111-111111111111';
+    const validHospitalId = (hospitalId === 'demo' || !hospitalId) ? '11111111-1111-1111-1111-111111111111' : hospitalId;
     const validComplaint = complaint || 'Chest pain';
     const validLang = language || 'en';
     const validAbha = abhaId || '00000000000000';
@@ -321,7 +321,10 @@ export default function ConsentFlow() {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      const sessionToken = data.data?.session_token || data.data?.id || crypto.randomUUID();
+      if (!res.ok) throw new Error(data.error || 'Failed to initialize session');
+
+      const sData = data.data || data.session;
+      const sessionToken = sData?.session_id || sData?.id || data.data?.session_token || crypto.randomUUID();
 
       localStorage.setItem('patient_session', sessionToken);
       localStorage.setItem('session_id', sessionToken);
@@ -339,7 +342,7 @@ export default function ConsentFlow() {
           navigate('/interview');
         }
       }, 400);
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Network issue starting session, using local session:', err);
       const fallbackToken = crypto.randomUUID();
       localStorage.setItem('patient_session', fallbackToken);
@@ -378,7 +381,7 @@ export default function ConsentFlow() {
           }
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
             isListening
-              ? 'bg-primary text-white scale-105 ring-2 ring-primary/40'
+              ? 'bg-primary text-white scale-105 ring-2 ring-primary/40 animate-pulse'
               : isProcessing
               ? 'bg-amber-600 text-white'
               : 'bg-primary text-white hover:bg-primary/90'
@@ -394,9 +397,9 @@ export default function ConsentFlow() {
         <div className="text-left">
           <p className="text-xs font-semibold text-charcoal">
             {isProcessing
-              ? 'Processing Audio...'
+              ? (language === 'hi' ? 'ऑडियो प्रोसेस हो रहा है...' : 'Processing Audio...')
               : isListening
-              ? 'Listening (tap to finish)...'
+              ? (language === 'hi' ? 'सुन रहे हैं (रोकने के लिए टैप करें)...' : 'Listening (tap to finish)...')
               : 'Voice Input (ASR)'}
           </p>
           <p className="text-xs text-muted">{hint}</p>
