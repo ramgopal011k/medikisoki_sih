@@ -1,23 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { API_URL } from '@/lib/api';
 
 export interface SpeakOptions {
   clipId?: string;
   fallbackText?: string;
+  text?: string;
   language?: string;
-}
-
-const audioCache = new Map<string, HTMLAudioElement>();
-
-function getCachedAudio(path: string): HTMLAudioElement {
-  let audio = audioCache.get(path);
-  if (!audio) {
-    audio = new Audio(path);
-    audio.preload = 'auto';
-    audioCache.set(path, audio);
-  } else {
-    audio.currentTime = 0;
-  }
-  return audio;
 }
 
 export function useVoiceGuidance() {
@@ -50,7 +38,7 @@ export function useVoiceGuidance() {
       utterance.onerror = () => setIsPlaying(false);
       window.speechSynthesis.speak(utterance);
     } catch (err) {
-      console.warn('[voiceGuidance] Browser WebSpeech fallback notice:', err);
+      console.warn('[voiceGuidance] WebSpeech fallback error:', err);
       setIsPlaying(false);
     }
   }, []);
@@ -59,54 +47,66 @@ export function useVoiceGuidance() {
     async (optionsOrText: SpeakOptions | string, langOverride?: string, clipIdParam?: string) => {
       stop();
 
-      let clipId = '';
-      let fallbackText = '';
+      let targetText = '';
       let language = 'en';
 
       if (typeof optionsOrText === 'string') {
-        clipId = clipIdParam || '';
-        fallbackText = optionsOrText;
+        targetText = optionsOrText;
         language = langOverride || 'en';
       } else {
-        clipId = optionsOrText.clipId || '';
-        fallbackText = optionsOrText.fallbackText || '';
+        targetText = optionsOrText.fallbackText || optionsOrText.text || '';
         language = optionsOrText.language || langOverride || 'en';
       }
 
-      const langFolder = language.toLowerCase().startsWith('hi') ? 'hi' : 'en';
-      const bLang = language.toLowerCase().startsWith('hi') ? 'hi-IN' : 'en-IN';
-
-      // Path A: Static prompt clip from /audio/v1/{lang}/{clipId}.mp3
-      if (clipId) {
-        const audioPath = `/audio/v1/${langFolder}/${clipId}.mp3`;
-        try {
-          const audio = getCachedAudio(audioPath);
-          audioRef.current = audio;
-          setIsPlaying(true);
-
-          audio.onended = () => {
-            setIsPlaying(false);
-            audioRef.current = null;
-          };
-
-          audio.onerror = (e) => {
-            console.warn(`[voiceGuidance] Falling back for clip ${clipId} to WebSpeech:`, e);
-            setIsPlaying(false);
-            audioRef.current = null;
-            playFallbackWebSpeech(fallbackText, bLang);
-          };
-
-          await audio.play();
-          return;
-        } catch (err) {
-          console.warn(`[voiceGuidance] Could not play static audio clip ${clipId}, falling back:`, err);
-          playFallbackWebSpeech(fallbackText, bLang);
-          return;
-        }
+      if (!targetText) {
+        return;
       }
 
-      // Path B: Dynamic content fallback
-      playFallbackWebSpeech(fallbackText, bLang);
+      const isHindi = language.toLowerCase().startsWith('hi');
+      const sarvamLang = isHindi ? 'hi-IN' : 'en-IN';
+      const webSpeechLang = isHindi ? 'hi-IN' : 'en-IN';
+
+      setIsPlaying(true);
+
+      // Try Sarvam TTS via backend endpoint
+      try {
+        const response = await fetch(`${API_URL}/api/sarvam/tts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: targetText,
+            language: sarvamLang
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.audios && data.audios[0]) {
+            const audioSrc = `data:audio/wav;base64,${data.audios[0]}`;
+            const audio = new Audio(audioSrc);
+            audioRef.current = audio;
+
+            audio.onended = () => {
+              setIsPlaying(false);
+              audioRef.current = null;
+            };
+
+            audio.onerror = (e) => {
+              console.warn('[voiceGuidance] Audio play error, falling back to WebSpeech:', e);
+              audioRef.current = null;
+              playFallbackWebSpeech(targetText, webSpeechLang);
+            };
+
+            await audio.play();
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('[voiceGuidance] Sarvam TTS request failed, falling back to WebSpeech:', err);
+      }
+
+      // Fallback to browser WebSpeech API
+      playFallbackWebSpeech(targetText, webSpeechLang);
     },
     [stop, playFallbackWebSpeech]
   );

@@ -41,7 +41,7 @@ export default function ConsentFlow() {
   const [pastVisits, setPastVisits] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  const { isListening, isProcessing, transcript, startListening, stopListening } = useAsr();
+  const { isListening, isProcessing, transcript, startListening, stopListening, setTranscript } = useAsr();
   const { speak, stop } = useAudio();
 
   const baseAbhaIdRef = useRef('');
@@ -52,6 +52,10 @@ export default function ConsentFlow() {
   const [consentResearch, setConsentResearch] = useState(true);
 
   const wasListeningRef = useRef(false);
+
+  useEffect(() => {
+    setTranscript('');
+  }, [step, setTranscript]);
 
   useEffect(() => {
     if (isListening && !wasListeningRef.current) {
@@ -112,56 +116,36 @@ export default function ConsentFlow() {
         setStep('new_patient');
       }
     } else if (step === 'new_patient') {
-      // Voice state machine: guides patient through name → age → gender in sequence
       if (lower.includes('continue') || lower.includes('next') || lower.includes('आगे')) {
-        // Only allow continue if all 3 fields are filled
         if (patientName && patientAge && patientGender) {
           setStep('consent');
+          setTranscript('');
+          return;
         }
-      } else if (newPatientVoiceField === 'name') {
-        // First spoken utterance → patient name
-        const spokenName = transcript.trim();
-        if (spokenName.length >= 2) {
-          setPatientName(spokenName);
-          setNewPatientVoiceField('age');
-          const prompt = language === 'hi'
-            ? `धन्यवाद ${spokenName}। अब अपनी उम्र बताएं।`
-            : `Got it, ${spokenName}. Now please say your age.`;
-          speak(prompt, language === 'hi' ? 'hi-IN' : 'en-IN');
-        }
-      } else if (newPatientVoiceField === 'age') {
-        // Extract numeric age from spoken text
-        const digits = transcript.replace(/[^0-9]/g, '');
-        if (digits && parseInt(digits) > 0 && parseInt(digits) < 130) {
-          setPatientAge(digits);
-          setNewPatientVoiceField('gender');
-          const prompt = language === 'hi'
-            ? 'अब अपना लिंग बताएं: पुरुष या महिला।'
-            : 'Now please say your gender: male or female.';
-          speak(prompt, language === 'hi' ? 'hi-IN' : 'en-IN');
-        }
-      } else if (newPatientVoiceField === 'gender') {
-        // Match male/female in English and Hindi
-        const g = lower;
-        const isFemale = g.includes('female') || g.includes('महिला') || g.includes('स्त्री') || g.includes('लड़की');
-        const isMale = g.includes('male') || g.includes('पुरुष') || g.includes('लड़का') || g.includes('आदमी');
-        if (isFemale) {
-          setPatientGender('Female');
-          setNewPatientVoiceField('name'); // reset for next session
-          speak(
-            language === 'hi' ? 'धन्यवाद। आगे बढ़ें।' : 'Thank you. Proceeding to consent.',
-            language === 'hi' ? 'hi-IN' : 'en-IN'
-          );
-          setStep('consent');
-        } else if (isMale) {
-          setPatientGender('Male');
-          setNewPatientVoiceField('name');
-          speak(
-            language === 'hi' ? 'धन्यवाद। आगे बढ़ें।' : 'Thank you. Proceeding to consent.',
-            language === 'hi' ? 'hi-IN' : 'en-IN'
-          );
-          setStep('consent');
-        }
+      }
+
+      // Check numeric age in transcript
+      const digits = transcript.replace(/[^0-9]/g, '');
+      const parsedAge = digits ? parseInt(digits, 10) : 0;
+      if (parsedAge > 0 && parsedAge < 130) {
+        setPatientAge(digits);
+      }
+
+      // Check gender in transcript
+      const isFemale = lower.includes('female') || lower.includes('महिला') || lower.includes('स्त्री') || lower.includes('लड़की');
+      const isMale = lower.includes('male') || lower.includes('पुरुष') || lower.includes('लड़का') || lower.includes('आदमी');
+      const isOther = lower.includes('other') || lower.includes('अन्य');
+      if (isFemale) setPatientGender('Female');
+      else if (isMale) setPatientGender('Male');
+      else if (isOther) setPatientGender('Other');
+
+      // Extract spoken name if transcript is not pure age or gender
+      const ignoreWords = ['new', 'patient', 'continue', 'next', 'male', 'female', 'other', 'yes', 'no', 'आभा', 'आगे', 'पुरुष', 'महिला', 'मरीज', 'नया'];
+      const nameWords = transcript.trim().split(/\s+/).filter(w => !ignoreWords.includes(w.toLowerCase()) && !/^\d+$/.test(w));
+      const spokenName = nameWords.join(' ');
+
+      if (spokenName.length >= 2) {
+        setPatientName(spokenName);
       }
     } else if (step === 'identity') {
       // Extract digits from spoken numbers (handles words like "one two" or "एक दो" or digits)

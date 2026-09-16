@@ -51,10 +51,10 @@ export default function LandingPage() {
           <button
             onClick={() => navigate('/hospital/demo/kiosk')}
             className="group w-full min-h-[68px] px-8 py-4 bg-primary hover:bg-[#154a3a] text-white rounded-2xl font-bold text-xl md:text-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3 border-2 border-primary focus:outline-none focus:ring-4 focus:ring-primary/30"
-            aria-label="Enter as Patient (Demo)"
+            aria-label="Enter Patient Kiosk"
           >
             <User className="w-7 h-7 text-sand group-hover:scale-110 transition-transform" />
-            <span>Enter Patient Kiosk (Demo)</span>
+            <span>Enter Patient Kiosk</span>
             <ArrowRight className="w-6 h-6 text-sand/80 group-hover:translate-x-1 transition-transform" />
           </button>
 
