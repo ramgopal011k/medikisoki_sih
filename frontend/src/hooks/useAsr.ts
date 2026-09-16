@@ -15,6 +15,7 @@ import {
   setLastAsrError,
   logAsrDiagnostics,
 } from '@/lib/asrDiagnostics';
+import { API_URL } from '@/lib/api';
 
 declare global {
   interface Window {
@@ -99,12 +100,9 @@ async function sendAudioToBackend(
   formData.append('audio', blob, `recording.${ext}`);
   formData.append('language_code', sarvamLang);
 
-  // Determine the API URL
-  const baseUrl = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL)
-    ? (import.meta as any).env.VITE_API_URL
-    : '';
-
-  const response = await fetch(`${baseUrl}/api/sarvam/asr`, {
+  // Use the shared API_URL from lib/api — correctly resolves to Railway in production
+  // (VITE_API_URL env var, or https://medikisoki-production.up.railway.app on non-localhost)
+  const response = await fetch(`${API_URL}/api/sarvam/asr`, {
     method: 'POST',
     body: formData,
     // NOTE: No auth token for this endpoint — it is explicitly public (see auth middleware)
@@ -213,9 +211,6 @@ export function useAsr() {
     }
   }, [cleanupMedia]);
 
-  // ──────────────────────────────────────────────────────
-  // LAYER 1: NATIVE WEBSPEECH
-  // ──────────────────────────────────────────────────────
   const startNativeSpeech = useCallback((
     stream: MediaStream,
     bcpLang: string,
@@ -227,6 +222,9 @@ export function useAsr() {
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
+
+    // Track whether we've already fallen back to MediaRecorder to avoid double-fallback
+    let usedMediaRecorderFallback = false;
 
     recognition.onresult = (event: any) => {
       let final = '';
@@ -249,24 +247,82 @@ export function useAsr() {
     };
 
     recognition.onerror = (e: any) => {
-      console.warn('[MediKiosk ASR] WebSpeech error:', e.error);
-      setLastAsrError(e.error || 'unknown');
+      const err: string = e.error || 'unknown';
+      console.warn('[MediKiosk ASR] WebSpeech error:', err);
+      setLastAsrError(err);
 
-      // 'no-speech' and 'aborted' are not fatal; let it end naturally
-      if (e.error === 'not-allowed') {
+      if (err === 'not-allowed') {
+        // Hard permission denial — user must act in browser settings
         if (isMountedRef.current) {
           setError('Microphone access denied. Please allow microphone in browser settings.');
           setStatus('error');
           setIsListening(false);
         }
         cleanupMedia();
-      } else if (e.error === 'network') {
+
+      } else if (err === 'service-not-allowed') {
+        // Android Chrome: Google speech servers rate-limited or region-blocked.
+        // Fall back to MediaRecorder + Sarvam backend instead of failing silently.
+        console.warn('[MediKiosk ASR] service-not-allowed — falling back to MediaRecorder+Sarvam backend');
+        if (!usedMediaRecorderFallback && !isMountedRef.current === false) {
+          usedMediaRecorderFallback = true;
+          try { recognition.abort(); } catch { /* ignore */ }
+          recognitionRef.current = null;
+          strategyRef.current = 'mediarecorder';
+          // Re-acquire stream since the native recognition may have consumed it
+          navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((newStream) => {
+              streamRef.current = newStream;
+              startMediaRecorder(newStream, duration);
+            })
+            .catch(() => {
+              if (isMountedRef.current) {
+                setError('Voice input unavailable. Please tap your answer instead.');
+                setStatus('error');
+                setIsListening(false);
+              }
+              cleanupMedia();
+            });
+        } else {
+          if (isMountedRef.current) {
+            setError('Voice recognition unavailable. Please tap your answer instead.');
+            setStatus('error');
+            setIsListening(false);
+          }
+          cleanupMedia();
+        }
+
+      } else if (err === 'audio-capture') {
+        // Microphone hardware error
+        if (isMountedRef.current) {
+          setError('Could not access microphone. Please check your mic and try again.');
+          setStatus('error');
+          setIsListening(false);
+        }
+        cleanupMedia();
+
+      } else if (err === 'network') {
         if (isMountedRef.current) {
           setError('Network error with speech recognition. Please check your connection.');
           setStatus('error');
         }
+
+      } else if (err === 'no-speech') {
+        // Not fatal — let onend handle cleanup, show gentle hint
+        if (isMountedRef.current) {
+          setError('No speech detected. Please try again or tap your answer.');
+          setStatus('error');
+        }
+
+      } else {
+        // aborted, language-not-supported, or unknown — surface to user, don't silently discard
+        if (isMountedRef.current) {
+          setError('Voice input unavailable. Please tap your answer instead.');
+          setStatus('error');
+          setIsListening(false);
+        }
+        cleanupMedia();
       }
-      // For other errors ('no-speech', 'audio-capture', etc.), let onend handle it
     };
 
     recognition.onend = () => {
@@ -294,6 +350,8 @@ export function useAsr() {
     // Auto-stop timer
     timeoutRef.current = setTimeout(() => stopListening(), duration);
   }, [cleanupMedia, stopListening]);
+
+
 
   // ──────────────────────────────────────────────────────
   // LAYER 2: MEDIARECORDER + BACKEND ASR

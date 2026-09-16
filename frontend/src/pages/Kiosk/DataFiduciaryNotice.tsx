@@ -120,7 +120,8 @@ export default function DataFiduciaryNotice() {
       </div>
 
       <VoiceGuideButton 
-        text={isHindi ? 'कृपया डीपीडीपी अधिनियम 2023 के तहत हमारी डेटा गोपनीयता सूचना की समीक्षा करें। हम आपके स्वास्थ्य डेटा की सुरक्षा करते हैं। आगे बढ़ने के लिए बटन दबाएं।' : 'Please review our Data Fiduciary Notice under the Digital Personal Data Protection Act 2023. We protect your health data.'} 
+        clipId="notice"
+        fallbackText={isHindi ? 'कृपया डीपीडीपी अधिनियम 2023 के तहत हमारी डेटा गोपनीयता सूचना की समीक्षा करें। हम आपके स्वास्थ्य डेटा की सुरक्षा करते हैं। आगे बढ़ने के लिए बटन दबाएं।' : 'Please review our Data Fiduciary Notice under the Digital Personal Data Protection Act 2023. We protect your health data.'} 
         language={isHindi ? 'hi-IN' : 'en-IN'} 
       />
     </div>

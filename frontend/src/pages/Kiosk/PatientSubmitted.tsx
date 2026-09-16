@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MandalaBackground } from '../../components/MandalaBackground';
+import { VoiceGuideButton } from '../../components/VoiceGuideButton';
 
 export default function PatientSubmitted() {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ export default function PatientSubmitted() {
         </button>
         <p className="text-xs text-muted mt-3">Auto-redirecting in {countdown}s</p>
       </div>
+      <VoiceGuideButton
+        clipId="submitted"
+        fallbackText="Your health assessment has been submitted successfully. Please wait for the doctor."
+      />
     </div>
   );
 }

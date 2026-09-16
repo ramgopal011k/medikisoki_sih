@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, Key, UserPlus, Building2, ChevronDown, HeartPulse } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Eye, EyeOff, LogIn, Key, UserPlus, Building2, ChevronDown, HeartPulse, MapPin } from 'lucide-react';
 import { QuestionCard } from '@/components/QuestionCard';
 import { API_URL } from '@/lib/api';
 
+export interface HospitalInfo {
+  hospital_id: string;
+  id: string;
+  hospital_name: string;
+  name: string;
+  location: string;
+  hospital_type: string;
+  type: string;
+}
+
 export default function DoctorLogin() {
   const navigate = useNavigate();
+  const { hospitalId } = useParams<{ hospitalId?: string }>();
   const [tab, setTab] = useState<'login' | 'register'>('login');
+  const [hospitalInfo, setHospitalInfo] = useState<HospitalInfo | null>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +34,22 @@ export default function DoctorLogin() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [regError, setRegError] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
+
+  useEffect(() => {
+    if (hospitalId) {
+      fetch(`${API_URL}/api/hospitals`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.data && Array.isArray(data.data)) {
+            const found = data.data.find((h: any) => h.hospital_id === hospitalId || h.id === hospitalId);
+            if (found) {
+              setHospitalInfo(found);
+            }
+          }
+        })
+        .catch(err => console.error('Failed to load hospital info:', err));
+    }
+  }, [hospitalId]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,16 +72,18 @@ export default function DoctorLogin() {
       const user = data.user || data.doctor || {};
       const token = data.token || 'mock-doctor-token';
       const doctorId = user.doctor_id || user.id || 'd1111111-1111-1111-1111-111111111111';
+      const targetHospitalId = hospitalId || user.hospital_id || '11111111-1111-1111-1111-111111111111';
 
       localStorage.setItem('doctor_token', token);
       localStorage.setItem('doctor_info', JSON.stringify({
         doctor_id: doctorId,
         name: user.name || 'Dr. Rajesh Varma',
         email: user.email || email,
-        hospital_id: user.hospital_id || '11111111-1111-1111-1111-111111111111',
+        hospital_id: targetHospitalId,
         role: user.role || 'doctor'
       }));
-      navigate('/doctor');
+
+      navigate(hospitalId ? `/doctor/dashboard?h=${hospitalId}` : '/doctor/dashboard');
     } catch (err) {
       console.error('Doctor login error:', err);
       setLoginError('Network error. Please ensure the backend is running.');
@@ -90,16 +120,18 @@ export default function DoctorLogin() {
       const user = data.user || data.doctor || {};
       const token = data.token || 'mock-doctor-token';
       const doctorId = user.doctor_id || user.id || crypto.randomUUID();
+      const targetHospitalId = hospitalId || user.hospital_id || '11111111-1111-1111-1111-111111111111';
 
       localStorage.setItem('doctor_token', token);
       localStorage.setItem('doctor_info', JSON.stringify({
         doctor_id: doctorId,
         name: user.name || regName,
         email: user.email || regEmail,
-        hospital_id: user.hospital_id || null,
+        hospital_id: targetHospitalId,
         role: user.role || 'doctor'
       }));
-      navigate('/doctor');
+
+      navigate(hospitalId ? `/doctor/dashboard?h=${hospitalId}` : '/doctor/dashboard');
     } catch (err) {
       console.error('Doctor registration error:', err);
       setRegError('Network error. Please try again later.');
@@ -109,15 +141,18 @@ export default function DoctorLogin() {
   };
 
   const handleDevBypass = () => {
+    const targetHospitalId = hospitalId || '11111111-1111-1111-1111-111111111111';
+
     localStorage.setItem('doctor_token', 'mock-doctor-token');
     localStorage.setItem('doctor_info', JSON.stringify({
       doctor_id: 'd1111111-1111-1111-1111-111111111111',
       name: 'Dr. Dev Bypass',
       email: 'doctor@demo.com',
-      hospital_id: 'all',
+      hospital_id: targetHospitalId,
       role: 'doctor'
     }));
-    navigate('/doctor');
+
+    navigate(hospitalId ? `/doctor/dashboard?h=${hospitalId}` : '/doctor/dashboard');
   };
 
   return (
@@ -136,7 +171,27 @@ export default function DoctorLogin() {
             <p className="text-muted text-sm mt-1.5">
               {tab === 'login' ? 'Sign in to access your triage queue' : 'Create your doctor account'}
             </p>
-          </div>  {/* Tab switcher */ }
+
+            {hospitalId && (
+              <div className="mt-4 bg-primary/10 border border-primary/20 rounded-xl p-3 text-left flex items-start gap-3">
+                <Building2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary block">
+                    {hospitalInfo?.hospital_type || 'Hospital'} Specific Login
+                  </span>
+                  <p className="text-sm font-bold text-charcoal truncate">
+                    {hospitalInfo?.hospital_name || hospitalInfo?.name || `Facility ID: ${hospitalId.slice(0, 16)}...`}
+                  </p>
+                  {hospitalInfo?.location && (
+                    <p className="text-[11px] text-muted flex items-center gap-1 mt-0.5">
+                      <MapPin className="w-3 h-3 text-charcoal shrink-0" />
+                      {hospitalInfo.location}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>  {/* Tab switcher */}
   < div className = "mx-8 mt-6 flex bg-sand border border-warmgray p-1 rounded-xl gap-1" >
             <button
               onClick={() => { setTab('login'); setLoginError(''); setRegError(''); }}

@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { Volume2, Loader2 } from 'lucide-react';
 import { useVoiceGuidance } from '@/hooks/useVoiceGuidance';
 
-interface VoiceGuideButtonProps {
-  text: string;
+export interface VoiceGuideButtonProps {
+  clipId?: string;
+  fallbackText?: string;
+  text?: string; // backward compatibility alias for fallbackText
   language?: string;
   className?: string;
   variant?: 'floating' | 'inline';
 }
 
 export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
+  clipId,
+  fallbackText,
   text,
-  language = 'en-IN',
+  language = 'en',
   className = '',
   variant = 'floating',
 }) => {
@@ -19,13 +23,18 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
   const { speak } = useVoiceGuidance();
 
   const isHindi = language.startsWith('hi');
+  const targetText = fallbackText || text || '';
 
   const handleListen = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (loading) return;
     setLoading(true);
     try {
-      await speak(text, language);
+      await speak({
+        clipId,
+        fallbackText: targetText,
+        language
+      });
     } finally {
       setLoading(false);
     }

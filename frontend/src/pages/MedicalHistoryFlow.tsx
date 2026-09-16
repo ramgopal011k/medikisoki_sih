@@ -642,7 +642,8 @@ export default function MedicalHistoryFlow() {
         </div>
       </div>
       <VoiceGuideButton 
-        text={session?.language === 'hi' ? 'अब अपनी पुरानी बीमारियों और मेडिकल इतिहास की समीक्षा करें।' : 'Now let us review your past medical history and conditions.'} 
+        clipId="medical_history"
+        fallbackText={session?.language === 'hi' ? 'अब अपनी पुरानी बीमारियों और मेडिकल इतिहास की समीक्षा करें।' : 'Now let us review your past medical history and conditions.'} 
         language={session?.language === 'hi' ? 'hi-IN' : 'en-IN'} 
       />
     </div>

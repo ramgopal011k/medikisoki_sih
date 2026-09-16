@@ -33,6 +33,8 @@ export default function ConsentFlow() {
   const [patientAge, setPatientAge] = useState('');
   const [patientGender, setPatientGender] = useState('');
   const [patientPhone, setPatientPhone] = useState('');
+  // Voice state machine for new patient registration: name → age → gender
+  const [newPatientVoiceField, setNewPatientVoiceField] = useState<'name' | 'age' | 'gender'>('name');
   const [ayushMode, setAyushMode] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
@@ -110,8 +112,56 @@ export default function ConsentFlow() {
         setStep('new_patient');
       }
     } else if (step === 'new_patient') {
+      // Voice state machine: guides patient through name → age → gender in sequence
       if (lower.includes('continue') || lower.includes('next') || lower.includes('आगे')) {
-        setStep('consent');
+        // Only allow continue if all 3 fields are filled
+        if (patientName && patientAge && patientGender) {
+          setStep('consent');
+        }
+      } else if (newPatientVoiceField === 'name') {
+        // First spoken utterance → patient name
+        const spokenName = transcript.trim();
+        if (spokenName.length >= 2) {
+          setPatientName(spokenName);
+          setNewPatientVoiceField('age');
+          const prompt = language === 'hi'
+            ? `धन्यवाद ${spokenName}। अब अपनी उम्र बताएं।`
+            : `Got it, ${spokenName}. Now please say your age.`;
+          speak(prompt, language === 'hi' ? 'hi-IN' : 'en-IN');
+        }
+      } else if (newPatientVoiceField === 'age') {
+        // Extract numeric age from spoken text
+        const digits = transcript.replace(/[^0-9]/g, '');
+        if (digits && parseInt(digits) > 0 && parseInt(digits) < 130) {
+          setPatientAge(digits);
+          setNewPatientVoiceField('gender');
+          const prompt = language === 'hi'
+            ? 'अब अपना लिंग बताएं: पुरुष या महिला।'
+            : 'Now please say your gender: male or female.';
+          speak(prompt, language === 'hi' ? 'hi-IN' : 'en-IN');
+        }
+      } else if (newPatientVoiceField === 'gender') {
+        // Match male/female in English and Hindi
+        const g = lower;
+        const isFemale = g.includes('female') || g.includes('महिला') || g.includes('स्त्री') || g.includes('लड़की');
+        const isMale = g.includes('male') || g.includes('पुरुष') || g.includes('लड़का') || g.includes('आदमी');
+        if (isFemale) {
+          setPatientGender('Female');
+          setNewPatientVoiceField('name'); // reset for next session
+          speak(
+            language === 'hi' ? 'धन्यवाद। आगे बढ़ें।' : 'Thank you. Proceeding to consent.',
+            language === 'hi' ? 'hi-IN' : 'en-IN'
+          );
+          setStep('consent');
+        } else if (isMale) {
+          setPatientGender('Male');
+          setNewPatientVoiceField('name');
+          speak(
+            language === 'hi' ? 'धन्यवाद। आगे बढ़ें।' : 'Thank you. Proceeding to consent.',
+            language === 'hi' ? 'hi-IN' : 'en-IN'
+          );
+          setStep('consent');
+        }
       }
     } else if (step === 'identity') {
       // Extract digits from spoken numbers (handles words like "one two" or "एक दो" or digits)
@@ -236,7 +286,7 @@ export default function ConsentFlow() {
       : 'Do you consent to share your data for clinical assessment?';
     
     setIsPlaying(true);
-    await speak(text, language === 'hi' ? 'hi-IN' : 'en-US');
+    await speak(text, language === 'hi' ? 'hi-IN' : 'en-US', 'consent');
     setIsPlaying(false);
   };
 
@@ -266,6 +316,7 @@ export default function ConsentFlow() {
         language: validLang,
         chief_complaint: validComplaint,
         patient_type: patientType,
+        ayush_opt_in: ayushMode,
         consents: {
           clinicalCare: consentClinicalCare,
           dataAnalytics: consentDataAnalytics,

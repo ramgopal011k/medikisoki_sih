@@ -755,7 +755,8 @@ export default function PatientPreview() {
 
       </div>
       <VoiceGuideButton 
-        text={isHindi ? 'कृपया डॉक्टर को सबमिट करने से पहले अपनी जानकारी की समीक्षा करें।' : 'Please review your information before submitting to the doctor.'} 
+        clipId="preview"
+        fallbackText={isHindi ? 'कृपया डॉक्टर को सबमिट करने से पहले अपनी जानकारी की समीक्षा करें।' : 'Please review your information before submitting to the doctor.'} 
         language={isHindi ? 'hi-IN' : 'en-IN'} 
       />
     </div>

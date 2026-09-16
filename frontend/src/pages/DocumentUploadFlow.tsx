@@ -330,7 +330,7 @@ export default function DocumentUploadFlow() {
                 </p>
               </div>
               <button
-                onClick={() => speak(t('upload.title') + '. ' + t('upload.subtitle'), session.language === 'hi' ? 'hi-IN' : 'en-US')}
+                onClick={() => speak(t('upload.title') + '. ' + t('upload.subtitle'), session.language === 'hi' ? 'hi-IN' : 'en-US', 'document_upload')}
                 className="w-11 h-11 rounded-full bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center shrink-0"
                 title="Listen to instruction"
               >

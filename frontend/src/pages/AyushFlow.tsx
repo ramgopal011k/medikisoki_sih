@@ -152,6 +152,21 @@ const stepContent: Record<AyushStep, { en: string; hi: string; title: string; op
   }
 };
 
+const ayushClipMap: Record<AyushStep, string> = {
+  prakriti: 'ayush_1_prakriti',
+  vikriti: 'ayush_2_vikriti',
+  sara: 'ayush_3_sara',
+  samhanana: 'ayush_4_samhanana',
+  pramana: 'ayush_5_pramana',
+  satmya: 'ayush_6_satmya',
+  sattva: 'ayush_7_satwa',
+  ahara_vihara: 'ayush_8_ahara_shakti',
+  vyayama_shakti: 'ayush_9_vyayama_shakti',
+  vaya: 'ayush_10_vaya',
+  agni: 'ayush_11_agni',
+  koshtha: 'ayush_12_koshtha'
+};
+
 export default function AyushFlow() {
   const navigate = useNavigate();
   const [session] = useState<SessionState | null>(() => {
@@ -332,7 +347,7 @@ export default function AyushFlow() {
               {questionText}
             </h2>
             <button
-              onClick={() => speak(questionText, session.language === 'hi' ? 'hi-IN' : 'en-US')}
+              onClick={() => speak(questionText, session.language === 'hi' ? 'hi-IN' : 'en-US', ayushClipMap[currentStepId])}
               className="w-11 h-11 rounded-full bg-terracotta/10 hover:bg-terracotta/20 text-terracotta flex items-center justify-center transition-colors shrink-0"
               title="Listen to question"
               aria-label={isPlaying ? 'Stop audio' : 'Listen to question'}

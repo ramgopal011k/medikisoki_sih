@@ -79,6 +79,8 @@ export default function TriageSummary() {
   const [redFlags, setRedFlags] = useState<RedFlag[]>([]);
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryItem[]>([]);
   const [ayushAssessments, setAyushAssessments] = useState<AyushAssessment[]>([]);
+  const [answers, setAnswers] = useState<any[]>([]);
+  const [ayushOptIn, setAyushOptIn] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [extractions, setExtractions] = useState<ExtractedField[]>([]);
   const [summaries, setSummaries] = useState<Summary[]>([]);
@@ -115,6 +117,17 @@ export default function TriageSummary() {
           setRedFlags(triageData.redFlags || []);
           setMedicalHistory(triageData.medicalHistory || []);
           setAyushAssessments(triageData.ayushAssessments || []);
+          setAnswers(triageData.answers || []);
+          const isAyushSelected = Boolean(
+            triageData.ayush_opt_in ||
+            triageData.session?.ayush_opt_in ||
+            (triageData.answers || []).some((a: any) =>
+              (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') &&
+              (a.answer_value === 'true' || a.answer_text === 'true')
+            ) ||
+            ((triageData.ayushAssessments || []).length > 0)
+          );
+          setAyushOptIn(isAyushSelected);
           setDocuments(triageData.documents || []);
           setExtractions(triageData.extractions || []);
           setSummaries(triageData.summaries || []);
@@ -507,53 +520,56 @@ export default function TriageSummary() {
           )}
         </CollapsibleSection>
 
-        <CollapsibleSection title="AYUSH Assessment & Classical Citations" icon={Sparkles} badge="Classical References" defaultOpen={true}>
-          <div className="space-y-4">
-            {ayushAssessments.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {ayushAssessments.map(item => (
-                  <div key={item.assessment_id} className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
-                    <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1.5">{item.dimension}</p>
-                    <p className="text-charcoal font-medium capitalize text-sm">{item.value}</p>
+        {/* AYUSH Assessment & Classical Citations - Only shown if patient opted into AYUSH */}
+        {(ayushOptIn || ayushAssessments.length > 0) && (
+          <CollapsibleSection title="AYUSH Assessment & Classical Citations" icon={Sparkles} badge="Classical References" defaultOpen={true}>
+            <div className="space-y-4">
+              {ayushAssessments.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {ayushAssessments.map(item => (
+                    <div key={item.assessment_id} className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                      <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1.5">{item.dimension}</p>
+                      <p className="text-charcoal font-medium capitalize text-sm">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                    <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Prakriti Analysis</p>
+                    <p className="text-charcoal font-semibold text-sm">Vata-Pitta Dominant</p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Prakriti Analysis</p>
-                  <p className="text-charcoal font-semibold text-sm">Vata-Pitta Dominant</p>
+                  <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                    <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Vikriti / Imbalance</p>
+                    <p className="text-charcoal font-semibold text-sm">Pitta-Vata (Ushna / Ruksha)</p>
+                  </div>
+                  <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
+                    <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Agni Status</p>
+                    <p className="text-charcoal font-semibold text-sm">Tikshna / Vishama Agni</p>
+                  </div>
                 </div>
-                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Vikriti / Imbalance</p>
-                  <p className="text-charcoal font-semibold text-sm">Pitta-Vata (Ushna / Ruksha)</p>
-                </div>
-                <div className="bg-lavender/8 border border-lavender/20 rounded-xl p-4">
-                  <p className="text-[10px] font-bold text-lavender uppercase tracking-widest mb-1">Agni Status</p>
-                  <p className="text-charcoal font-semibold text-sm">Tikshna / Vishama Agni</p>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Classical Citations & Textual Grounding */}
-            <div className="bg-sand/60 border-2 border-warmgray rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-terracotta" />
-                <h3 className="text-xs font-bold text-charcoal uppercase tracking-wider">Classical Vedic & Ayurvedic References</h3>
-              </div>
-              <div className="space-y-2 text-xs text-charcoal/80 font-body">
-                <div className="bg-white p-3 rounded-lg border border-warmgray">
-                  <p className="font-bold text-terracotta">[1] Charaka Samhita · Sutra Sthana (Ch. 20 - Maharoga Adhyaya)</p>
-                  <p className="text-muted mt-1 italic">"Assessment of Dosha-Dushya Sammurchana, Prakriti constitution and Agnibala under classical Ayurvedic diagnostic principles."</p>
+              {/* Classical Citations & Textual Grounding */}
+              <div className="bg-sand/60 border-2 border-warmgray rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-terracotta" />
+                  <h3 className="text-xs font-bold text-charcoal uppercase tracking-wider">Classical Vedic & Ayurvedic References</h3>
                 </div>
-                <div className="bg-white p-3 rounded-lg border border-warmgray">
-                  <p className="font-bold text-terracotta">[2] Sushruta Samhita · Sutra Sthana (Dosha Dhatu Mala Kshaya Vriddhi)</p>
-                  <p className="text-muted mt-1 italic">"Determination of Rogi-Roga Pariksha, Koshtha nature, and Ahara-Vihara intervention protocol."</p>
+                <div className="space-y-2 text-xs text-charcoal/80 font-body">
+                  <div className="bg-white p-3 rounded-lg border border-warmgray">
+                    <p className="font-bold text-terracotta">[1] Charaka Samhita · Sutra Sthana (Ch. 20 - Maharoga Adhyaya)</p>
+                    <p className="text-muted mt-1 italic">"Assessment of Dosha-Dushya Sammurchana, Prakriti constitution and Agnibala under classical Ayurvedic diagnostic principles."</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-warmgray">
+                    <p className="font-bold text-terracotta">[2] Sushruta Samhita · Sutra Sthana (Dosha Dhatu Mala Kshaya Vriddhi)</p>
+                    <p className="text-muted mt-1 italic">"Determination of Rogi-Roga Pariksha, Koshtha nature, and Ahara-Vihara intervention protocol."</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </CollapsibleSection>
+          </CollapsibleSection>
+        )}
 
         <CollapsibleSection title="Medical Timeline" icon={Calendar} badge={documents.length === 0 ? 'No data' : `${documents.length} files`}>
           {documents.length === 0 ? (

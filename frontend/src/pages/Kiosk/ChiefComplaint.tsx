@@ -118,7 +118,7 @@ export default function ChiefComplaint() {
               {questionTitle}
             </h1>
             <button 
-              onClick={() => speak(questionTitle)}
+              onClick={() => speak(questionTitle, undefined, 'chief_complaint')}
               className="w-12 h-12 rounded-full bg-[#e3ded6] hover:bg-[#d8d2c8] text-[#4b5563] hover:text-[#1f2937] flex items-center justify-center transition-colors shadow-xs shrink-0 mt-0.5 focus:outline-none focus:ring-2 focus:ring-[#8c7355]/30"
               title="Listen to question"
             >

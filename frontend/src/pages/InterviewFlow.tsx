@@ -215,6 +215,14 @@ export default function InterviewFlow() {
                   ? 'आपके लक्षणों पर तुरंत ध्यान देने की आवश्यकता है। कृपया नर्स स्टेशन को सूचित करें।'
                   : 'Your symptoms require immediate attention. Please alert the nurse station.'}
               </p>
+              <div className="flex justify-center mb-4">
+                <VoiceGuideButton
+                  clipId="red_flag_message"
+                  fallbackText="Important information has been identified. Please notify hospital staff or wait for assistance."
+                  language={session?.language || 'en'}
+                  variant="inline"
+                />
+              </div>
               <p className="font-body text-sm text-muted">
                 Flag: {redFlagTriggered.flag_id}
               </p>

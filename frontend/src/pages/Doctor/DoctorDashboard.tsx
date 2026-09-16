@@ -70,8 +70,27 @@ export default function DoctorDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'urgent' | 'normal'>('all');
   const [view, setView] = useState<'pending' | 'verified'>('pending');
-  // Always default to 'all' so every patient shows regardless of hospital filter
-  const [selectedHospital, setSelectedHospital] = useState<string>('all');
+  // Initialize selectedHospital from URL query param or doctorInfo localStorage
+  const [selectedHospital, setSelectedHospital] = useState<string>(() => {
+    if (urlHospitalId) return urlHospitalId;
+    const info = localStorage.getItem('doctor_info');
+    if (info) {
+      try {
+        const parsed = JSON.parse(info);
+        if (parsed.hospital_id && parsed.hospital_id !== 'all') {
+          return parsed.hospital_id;
+        }
+      } catch {}
+    }
+    return 'all';
+  });
+
+  useEffect(() => {
+    if (urlHospitalId) {
+      setSelectedHospital(urlHospitalId);
+    }
+  }, [urlHospitalId]);
+
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
   const [isOnline, setIsOnline] = useState(true);
   const [showOfflineBanner, setShowOfflineBanner] = useState(true);
@@ -195,6 +214,7 @@ export default function DoctorDashboard() {
   const urgentCount = activePatients.filter(p => (p.red_flag_count || 0) > 0).length;
   const totalCount = activePatients.length;
   const currentList = view === 'pending' ? activePatients : verifiedPatients;
+  const activeHospitalObj = hospitals.find(h => (h.hospital_id || (h as any).id) === selectedHospital);
 
   const filteredPatients = currentList.filter(p => {
     const matchesSearch =
@@ -248,16 +268,20 @@ export default function DoctorDashboard() {
 
           {/* Right controls */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Hospital picker */}
-            <div className="hidden md:flex items-center gap-2 bg-sand border border-warmgray px-3 py-1.5 rounded-xl text-xs font-medium text-charcoal">
-              <Building2 className="w-3.5 h-3.5 text-muted shrink-0" />
+            {/* Hospital picker - with fixed custom chevron arrow styling */}
+            <div className="hidden md:flex items-center bg-sand border border-warmgray px-3 py-1.5 rounded-xl text-xs font-medium text-charcoal relative">
+              <Building2 className="w-3.5 h-3.5 text-muted shrink-0 mr-1.5" />
               <select
                 value={selectedHospital}
                 onChange={(e) => setSelectedHospital(e.target.value)}
-                className="bg-transparent focus:outline-none cursor-pointer max-w-[180px] truncate text-charcoal"
+                className="bg-transparent focus:outline-none cursor-pointer max-w-[180px] truncate text-charcoal font-semibold appearance-none pr-6"
               >
                 <option value="all">All Facilities</option>
-                {hospitals.map(h => <option key={h.hospital_id} value={h.hospital_id}>{h.hospital_name}</option>)}
+                {hospitals.map(h => (
+                  <option key={h.hospital_id || (h as any).id} value={h.hospital_id || (h as any).id}>
+                    {h.hospital_name || (h as any).name}
+                  </option>
+                ))}
                 {hospitals.length === 0 && (
                   <>
                     <option value="11111111-1111-1111-1111-111111111111">City General Hospital</option>
@@ -265,7 +289,7 @@ export default function DoctorDashboard() {
                   </>
                 )}
               </select>
-              <ChevronDown className="w-3 h-3 text-muted" />
+              <ChevronDown className="w-3.5 h-3.5 text-muted pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
             </div>
 
             <button
@@ -299,6 +323,34 @@ export default function DoctorDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        {/* Active Facility Filter Banner */}
+        {selectedHospital !== 'all' && activeHospitalObj && (
+          <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Active Hospital Context</span>
+                  <span className="text-[10px] font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                    {activeHospitalObj.hospital_type || (activeHospitalObj as any).type || 'General'}
+                  </span>
+                </div>
+                <h3 className="font-display font-bold text-lg text-charcoal">
+                  {activeHospitalObj.hospital_name || (activeHospitalObj as any).name}
+                </h3>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedHospital('all')}
+              className="text-xs font-bold text-primary hover:underline bg-white border border-primary/20 px-3 py-1.5 rounded-xl shrink-0"
+            >
+              Show All Facilities →
+            </button>
+          </div>
+        )}
 
         {/* Clinical Liability Disclaimer Banner */}
         <div className="bg-amber-50 border-2 border-amber-200 text-amber-900 text-sm p-3.5 rounded-xl font-medium flex items-center gap-2.5 shadow-sm">

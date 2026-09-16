@@ -15,9 +15,14 @@ The following RAG utility scripts are standalone and not imported by application
 
 These are intentional, not dead code.
 
-### Architectural Debt (Future Work)
+### Architectural Debt & Future Work
 
 - `backend/src/index.ts` is 1,024 lines. Consider extracting routes into modules such as sessions and documents after the hackathon.
+- **Sign-language avatar** — Indian Sign Language video library for deaf patients. ~3–5 days. Medium priority.
+- **Hospital analytics dashboard** — patient volume, red-flag frequency, AYUSH case mix, peak hours. ~2–3 days. Low priority.
+- **Real ABDM sandbox integration**
+- **Fine-tuned AYUSH model**
+- **Full Dashividha 16-subtype expansion**
 
 ### Test Isolation (2026-09-15)
 

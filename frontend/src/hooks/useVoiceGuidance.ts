@@ -1,36 +1,104 @@
-import { API_URL } from '@/lib/api';
+import { useState, useCallback, useRef, useEffect } from 'react';
+
+export interface SpeakOptions {
+  clipId?: string;
+  fallbackText?: string;
+  language?: string;
+}
 
 export function useVoiceGuidance() {
-  const speak = async (text: string, language = 'en-IN') => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsPlaying(false);
+  }, []);
+
+  const playFallbackWebSpeech = useCallback((text: string, lang: string) => {
+    if (!text || typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setIsPlaying(false);
+      return;
+    }
     try {
-      const res = await fetch(`${API_URL}/api/sarvam/tts`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer medikiosk-demo-token',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text, language, speaker: 'priya' }),
-      });
-      const data = await res.json();
-      if (data.audios?.[0]) {
-        const audio = new Audio(`data:audio/wav;base64,${data.audios[0]}`);
-        await audio.play();
+      window.speechSynthesis.cancel();
+      setIsPlaying(true);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('[voiceGuidance] Browser WebSpeech fallback notice:', err);
+      setIsPlaying(false);
+    }
+  }, []);
+
+  const speak = useCallback(
+    async (optionsOrText: SpeakOptions | string, langOverride?: string, clipIdParam?: string) => {
+      stop();
+
+      let clipId = '';
+      let fallbackText = '';
+      let language = 'en';
+
+      if (typeof optionsOrText === 'string') {
+        clipId = clipIdParam || '';
+        fallbackText = optionsOrText;
+        language = langOverride || 'en';
       } else {
-        console.warn('[voiceGuidance] No audio from Sarvam, using browser TTS');
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = language;
-          window.speechSynthesis.speak(utterance);
+        clipId = optionsOrText.clipId || '';
+        fallbackText = optionsOrText.fallbackText || '';
+        language = optionsOrText.language || langOverride || 'en';
+      }
+
+      const langFolder = language.toLowerCase().startsWith('hi') ? 'hi' : 'en';
+      const bLang = language.toLowerCase().startsWith('hi') ? 'hi-IN' : 'en-IN';
+
+      // Path A: Static prompt clip from /audio/v1/{lang}/{clipId}.mp3
+      if (clipId) {
+        const audioPath = `/audio/v1/${langFolder}/${clipId}.mp3`;
+        try {
+          const audio = new Audio(audioPath);
+          audioRef.current = audio;
+          setIsPlaying(true);
+
+          audio.onended = () => {
+            setIsPlaying(false);
+            audioRef.current = null;
+          };
+
+          audio.onerror = (e) => {
+            console.warn(`[voiceGuidance] Falling back for clip ${clipId} to WebSpeech:`, e);
+            setIsPlaying(false);
+            audioRef.current = null;
+            playFallbackWebSpeech(fallbackText, bLang);
+          };
+
+          await audio.play();
+          return;
+        } catch (err) {
+          console.warn(`[voiceGuidance] Could not play static audio clip ${clipId}, falling back:`, err);
+          playFallbackWebSpeech(fallbackText, bLang);
+          return;
         }
       }
-    } catch (err) {
-      console.warn('Voice guidance TTS notice:', err);
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = language;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
-  };
-  return { speak };
+
+      // Path B: Dynamic content fallback
+      playFallbackWebSpeech(fallbackText, bLang);
+    },
+    [stop, playFallbackWebSpeech]
+  );
+
+  useEffect(() => {
+    return () => stop();
+  }, [stop]);
+
+  return { speak, stop, isPlaying };
 }
