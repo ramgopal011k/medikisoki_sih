@@ -212,7 +212,6 @@ export function useAsr() {
   }, [cleanupMedia]);
 
   const startNativeSpeech = useCallback((
-    stream: MediaStream,
     bcpLang: string,
     duration: number
   ) => {
@@ -223,7 +222,6 @@ export function useAsr() {
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    // Track whether we've already fallen back to MediaRecorder to avoid double-fallback
     let usedMediaRecorderFallback = false;
 
     recognition.onresult = (event: any) => {
@@ -252,7 +250,6 @@ export function useAsr() {
       setLastAsrError(err);
 
       if (err === 'not-allowed') {
-        // Hard permission denial — user must act in browser settings
         if (isMountedRef.current) {
           setError('Microphone access denied. Please allow microphone in browser settings.');
           setStatus('error');
@@ -261,15 +258,12 @@ export function useAsr() {
         cleanupMedia();
 
       } else if (err === 'service-not-allowed') {
-        // Android Chrome: Google speech servers rate-limited or region-blocked.
-        // Fall back to MediaRecorder + Sarvam backend instead of failing silently.
         console.warn('[MediKiosk ASR] service-not-allowed — falling back to MediaRecorder+Sarvam backend');
-        if (!usedMediaRecorderFallback && !isMountedRef.current === false) {
+        if (!usedMediaRecorderFallback && isMountedRef.current) {
           usedMediaRecorderFallback = true;
           try { recognition.abort(); } catch { /* ignore */ }
           recognitionRef.current = null;
           strategyRef.current = 'mediarecorder';
-          // Re-acquire stream since the native recognition may have consumed it
           navigator.mediaDevices.getUserMedia({ audio: true })
             .then((newStream) => {
               streamRef.current = newStream;
@@ -293,7 +287,6 @@ export function useAsr() {
         }
 
       } else if (err === 'audio-capture') {
-        // Microphone hardware error
         if (isMountedRef.current) {
           setError('Could not access microphone. Please check your mic and try again.');
           setStatus('error');
@@ -308,14 +301,12 @@ export function useAsr() {
         }
 
       } else if (err === 'no-speech') {
-        // Not fatal — let onend handle cleanup, show gentle hint
         if (isMountedRef.current) {
           setError('No speech detected. Please try again or tap your answer.');
           setStatus('error');
         }
 
       } else {
-        // aborted, language-not-supported, or unknown — surface to user, don't silently discard
         if (isMountedRef.current) {
           setError('Voice input unavailable. Please tap your answer instead.');
           setStatus('error');
@@ -326,11 +317,6 @@ export function useAsr() {
     };
 
     recognition.onend = () => {
-      // Release the stream tracks BEFORE updating state to avoid stale lock on iOS
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
-        streamRef.current = null;
-      }
       recognitionRef.current = null;
 
       if (isMountedRef.current) {
@@ -345,13 +331,21 @@ export function useAsr() {
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (startErr: any) {
+      console.warn('[MediKiosk ASR] Native recognition.start() failed:', startErr);
+      if (isMountedRef.current) {
+        setError('Could not start voice input. Please tap your answer instead.');
+        setStatus('error');
+        setIsListening(false);
+      }
+      return;
+    }
 
     // Auto-stop timer
     timeoutRef.current = setTimeout(() => stopListening(), duration);
   }, [cleanupMedia, stopListening]);
-
-
 
   // ──────────────────────────────────────────────────────
   // LAYER 2: MEDIARECORDER + BACKEND ASR
@@ -365,7 +359,6 @@ export function useAsr() {
     try {
       recorder = new MediaRecorder(stream, { mimeType: mime });
     } catch {
-      // Some browsers don't accept the mime type in the constructor — try without
       try {
         recorder = new MediaRecorder(stream);
       } catch (err) {
@@ -390,7 +383,6 @@ export function useAsr() {
     };
 
     recorder.onstop = async () => {
-      // Release mic immediately to prevent OS-level lock
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
@@ -448,7 +440,6 @@ export function useAsr() {
     };
 
     mediaRecorderRef.current = recorder;
-    // Collect in 250ms timeslices for better iOS compatibility
     recorder.start(250);
 
     // Auto-stop timer
@@ -458,7 +449,7 @@ export function useAsr() {
   // ──────────────────────────────────────────────────────
   // START (public API)
   // ──────────────────────────────────────────────────────
-  const startListening = useCallback(async (options?: UseAsrOptions) => {
+  const startListening = useCallback((options?: UseAsrOptions) => {
     // Toggle off if already running
     if (isListening || isProcessing) {
       stopListening();
@@ -472,26 +463,22 @@ export function useAsr() {
     onResultCallbackRef.current = options?.onResult;
     onEndCallbackRef.current = options?.onEnd;
 
-    // Log diagnostics in dev (non-blocking, no patient data)
     if (import.meta.env?.DEV) {
       logAsrDiagnostics().catch(() => {});
     }
 
-    // Gate: HTTPS / secure context required
     if (typeof window !== 'undefined' && !window.isSecureContext) {
       setStatus('unsupported');
       setError('Voice input requires HTTPS. Please tap your answer instead.');
       return;
     }
 
-    // Gate: getUserMedia must exist
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       setStatus('unsupported');
       setError('Voice input is not supported in this browser. Please tap your answer instead.');
       return;
     }
 
-    // Determine strategy
     const strategy = selectAsrStrategy();
     strategyRef.current = strategy;
 
@@ -501,59 +488,51 @@ export function useAsr() {
       return;
     }
 
-    // Acquire mic stream
-    let stream: MediaStream | null = null;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          // sampleRate hint: Sarvam works best with 16kHz; browser may ignore this
-          sampleRate: 16000,
-        },
-      });
-      streamRef.current = stream;
-    } catch (err: any) {
-      const name: string = err?.name || '';
-      let msg = 'Microphone access denied. Please allow microphone in browser settings.';
-      if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
-        msg = 'No microphone found. Please connect a microphone or tap your answer instead.';
-      } else if (name === 'NotReadableError' || name === 'TrackStartError') {
-        msg = 'Microphone is busy with another app. Please close other apps using the mic.';
-      } else if (name === 'OverconstrainedError') {
-        // Retry without sampleRate constraint
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          streamRef.current = stream;
-        } catch {
-          setError('Could not start microphone. Please tap your answer instead.');
-          setStatus('error');
-          return;
-        }
-      }
-      if (!stream) {
-        setLastAsrError(name || err.message);
-        setError(msg);
-        setStatus('error');
-        return;
-      }
-    }
-
-    setIsListening(true);
-    setStatus('listening');
-
     const bcpLang = getBcpTag(options);
     const duration = (options?.maxDurationSeconds || 10) * 1000;
 
+    // Desktop Native Path: execute SpeechRecognition.start() synchronously inside user gesture handler
     if (strategy === 'native') {
-      startNativeSpeech(stream, bcpLang, duration);
-    } else {
-      // strategy === 'mediarecorder'
-      // On iOS, native SpeechRecognition and getUserMedia conflict at the OS level.
-      // We never open a SpeechRecognition instance when using MediaRecorder.
-      startMediaRecorder(stream, duration);
+      setIsListening(true);
+      setStatus('listening');
+      startNativeSpeech(bcpLang, duration);
+      return;
     }
+
+    // Mobile / MediaRecorder Path: request mic and start MediaRecorder
+    setIsListening(true);
+    setStatus('listening');
+
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    })
+      .then((stream) => {
+        if (!isMountedRef.current) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
+        streamRef.current = stream;
+        startMediaRecorder(stream, duration);
+      })
+      .catch((err: any) => {
+        const name: string = err?.name || '';
+        let msg = 'Microphone access denied. Please allow microphone in browser settings.';
+        if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+          msg = 'No microphone found. Please connect a microphone or tap your answer instead.';
+        } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+          msg = 'Microphone is busy with another app. Please close other apps using the mic.';
+        }
+        if (isMountedRef.current) {
+          setLastAsrError(name || err.message);
+          setError(msg);
+          setStatus('error');
+          setIsListening(false);
+        }
+      });
   }, [isListening, isProcessing, stopListening, startNativeSpeech, startMediaRecorder]);
 
   // ──────────────────────────────────────────────────────

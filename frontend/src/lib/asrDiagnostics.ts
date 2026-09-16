@@ -135,20 +135,19 @@ export function selectAsrStrategy(): 'native' | 'mediarecorder' | 'none' {
 
   if (!window.isSecureContext) return 'none';
 
-  // iOS WebKit: native SpeechRecognition exists but WebRTC getUserMedia mic capture
-  // conflicts with it at OS level. iOS 15+ supports MediaRecorder (mp4).
-  // Prefer mediarecorder on iOS for reliability.
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-  const isIOS = /iPhone|iPad|iPod/.test(ua) && !/(Windows NT|Windows Phone)/.test(ua);
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) || (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches);
 
-  if (isIOS) {
-    // On iOS, MediaRecorder with audio/mp4 is more reliable for sustained recording
+  // All Mobile browsers (iOS & Android): Google SpeechRecognition on Android mobile frequently returns
+  // 'service-not-allowed' or conflicts with getUserMedia mic locks.
+  // Prefer MediaRecorder + Sarvam backend for all mobile devices for 100% deterministic reliability.
+  if (isMobile) {
     if (hasMR && hasGUM) return 'mediarecorder';
-    if (hasNative) return 'native'; // fallback to native if no MediaRecorder
+    if (hasNative) return 'native';
     return 'none';
   }
 
-  // All other browsers: prefer native if available, otherwise MediaRecorder
+  // Desktop browsers (Desktop Chrome, Edge, Brave): Use native WebSpeech API
   if (hasNative) return 'native';
   if (hasMR && hasGUM) return 'mediarecorder';
   return 'none';
