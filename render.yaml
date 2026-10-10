@@ -27,6 +27,14 @@ services:
         sync: false
       - key: ALLOW_DEMO_MOCK_AUTH
         value: "true"
+      - key: DEMO_ADMIN_EMAILS
+        sync: false
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false
+      - key: DEMO_DOCTOR_EMAIL
+        sync: false
+      - key: DEMO_DOCTOR_PASSWORD
+        sync: false
       - key: USE_LOCAL_ASR
         value: "false"
       - key: USE_LOCAL_OCR
