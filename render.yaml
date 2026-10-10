@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: medikisoki-backend
+    env: node
+    region: singapore
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/hospitals
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ALLOW_DEMO_MOCK_AUTH
+        value: "true"
+      - key: USE_LOCAL_ASR
+        value: "false"
+      - key: USE_LOCAL_OCR
+        value: "false"
+      - key: USE_LOCAL_TRANSLATE
+        value: "false"
