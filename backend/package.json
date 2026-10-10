@@ -17,6 +17,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.114.0",
+    "@types/cors": "^2.8.19",
     "@types/multer": "^2.2.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -36,7 +37,6 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.4.0",
