@@ -340,121 +340,67 @@ router.get('/', async (req, res) => {
 router.get('/:id/triage', async (req, res) => {
   const { id } = req.params;
   try {
-    const { data: session, error: sessionErr } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const t0 = Date.now();
+    const [
+      sessionRes,
+      answersRes,
+      historyFactsRes,
+      medicalHistoryRes,
+      ayushRes,
+      documentsRes,
+      redFlagsRes,
+      summariesRes
+    ] = await Promise.all([
+      supabase.from('sessions').select('*').eq('id', id).single(),
+      supabase.from('answers').select('*').eq('session_id', id).order('created_at', { ascending: true }),
+      supabase.from('history_facts').select('*').eq('session_id', id),
+      supabase.from('medical_history').select('*').eq('session_id', id),
+      supabase.from('ayush_assessments').select('*').eq('session_id', id),
+      supabase.from('documents').select('*').eq('session_id', id),
+      supabase.from('red_flags').select('*').eq('session_id', id),
+      supabase.from('summaries').select('*').eq('session_id', id)
+    ]);
+    console.log(`[triage] ${id} queries_done in ${Date.now() - t0}ms`);
 
-    if (sessionErr || !session) {
+    const session = sessionRes.data;
+    if (sessionRes.error || !session) {
       return res.status(404).json({ error: 'Session not found' });
     }
 
-    // Insert audit log
-    try {
-      await supabase.from('audit_logs').insert({
+    if (answersRes.error) console.warn('[triage] query answers failed');
+    if (historyFactsRes.error) console.warn('[triage] query history_facts failed');
+    if (medicalHistoryRes.error) console.warn('[triage] query medical_history failed');
+    if (ayushRes.error) console.warn('[triage] query ayush_assessments failed');
+    if (documentsRes.error) console.warn('[triage] query documents failed');
+    if (redFlagsRes.error) console.warn('[triage] query red_flags failed');
+    if (summariesRes.error) console.warn('[triage] query summaries failed');
+
+    const answers = answersRes.data || [];
+    const historyFactsData = historyFactsRes.data || [];
+    const medicalHistoryData = medicalHistoryRes.data || [];
+    const ayushData = ayushRes.data || [];
+    const documentsData = documentsRes.data || [];
+    const redFlagsData = redFlagsRes.data || [];
+    let summaryData = summariesRes.data || [];
+
+    if (!summariesRes.error && summaryData.length === 0) {
+      try {
+        await generateTriageSummary(id);
+        const { data: freshSummary } = await supabase.from('summaries').select('*').eq('session_id', id);
+        if (freshSummary) summaryData = freshSummary;
+      } catch (genErr) {
+        console.warn('Auto summary generation warning:', genErr);
+      }
+    }
+
+    // Insert audit log in background
+    void Promise.resolve(
+      supabase.from('audit_logs').insert({
         session_id: id,
         action: 'Viewed Triage Summary',
         resource_type: 'sessions'
-      });
-    } catch (auditErr) {
-      console.warn('Failed to insert audit log:', auditErr);
-    }
-
-    // Fetch answers
-    const { data: answersData } = await supabase
-      .from('answers')
-      .select('*')
-      .eq('session_id', id)
-      .order('created_at', { ascending: true });
-    
-    const answers = answersData || [];
-
-    // Fetch history_facts
-    let historyFactsData: any[] = [];
-    try {
-      const { data: hfResult } = await supabase
-        .from('history_facts')
-        .select('*')
-        .eq('session_id', id);
-      if (hfResult) historyFactsData = hfResult;
-    } catch (e) {
-      console.warn('history_facts query warning:', e);
-    }
-
-    // Fetch medical history
-    let medicalHistoryData: any[] = [];
-    try {
-      const { data: mhResult } = await supabase
-        .from('medical_history')
-        .select('*')
-        .eq('session_id', id);
-      if (mhResult) medicalHistoryData = mhResult;
-    } catch (e) {
-      console.warn('medical_history query warning:', e);
-    }
-
-    // Fetch AYUSH assessments
-    let ayushData: any[] = [];
-    try {
-      const { data: ayushResult } = await supabase
-        .from('ayush_assessments')
-        .select('*')
-        .eq('session_id', id);
-      if (ayushResult) ayushData = ayushResult;
-    } catch (e) {
-      console.warn('ayush_assessments query warning:', e);
-    }
-
-    // Fetch documents
-    let documentsData: any[] = [];
-    try {
-      const { data: docResult } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('session_id', id);
-      if (docResult) documentsData = docResult;
-    } catch (e) {
-      console.warn('documents query warning:', e);
-    }
-
-    // Fetch red flags
-    let redFlagsData: any[] = [];
-    try {
-      const { data: rfResult } = await supabase
-        .from('red_flags')
-        .select('*')
-        .eq('session_id', id);
-      if (rfResult) redFlagsData = rfResult;
-    } catch (e) {
-      console.warn('red_flags query warning:', e);
-    }
-
-    // Fetch summaries, auto-generate if missing
-    let summaryData: any[] = [];
-    try {
-      const { data: sumResult } = await supabase
-        .from('summaries')
-        .select('*')
-        .eq('session_id', id);
-      if (sumResult && sumResult.length > 0) {
-        summaryData = sumResult;
-      } else {
-        // Generate summary on the fly
-        try {
-          await generateTriageSummary(id);
-          const { data: freshSummary } = await supabase
-            .from('summaries')
-            .select('*')
-            .eq('session_id', id);
-          if (freshSummary) summaryData = freshSummary;
-        } catch (genErr) {
-          console.warn('Auto summary generation warning:', genErr);
-        }
-      }
-    } catch (e) {
-      console.warn('summaries query warning:', e);
-    }
+      })
+    ).catch((err: any) => console.warn('Failed to insert audit log:', err));
 
     const chiefComplaint = session.chief_complaint || 
       answers.find((a: any) => a.question_id === 'chief_complaint')?.answer_text || 
@@ -583,7 +529,7 @@ router.get('/:id/triage', async (req, res) => {
     });
 
     const hasAyushOptIn = ayushData.length > 0 ||
-      (answersData || []).some((a: any) => (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') && (a.answer_text === 'true' || a.answer_text === true));
+      (answers || []).some((a: any) => (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') && (a.answer_text === 'true' || a.answer_text === true));
 
     let ayush_reasoning = null;
     if (hasAyushOptIn || ayushData.length > 0) {
