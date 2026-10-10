@@ -33,3 +33,7 @@ services:
         value: "false"
       - key: USE_LOCAL_TRANSLATE
         value: "false"
+      - key: CORS_EXTRA_ORIGINS
+        sync: false
+      - key: DEMO_AUTH_TOKEN
+        sync: false
