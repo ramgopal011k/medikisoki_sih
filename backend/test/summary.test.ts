@@ -73,7 +73,7 @@ describe('Triage Summary Generator', () => {
     const summary = result.summary;
 
     expect(summary.chief_complaint).toBe('Headache');
-    expect(summary.hpi.some((h: string) => h.includes('pain: throbbing'))).toBe(true);
+    expect(summary.hpi.some((h: string) => h.includes('Pain: throbbing') || h.toLowerCase().includes('pain: throbbing'))).toBe(true);
     expect(summary.pmh.some((p: string) => p.includes('Diabetes'))).toBe(true);
     expect(summary.psh).toEqual(['None reported']);
   });

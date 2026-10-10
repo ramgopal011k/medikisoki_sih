@@ -26,9 +26,12 @@ import {
   ShieldCheck,
   Layers,
   CheckCircle2,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ShieldAlert,
+  BarChart3
 } from 'lucide-react';
 import { API_URL } from '@/lib/api';
+import { loadHospitalsSWR, removeCachedHospital } from '@/lib/hospitalsCache';
 
 export interface Hospital {
   hospital_id: string;
@@ -76,14 +79,13 @@ export default function AdminHospitals() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const fetchHospitals = useCallback(async (silent = false) => {
+  const fetchHospitals = useCallback(async (silent = false, forceFresh = false) => {
     if (!silent) setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/hospitals`);
-      const data = await res.json();
-      if (data.data) {
-        setHospitals(data.data);
-      }
+      await loadHospitalsSWR((data, fromCache) => {
+        setHospitals(data);
+        if (fromCache || !silent) setIsLoading(false);
+      }, forceFresh);
     } catch (err) {
       console.error('Failed to load hospitals:', err);
     } finally {
@@ -146,7 +148,7 @@ export default function AdminHospitals() {
 
       showToast(`Successfully registered "${formData.hospital_name}"!`);
       setIsAddModalOpen(false);
-      fetchHospitals(true);
+      fetchHospitals(true, true);
     } catch (err: any) {
       alert(err.message || 'Error registering hospital');
     } finally {
@@ -170,7 +172,7 @@ export default function AdminHospitals() {
 
       showToast(`Updated "${formData.hospital_name}"!`);
       setIsEditModalOpen(false);
-      fetchHospitals(true);
+      fetchHospitals(true, true);
     } catch (err: any) {
       alert(err.message || 'Error updating hospital');
     } finally {
@@ -181,16 +183,23 @@ export default function AdminHospitals() {
   const handleDeleteHospital = async () => {
     if (!selectedHospital) return;
 
+    const targetId = selectedHospital.id || selectedHospital.hospital_id;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/api/hospitals/${selectedHospital.id || selectedHospital.hospital_id}`, {
+      const res = await fetch(`${API_URL}/api/hospitals/${targetId}`, {
         method: 'DELETE'
       });
-      if (!res.ok) throw new Error('Failed to remove hospital');
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(result.error || 'Failed to remove hospital');
+
+      // Optimistically update local state immediately so item is removed instantly
+      setHospitals(prev => prev.filter(h => h.id !== targetId && h.hospital_id !== targetId));
+      removeCachedHospital(targetId);
 
       showToast(`Removed facility "${selectedHospital.hospital_name || selectedHospital.name}"`);
       setIsDeleteModalOpen(false);
-      fetchHospitals(true);
+      setSelectedHospital(null);
+      fetchHospitals(true, true);
     } catch (err: any) {
       alert(err.message || 'Error deleting hospital');
     } finally {
@@ -601,9 +610,20 @@ export default function AdminHospitals() {
 
         {/* Facilities List / Grid */}
         {isLoading && hospitals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-warmgray shadow-xs">
-            <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-            <p className="text-muted font-medium text-sm">Loading registered healthcare facilities...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-3xl border border-warmgray p-6 space-y-4 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-sand rounded-2xl" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-sand rounded w-3/4" />
+                    <div className="h-3 bg-sand rounded w-1/2" />
+                  </div>
+                </div>
+                <div className="h-3 bg-sand rounded w-full" />
+                <div className="h-8 bg-sand rounded-xl w-full" />
+              </div>
+            ))}
           </div>
         ) : filteredHospitals.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-dashed border-warmgray text-center p-6 shadow-xs">
@@ -631,6 +651,7 @@ export default function AdminHospitals() {
               const hospitalId = h.hospital_id || h.id;
               const kioskUrl = `${window.location.origin}/hospital/${hospitalId}/kiosk`;
               const doctorUrl = `${window.location.origin}/hospital/${hospitalId}/doctor`;
+              const triageUrl = `${window.location.origin}/hospital/${hospitalId}/triage`;
 
               return (
                 <div
@@ -758,6 +779,28 @@ export default function AdminHospitals() {
                           <Copy className="w-3.5 h-3.5" />
                         </button>
                       </div>
+
+                      {/* Triage Portal Link */}
+                      <div className="flex items-center justify-between bg-danger/5 p-2.5 rounded-xl border border-danger/15">
+                        <div className="flex flex-col min-w-0 pr-2">
+                          <span className="text-[10px] uppercase font-bold text-danger tracking-wider">Triage Portal URL</span>
+                          <a
+                            href={triageUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-mono text-danger hover:underline truncate transition-colors flex items-center gap-1"
+                          >
+                            {triageUrl.replace(/^https?:\/\//, '')}
+                          </a>
+                        </div>
+                        <button
+                          onClick={() => handleCopyId(triageUrl, 'Triage URL copied!')}
+                          className="text-xs font-bold text-danger p-1.5 hover:bg-danger/10 rounded-lg transition shrink-0"
+                          title="Copy Triage URL"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -772,37 +815,59 @@ export default function AdminHospitals() {
                       Launch Kiosk →
                     </Button>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5">
                       <Button
                         variant="outline"
-                        className="border-primary/40 text-primary hover:bg-primary hover:text-white rounded-xl h-9 text-xs font-bold gap-1.5 transition-colors"
+                        className="border-primary/40 text-primary hover:bg-primary hover:text-white rounded-xl h-9 text-[11px] font-bold gap-1 transition-colors px-1.5"
                         onClick={() => window.open(`/hospital/${hospitalId}/doctor`, '_blank')}
+                        title="Doctor Queue"
                       >
-                        <Stethoscope className="w-3.5 h-3.5" />
-                        Doctor Queue
+                        <Stethoscope className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Doctor Queue</span>
                       </Button>
 
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 border-warmgray text-charcoal hover:bg-sand rounded-xl h-9 text-xs font-semibold gap-1"
-                          onClick={() => handleOpenEdit(h)}
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-muted" />
-                          Edit
-                        </Button>
+                      <Button
+                        variant="outline"
+                        className="border-danger/30 text-danger hover:bg-danger hover:text-white rounded-xl h-9 text-[11px] font-bold gap-1 transition-colors px-1.5"
+                        onClick={() => window.open(`/hospital/${hospitalId}/triage`, '_blank')}
+                        title="Triage Portal"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Triage Portal</span>
+                      </Button>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-danger/20 text-danger hover:bg-danger/10 hover:border-danger rounded-xl h-9 px-2.5 text-xs"
-                          onClick={() => handleOpenDelete(h)}
-                          title="Remove Facility"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="outline"
+                        className="border-primary/40 text-primary hover:bg-primary hover:text-white rounded-xl h-9 text-[11px] font-bold gap-1 transition-colors px-1.5"
+                        onClick={() => navigate(`/hospital/${hospitalId}/analytics`)}
+                        title="Hospital Analytics"
+                      >
+                        <BarChart3 className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Analytics</span>
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 border-warmgray text-charcoal hover:bg-sand rounded-xl h-9 text-xs font-semibold gap-1"
+                        onClick={() => handleOpenEdit(h)}
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-muted" />
+                        Edit Facility
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-danger/20 text-danger hover:bg-danger/10 hover:border-danger rounded-xl h-9 px-3 text-xs font-semibold gap-1"
+                        onClick={() => handleOpenDelete(h)}
+                        title="Remove Facility"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -832,6 +897,7 @@ export default function AdminHospitals() {
                     const hospitalId = h.hospital_id || h.id;
                     const kioskUrl = `${window.location.origin}/hospital/${hospitalId}/kiosk`;
                     const doctorUrl = `${window.location.origin}/hospital/${hospitalId}/doctor`;
+                    const triageUrl = `${window.location.origin}/hospital/${hospitalId}/triage`;
 
                     return (
                       <tr key={hospitalId} className="hover:bg-sand/30 transition-colors">
@@ -888,6 +954,15 @@ export default function AdminHospitals() {
                               <Copy className="w-3 h-3" />
                             </button>
                           </div>
+                          <div className="flex items-center gap-1 text-[11px]">
+                            <span className="text-danger font-bold">Triage:</span>
+                            <a href={triageUrl} target="_blank" rel="noopener noreferrer" className="text-danger underline truncate max-w-[140px]">
+                              /hospital/{hospitalId.slice(0, 8)}...
+                            </a>
+                            <button onClick={() => handleCopyId(triageUrl, 'Triage URL copied!')} className="text-muted hover:text-danger">
+                              <Copy className="w-3 h-3" />
+                            </button>
+                          </div>
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-bold border border-emerald-200">
@@ -896,6 +971,16 @@ export default function AdminHospitals() {
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-primary/40 text-primary hover:bg-primary hover:text-white rounded-lg h-8 px-2 text-xs font-bold gap-1"
+                              onClick={() => navigate(`/hospital/${hospitalId}/analytics`)}
+                              title="Hospital Analytics"
+                            >
+                              <BarChart3 className="w-3.5 h-3.5" />
+                              Analytics
+                            </Button>
                             <Button
                               size="sm"
                               className="bg-primary hover:bg-primary/90 text-white rounded-lg h-8 px-3 text-xs font-bold"

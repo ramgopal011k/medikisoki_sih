@@ -265,13 +265,24 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    // Explicitly disassociate any sessions referencing this hospital
+    const { error: sessionErr } = await supabase
+      .from('sessions')
+      .update({ hospital_id: null })
+      .eq('hospital_id', id);
+
+    if (sessionErr) {
+      console.warn('Disassociating sessions before hospital delete warning:', sessionErr.message);
+    }
+
     const { error } = await supabase
       .from('hospitals')
       .delete()
       .eq('id', id);
 
     if (error) {
-      console.warn('Supabase delete hospital warning:', error.message);
+      console.error('Supabase delete hospital error:', error.message);
+      return res.status(500).json({ error: error.message });
     }
 
     hospitalCache = hospitalCache.filter(h => h.id !== id && h.hospital_id !== id);
@@ -279,7 +290,7 @@ router.delete('/:id', async (req, res) => {
   } catch (err: any) {
     console.error('Delete hospital error:', err);
     hospitalCache = hospitalCache.filter(h => h.id !== id && h.hospital_id !== id);
-    return res.json({ success: true, message: 'Hospital removed from local cache' });
+    return res.status(500).json({ error: err.message || 'Failed to delete hospital' });
   }
 });
 

@@ -76,7 +76,7 @@ export default function PatientPreview() {
   };
 
   useEffect(() => {
-    const rawId = localStorage.getItem('session_id') || localStorage.getItem('patient_session');
+    const rawId = sessionStorage.getItem('session_id') || sessionStorage.getItem('patient_session');
     let sId: string | null = null;
     let initialSession: any = null;
 
@@ -97,12 +97,12 @@ export default function PatientPreview() {
     if (!initialSession) {
       initialSession = {
         id: sId,
-        patient_name: localStorage.getItem('patient_name') || 'Anonymous Patient',
-        chief_complaint: localStorage.getItem('patient_complaint') || localStorage.getItem('chief_complaint') || 'General Consultation',
+        patient_name: sessionStorage.getItem('patient_name') || 'Anonymous Patient',
+        chief_complaint: sessionStorage.getItem('patient_complaint') || sessionStorage.getItem('chief_complaint') || 'General Consultation',
         language: localStorage.getItem('patient_language') || 'en',
-        age: localStorage.getItem('patient_age') || '',
-        gender: localStorage.getItem('patient_gender') || '',
-        phone: localStorage.getItem('patient_phone') || ''
+        age: sessionStorage.getItem('patient_age') || '',
+        gender: sessionStorage.getItem('patient_gender') || '',
+        phone: sessionStorage.getItem('patient_phone') || ''
       };
     }
 
@@ -162,12 +162,12 @@ export default function PatientPreview() {
     };
 
     setSession(updated);
-    localStorage.setItem('patient_name', updated.patient_name);
-    localStorage.setItem('patient_complaint', updated.chief_complaint);
-    localStorage.setItem('chief_complaint', updated.chief_complaint);
-    if (updated.age) localStorage.setItem('patient_age', updated.age);
-    if (updated.gender) localStorage.setItem('patient_gender', updated.gender);
-    if (updated.phone) localStorage.setItem('patient_phone', updated.phone);
+    sessionStorage.setItem('patient_name', updated.patient_name);
+    sessionStorage.setItem('patient_complaint', updated.chief_complaint);
+    sessionStorage.setItem('chief_complaint', updated.chief_complaint);
+    if (updated.age) sessionStorage.setItem('patient_age', updated.age);
+    if (updated.gender) sessionStorage.setItem('patient_gender', updated.gender);
+    if (updated.phone) sessionStorage.setItem('patient_phone', updated.phone);
 
     if (sessionId && sessionId !== 'active-session') {
       try {
@@ -243,14 +243,20 @@ export default function PatientPreview() {
     }
   };
 
-  const isHindi = session?.language === 'hi';
+  const userLang = session?.language || localStorage.getItem('patient_language') || 'en';
+  const isMr = userLang === 'mr';
+  const isBn = userLang === 'bn';
+  const isHi = userLang === 'hi';
+  const ttsLang = isMr ? 'mr-IN' : isBn ? 'bn-IN' : isHi ? 'hi-IN' : 'en-IN';
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-6 font-body">
         <MandalaBackground />
         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-        <p className="text-charcoal font-medium">Loading summary...</p>
+        <p className="text-charcoal font-medium">
+          {isMr ? 'माहिती लोड होत आहे...' : isBn ? 'সারাংশ লোড হচ্ছে...' : isHi ? 'विवरण लोड हो रहा है...' : 'Loading summary...'}
+        </p>
       </div>
     );
   }
@@ -260,10 +266,14 @@ export default function PatientPreview() {
       <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-6 relative font-body">
         <MandalaBackground />
         <QuestionCard className="w-full max-w-md text-center p-8 z-10">
-          <p className="text-charcoal font-semibold text-lg mb-2">No active session found</p>
-          <p className="text-muted text-sm mb-6">Please start a new check-in at the kiosk.</p>
+          <p className="text-charcoal font-semibold text-lg mb-2">
+            {isMr ? 'सक्रिय सत्र आढळले नाही' : isBn ? 'কোনো সক্রিয় সেশন পাওয়া যায়নি' : isHi ? 'कोई सक्रिय सत्र नहीं मिला' : 'No active session found'}
+          </p>
+          <p className="text-muted text-sm mb-6">
+            {isMr ? 'कृपया किऑस्कवर नवीन तपासणी सुरू करा.' : isBn ? 'অনুগ্রহ করে কিয়স্কে একটি নতুন চেক-ইন শুরু করুন।' : isHi ? 'कृपया कियोस्क पर एक नया चेक-इन शुरू करें।' : 'Please start a new check-in at the kiosk.'}
+          </p>
           <Button onClick={() => navigate('/consent')} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl">
-            Start Check-in
+            {isMr ? 'तपासणी सुरू करा' : isBn ? 'চেক-ইন শুরু করুন' : isHi ? 'चेक-इन शुरू करें' : 'Start Check-in'}
           </Button>
         </QuestionCard>
       </div>
@@ -284,13 +294,17 @@ export default function PatientPreview() {
             </div>
             <div>
               <span className="text-xs font-bold text-primary tracking-wider uppercase bg-primary/10 px-2.5 py-0.5 rounded-full">
-                {isHindi ? 'अंतिम चरण' : 'Final Step'}
+                {isMr ? 'अंतिम टप्पा' : isBn ? 'চূড়ান্ত ধাপ' : isHi ? 'अंतिम चरण' : 'Final Step'}
               </span>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-charcoal mt-1 tracking-tight">
-                {isHindi ? 'अपनी जानकारी की समीक्षा करें' : 'Review & Verify Your Information'}
+                {isMr ? 'आपल्या माहितीचे पुनरावलोकन करा' : isBn ? 'আপনার তথ্য পর্যালোচনা করুন' : isHi ? 'अपनी जानकारी की समीक्षा करें' : 'Review & Verify Your Information'}
               </h1>
               <p className="text-muted text-sm mt-0.5">
-                {isHindi
+                {isMr
+                  ? 'डॉक्टरांकडे पाठवण्यापूर्वी खालील माहिती तपासा किंवा आवश्यकतेनुसार संपादित करा.'
+                  : isBn
+                  ? 'ডাক্তারের কাছে পাঠানোর আগে নীচের তথ্য পরীক্ষা করুন বা সম্পাদনা করুন।'
+                  : isHi
                   ? 'नीचे दिए गए विवरणों को देखें और आवश्यकतानुसार संपादित करें।'
                   : 'Expand any section below to review or edit your answers before sending to the doctor.'}
               </p>
@@ -301,7 +315,7 @@ export default function PatientPreview() {
             onClick={() => navigate('/submitted')}
             className="w-full sm:w-auto h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-base shadow-sm shrink-0 flex items-center justify-center gap-2"
           >
-            {isHindi ? 'डॉक्टर को भेजें' : 'Submit to Doctor'}
+            {isMr ? 'डॉक्टरांकडे सादर करा' : isBn ? 'ডাক্তারের কাছে জমা দিন' : isHi ? 'डॉक्टर को भेजें' : 'Submit to Doctor'}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -319,7 +333,7 @@ export default function PatientPreview() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal">
-                  {isHindi ? 'मरीज की जानकारी' : 'Patient Information & Complaint'}
+                  {isMr ? 'रुग्णाची माहिती आणि तक्रार' : isBn ? 'রোগীর তথ্য ও অভিযোগ' : isHi ? 'मरीज की जानकारी' : 'Patient Information & Complaint'}
                 </h2>
                 <p className="text-xs text-muted">
                   {session.patient_name} • {session.chief_complaint}
@@ -328,7 +342,7 @@ export default function PatientPreview() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
-                {isHindi ? 'सत्यापित' : 'Ready'}
+                {isMr ? 'तयार' : isBn ? 'প্রস্তুত' : isHi ? 'सत्यापित' : 'Ready'}
               </span>
               <span className="text-muted">
                 {openSections.demographics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -343,19 +357,19 @@ export default function PatientPreview() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="p-3.5 bg-sand/30 rounded-xl border border-warmgray/60">
                       <p className="text-xs font-bold text-muted uppercase tracking-wider">
-                        {isHindi ? 'मरीज का नाम' : 'Patient Name'}
+                        {isMr ? 'रुग्णाचे नाव' : isBn ? 'রোগীর নাম' : isHi ? 'मरीज का नाम' : 'Patient Name'}
                       </p>
                       <p className="font-semibold text-charcoal text-base mt-0.5">{session.patient_name || 'Anonymous'}</p>
                     </div>
                     <div className="p-3.5 bg-sand/30 rounded-xl border border-warmgray/60">
                       <p className="text-xs font-bold text-muted uppercase tracking-wider">
-                        {isHindi ? 'आने का मुख्य कारण' : 'Primary Complaint'}
+                        {isMr ? 'मुख्य त्रास / कारण' : isBn ? 'প্রধান সমস্যা / অভিযোগ' : isHi ? 'आने का मुख्य कारण' : 'Primary Complaint'}
                       </p>
                       <p className="font-semibold text-primary text-base mt-0.5 capitalize">{session.chief_complaint || 'General Checkup'}</p>
                     </div>
                     <div className="p-3.5 bg-sand/30 rounded-xl border border-warmgray/60">
                       <p className="text-xs font-bold text-muted uppercase tracking-wider">
-                        {isHindi ? 'उम्र / लिंग' : 'Age & Gender'}
+                        {isMr ? 'वय आणि लिंग' : isBn ? 'বয়স ও লিঙ্গ' : isHi ? 'उम्र / लिंग' : 'Age & Gender'}
                       </p>
                       <p className="font-semibold text-charcoal text-base mt-0.5">
                         {session.age || 'Not specified'} {session.gender ? `• ${session.gender}` : ''}
@@ -363,7 +377,7 @@ export default function PatientPreview() {
                     </div>
                     <div className="p-3.5 bg-sand/30 rounded-xl border border-warmgray/60">
                       <p className="text-xs font-bold text-muted uppercase tracking-wider">
-                        {isHindi ? 'फ़ोन नंबर' : 'Phone Number'}
+                        {isMr ? 'फोन नंबर' : isBn ? 'ফোন নম্বর' : isHi ? 'फ़ोन नंबर' : 'Phone Number'}
                       </p>
                       <p className="font-semibold text-charcoal text-base mt-0.5">{session.phone || 'Not provided'}</p>
                     </div>
@@ -376,7 +390,7 @@ export default function PatientPreview() {
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-warmgray hover:border-primary/40 hover:bg-primary/5 text-charcoal transition-colors"
                     >
                       <Edit2 className="w-3.5 h-3.5 text-primary" />
-                      {isHindi ? 'विवरण संपादित करें' : 'Edit Information'}
+                      {isMr ? 'माहिती संपादित करा' : isBn ? 'তথ্য সম্পাদনা করুন' : isHi ? 'विवरण संपादित करें' : 'Edit Information'}
                     </button>
                   </div>
                 </div>
@@ -385,7 +399,7 @@ export default function PatientPreview() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-muted uppercase mb-1">
-                        {isHindi ? 'मरीज का नाम' : 'Patient Name'}
+                        {isMr ? 'रुग्णाचे नाव' : isBn ? 'রোগীর নাম' : isHi ? 'मरीज का नाम' : 'Patient Name'}
                       </label>
                       <input
                         type="text"
@@ -397,7 +411,7 @@ export default function PatientPreview() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-muted uppercase mb-1">
-                        {isHindi ? 'मुख्य कारण' : 'Chief Complaint'}
+                        {isMr ? 'मुख्य त्रास' : isBn ? 'প্রধান সমস্যা' : isHi ? 'मुख्य कारण' : 'Chief Complaint'}
                       </label>
                       <input
                         type="text"
@@ -409,7 +423,7 @@ export default function PatientPreview() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-muted uppercase mb-1">
-                        {isHindi ? 'उम्र' : 'Age'}
+                        {isMr ? 'वय' : isBn ? 'বয়স' : isHi ? 'उम्र' : 'Age'}
                       </label>
                       <input
                         type="text"
@@ -421,7 +435,7 @@ export default function PatientPreview() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-muted uppercase mb-1">
-                        {isHindi ? 'फ़ोन नंबर' : 'Phone Number'}
+                        {isMr ? 'फोन नंबर' : isBn ? 'ফোন নম্বর' : isHi ? 'फ़ोन नंबर' : 'Phone Number'}
                       </label>
                       <input
                         type="text"
@@ -445,7 +459,7 @@ export default function PatientPreview() {
                       }}
                       className="px-4 py-2 rounded-xl text-xs font-bold border border-warmgray text-muted hover:text-charcoal hover:bg-sand/60 transition-colors"
                     >
-                      {isHindi ? 'रद्द करें' : 'Cancel'}
+                      {isMr ? 'रद्द करा' : isBn ? 'বাতিল করুন' : isHi ? 'रद्द करें' : 'Cancel'}
                     </button>
                     <button
                       type="button"
@@ -454,7 +468,7 @@ export default function PatientPreview() {
                       className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
                     >
                       <Check className="w-3.5 h-3.5" />
-                      {isSavingDemo ? 'Saving...' : (isHindi ? 'सहेजें' : 'Save Changes')}
+                      {isSavingDemo ? 'Saving...' : (isMr ? 'बदल जतन करा' : isBn ? 'পরিবর্তন সংরক্ষণ করুন' : isHi ? 'सहेजें' : 'Save Changes')}
                     </button>
                   </div>
                 </div>
@@ -476,16 +490,16 @@ export default function PatientPreview() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal">
-                  {isHindi ? 'लक्षण एवं प्रश्नावली के उत्तर' : 'Recorded Symptoms & Answers'}
+                  {isMr ? 'नोंदवलेली लक्षणे आणि उत्तरे' : isBn ? 'রেকর্ড করা লক্ষণ ও উত্তর' : isHi ? 'लक्षण एवं प्रश्नावली के उत्तर' : 'Recorded Symptoms & Answers'}
                 </h2>
                 <p className="text-xs text-muted">
-                  {facts.length} {isHindi ? 'उत्तर रिकॉर्ड किए गए' : 'interview questions answered'}
+                  {facts.length} {isMr ? 'उत्तरे नोंदवली गेली' : isBn ? 'টি উত্তর রেকর্ড করা হয়েছে' : isHi ? 'उत्तर रिकॉर्ड किए गए' : 'interview questions answered'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-charcoal bg-sand px-2.5 py-0.5 rounded-full border border-warmgray">
-                {facts.length} {isHindi ? 'उत्तर' : 'answers'}
+                {facts.length} {isMr ? 'उत्तरे' : isBn ? 'টি উত্তর' : isHi ? 'उत्तर' : 'answers'}
               </span>
               <span className="text-muted">
                 {openSections.symptoms ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -497,16 +511,16 @@ export default function PatientPreview() {
             <div className="px-6 pb-6 pt-2 border-t border-warmgray bg-white">
               {facts.length === 0 ? (
                 <div className="text-center py-6 text-muted text-sm">
-                  <p>{isHindi ? 'कोई विस्तृत लक्षण रिकॉर्ड नहीं किया गया।' : 'General consultation selected. No follow-up symptom questions recorded.'}</p>
+                  <p>{isMr ? 'कोणतीही तपशीलवार लक्षणे नोंदवली गेली नाहीत.' : isBn ? 'কোনো বিস্তারিত লক্ষণ রেকর্ড করা হয়নি।' : isHi ? 'कोई विस्तृत लक्षण रिकॉर्ड नहीं किया गया।' : 'General consultation selected. No follow-up symptom questions recorded.'}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-warmgray text-xs font-bold text-muted uppercase tracking-wider">
-                        <th className="py-3 px-3">{isHindi ? 'सवाल / लक्षण' : 'Question / Symptom'}</th>
-                        <th className="py-3 px-3">{isHindi ? 'आपका उत्तर' : 'Your Answer'}</th>
-                        <th className="py-3 px-3 text-right">{isHindi ? 'कार्य' : 'Action'}</th>
+                        <th className="py-3 px-3">{isMr ? 'प्रश्न / लक्षण' : isBn ? 'প্রশ্ন / লক্ষণ' : isHi ? 'सवाल / लक्षण' : 'Question / Symptom'}</th>
+                        <th className="py-3 px-3">{isMr ? 'तुमचे उत्तर' : isBn ? 'আপনার উত্তর' : isHi ? 'आपका उत्तर' : 'Your Answer'}</th>
+                        <th className="py-3 px-3 text-right">{isMr ? 'कृती' : isBn ? 'পদক্ষেপ' : isHi ? 'कार्य' : 'Action'}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-warmgray/60 text-sm">
@@ -560,7 +574,7 @@ export default function PatientPreview() {
                                 className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 hover:underline"
                               >
                                 <Edit2 className="w-3 h-3" />
-                                {isHindi ? 'बदलें' : 'Edit'}
+                                {isMr ? 'बदला' : isBn ? 'সম্পাদনা' : isHi ? 'बदलें' : 'Edit'}
                               </button>
                             )}
                           </td>
@@ -587,18 +601,18 @@ export default function PatientPreview() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal">
-                  {isHindi ? 'पूर्व चिकित्सा इतिहास' : 'Past Medical History & Conditions'}
+                  {isMr ? 'मागील वैद्यकीय इतिहास आणि जुने आजार' : isBn ? 'অতীতের চিকিৎসা ইতিহাস ও রোগ' : isHi ? 'पूर्व चिकित्सा इतिहास' : 'Past Medical History & Conditions'}
                 </h2>
                 <p className="text-xs text-muted">
                   {medicalHistory.length === 0
-                    ? (isHindi ? 'कोई पूर्व स्थिति दर्ज नहीं' : 'No prior chronic conditions recorded')
-                    : `${medicalHistory.length} ${isHindi ? 'शर्तें' : 'conditions recorded'}`}
+                    ? (isMr ? 'कोणतीही जुनी स्थिती नोंदवलेली नाही' : isBn ? 'কোনো পূর্ববর্তী অবস্থা রেকর্ড করা হয়নি' : isHi ? 'कोई पूर्व स्थिति दर्ज नहीं' : 'No prior chronic conditions recorded')
+                    : `${medicalHistory.length} ${isMr ? 'अटी नोंदवल्या गेल्या' : isBn ? 'টি অবস্থা রেকর্ড করা হয়েছে' : isHi ? 'शर्तें' : 'conditions recorded'}`}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${medicalHistory.length > 0 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-sand text-muted border-warmgray'}`}>
-                {medicalHistory.length > 0 ? `${medicalHistory.length} recorded` : 'None'}
+                {medicalHistory.length > 0 ? `${medicalHistory.length} ${isMr ? 'नोंदवले' : isBn ? 'টি রেকর্ডকৃত' : isHi ? 'दर्ज' : 'recorded'}` : (isMr ? 'काही नाही' : isBn ? 'কিছু নেই' : isHi ? 'कोई नहीं' : 'None')}
               </span>
               <span className="text-muted">
                 {openSections.history ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -610,7 +624,7 @@ export default function PatientPreview() {
             <div className="px-6 pb-6 pt-2 border-t border-warmgray bg-white space-y-4">
               {medicalHistory.length === 0 && !isAddingHistory ? (
                 <div className="text-center py-4 text-muted text-sm">
-                  <p>{isHindi ? 'कोई पूर्व स्थिति दर्ज नहीं की गई।' : 'No past medical conditions, surgeries, or chronic illnesses reported.'}</p>
+                  <p>{isMr ? 'कोणतेही जुने आजार, शस्त्रक्रिया किंवा स्थिती नोंदवलेली नाही.' : isBn ? 'কোনো অতীতের অসুস্থতা, অস্ত্রোপচার বা দীর্ঘস্থায়ী রোগ রিপোর্ট করা হয়নি।' : isHi ? 'कोई पूर्व स्थिति दर्ज नहीं की गई।' : 'No past medical conditions, surgeries, or chronic illnesses reported.'}</p>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2 pt-2">
@@ -640,14 +654,14 @@ export default function PatientPreview() {
                     onClick={handleAddHistory}
                     className="px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90"
                   >
-                    Add
+                    {isMr ? 'जोडा' : isBn ? 'যোগ করুন' : isHi ? 'जोड़ें' : 'Add'}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setIsAddingHistory(false); setNewHistoryValue(''); }}
                     className="px-3 py-2.5 bg-sand text-muted hover:text-charcoal text-xs font-bold rounded-xl"
                   >
-                    Cancel
+                    {isMr ? 'रद्द करा' : isBn ? 'বাতিল' : isHi ? 'रद्द करें' : 'Cancel'}
                   </button>
                 </div>
               ) : (
@@ -658,7 +672,7 @@ export default function PatientPreview() {
                     className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-primary border border-primary/30 rounded-xl hover:bg-primary/5 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    {isHindi ? 'स्थिति जोड़ें' : 'Add Condition'}
+                    {isMr ? 'स्थिती जोडा' : isBn ? 'অবস্থা যোগ করুন' : isHi ? 'स्थिति जोड़ें' : 'Add Condition'}
                   </button>
                 </div>
               )}
@@ -679,18 +693,18 @@ export default function PatientPreview() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal">
-                  {isHindi ? 'अपलोड किए गए दस्तावेज़' : 'Prescription & Lab Documents'}
+                  {isMr ? 'अपलोड केलेली कागदपत्रे व तपासण्या' : isBn ? 'প্রেসক্রিপশন ও ল্যাব নথি' : isHi ? 'अपलोड किए गए दस्तावेज़' : 'Prescription & Lab Documents'}
                 </h2>
                 <p className="text-xs text-muted">
                   {documents.length === 0
-                    ? (isHindi ? 'कोई दस्तावेज़ संलग्न नहीं' : 'No prescription uploaded')
-                    : `${documents.length} ${isHindi ? 'दस्तावेज़ सहेजे गए' : 'document(s) attached'}`}
+                    ? (isMr ? 'कोणतीही कागदपत्रे जोडलेली नाहीत' : isBn ? 'কোনো প্রেসক্রিপশন আপলোড করা হয়নি' : isHi ? 'कोई दस्तावेज़ संलग्न नहीं' : 'No prescription uploaded')
+                    : `${documents.length} ${isMr ? 'कागदपत्रे जोडली गेली' : isBn ? 'টি নথি সংযুক্ত করা হয়েছে' : isHi ? 'दस्तावेज़ सहेजे गए' : 'document(s) attached'}`}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-sand text-muted border-warmgray">
-                {documents.length} {isHindi ? 'दस्तावेज़' : 'files'}
+                {documents.length} {isMr ? 'कागदपत्रे' : isBn ? 'টি নথি' : isHi ? 'दस्तावेज़' : 'files'}
               </span>
               <span className="text-muted">
                 {openSections.documents ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -702,7 +716,7 @@ export default function PatientPreview() {
             <div className="px-6 pb-6 pt-2 border-t border-warmgray bg-white">
               {documents.length === 0 ? (
                 <div className="text-center py-4 text-muted text-sm">
-                  <p>{isHindi ? 'कोई दस्तावेज़ अपलोड नहीं किया गया।' : 'No physical documents or lab reports were scanned during this intake session.'}</p>
+                  <p>{isMr ? 'या तपासणीदरम्यान कोणतीही कागदपत्रे स्कॅन केली नाहीत.' : isBn ? 'এই সেশনে কোনো নথি বা ল্যাব রিপোর্ট স্ক্যান করা হয়নি।' : isHi ? 'कोई दस्तावेज़ अपलोड नहीं किया गया।' : 'No physical documents or lab reports were scanned during this intake session.'}</p>
                 </div>
               ) : (
                 <div className="space-y-2 pt-2">
@@ -710,9 +724,13 @@ export default function PatientPreview() {
                     <div key={doc.id || idx} className="p-3 bg-sand/30 rounded-xl border border-warmgray flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-primary" />
-                        <span className="font-medium text-charcoal">Prescription Record #{idx + 1}</span>
+                        <span className="font-medium text-charcoal">
+                          {isMr ? `प्रिस्क्रिप्शन नोंद #${idx + 1}` : isBn ? `প্রেসক্রিপশন রেকর্ড #${idx + 1}` : isHi ? `प्रिस्क्रिप्शन रिकॉर्ड #${idx + 1}` : `Prescription Record #${idx + 1}`}
+                        </span>
                       </div>
-                      <span className="text-xs bg-success/10 text-success font-bold px-2 py-0.5 rounded-full">Scanned</span>
+                      <span className="text-xs bg-success/10 text-success font-bold px-2 py-0.5 rounded-full">
+                        {isMr ? 'स्कॅन केले' : isBn ? 'স্ক্যান করা' : isHi ? 'स्कैन किया' : 'Scanned'}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -723,12 +741,16 @@ export default function PatientPreview() {
 
 
         {/* AYUSH Assessment Disclaimer */}
-        {localStorage.getItem('ayush_mode') === 'true' && (
+        {sessionStorage.getItem('ayush_mode') === 'true' && (
           <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 text-sm">
-            <span className="text-amber-500 text-base mt-0.5 shrink-0">\u24d8</span>
+            <span className="text-amber-500 text-base mt-0.5 shrink-0">ⓘ</span>
             <p className="text-amber-800 font-medium leading-relaxed">
-              {isHindi
-                ? '\u092f\u0939 \u0906\u092f\u0941\u0930\u094d\u0935\u0947\u0926\u093f\u0915 \u092e\u0942\u0932\u094d\u092f\u093e\u0902\u0915\u0928 \u0936\u093e\u0938\u094d\u0924\u094d\u0930\u0940\u092f \u0917\u094d\u0930\u0902\u0925\u094b\u0902 \u092a\u0930 \u0906\u0927\u093e\u0930\u093f\u0924 \u090f\u0915 \u0938\u0939\u093e\u092f\u0915 \u0909\u092a\u0915\u0930\u0923 \u0939\u0948\u0964 \u0907\u0938\u0947 \u090f\u0915 \u092f\u094b\u0917\u094d\u092f \u0906\u092f\u0941\u0930\u094d\u0935\u0947\u0926\u093f\u0915 \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u0915 \u0926\u094d\u0935\u093e\u0930\u093e \u0938\u092e\u0940\u0915\u094d\u0937\u093e \u0915\u0940 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u0948\u0964'
+              {isMr
+                ? 'हे आयुर्वेदिक मूल्यांकन शास्त्रीय ग्रंथांवर आधारित एक सहाय्यक साधन आहे. यासाठी पात्र आयुर्वेदिक वैद्यांच्या पुनरावलोकनाची आवश्यकता आहे.'
+                : isBn
+                ? 'এই আয়ুর্বেদিক মূল্যায়ন শাস্ত্রীয় গ্রন্থের উপর ভিত্তি করে একটি সহায়ক সরঞ্জাম। একজন যোগ্য আয়ুর্বেদিক চিকিৎসকের দ্বারা পর্যালোচনার প্রয়োজন।'
+                : isHi
+                ? 'यह आयुर्वेदिक मूल्यांकन शास्त्रीय ग्रंथों पर आधारित एक सहायक उपकरण है। इसे एक योग्य आयुर्वेदिक चिकित्सक द्वारा समीक्षा की आवश्यकता है।'
                 : 'This is an Ayurvedic assessment aid based on classical texts. Requires review by a qualified Ayurvedic physician.'}
             </p>
           </div>
@@ -741,14 +763,14 @@ export default function PatientPreview() {
             onClick={() => navigate('/consent')}
             className="text-xs font-bold text-muted hover:text-charcoal hover:underline"
           >
-            {isHindi ? '← फिर से शुरू करें' : '← Need to change details? Start over'}
+            {isMr ? '← पुन्हा सुरू करा' : isBn ? '← পুনরায় শুরু করুন' : isHi ? '← फिर से शुरू करें' : '← Need to change details? Start over'}
           </button>
 
           <Button
             onClick={() => navigate('/submitted')}
             className="w-full sm:w-auto h-14 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-md transition-all flex items-center justify-center gap-2"
           >
-            {isHindi ? 'डॉक्टर को सबमिट करें' : 'Confirm & Submit to Doctor'}
+            {isMr ? 'डॉक्टरांकडे सादर करा' : isBn ? 'ডাক্তারের কাছে জমা দিন' : isHi ? 'डॉक्टर को सबमिट करें' : 'Confirm & Submit to Doctor'}
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
@@ -756,8 +778,16 @@ export default function PatientPreview() {
       </div>
       <VoiceGuideButton 
         clipId="preview"
-        fallbackText={isHindi ? 'कृपया डॉक्टर को सबमिट करने से पहले अपनी जानकारी की समीक्षा करें।' : 'Please review your information before submitting to the doctor.'} 
-        language={isHindi ? 'hi-IN' : 'en-IN'} 
+        fallbackText={
+          isMr 
+            ? 'कृपया डॉक्टरांकडे पाठवण्यापूर्वी आपल्या माहितीचे पुनरावलोकन करा.' 
+            : isBn 
+            ? 'ডাক্তারের কাছে জমা দেওয়ার আগে অনুগ্রহ করে আপনার তথ্য পর্যালোচনা করুন।' 
+            : isHi 
+            ? 'कृपया डॉक्टर को सबमिट करने से पहले अपनी जानकारी की समीक्षा करें।' 
+            : 'Please review your information before submitting to the doctor.'
+        } 
+        language={ttsLang} 
       />
     </div>
   );

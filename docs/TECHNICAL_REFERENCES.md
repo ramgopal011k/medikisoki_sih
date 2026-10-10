@@ -57,28 +57,7 @@
 - **Where Used**: [`backend/src/orchestration/sarvamClient.ts:L1-L119`](file:///c:/game/pythoncoding/New%20folder/hackathon/backend/src/orchestration/sarvamClient.ts#L1-L119), [`backend/src/orchestration/router.ts:L22-L58`](file:///c:/game/pythoncoding/New%20folder/hackathon/backend/src/orchestration/router.ts#L22-L58).
 - **Citation / Link**: [Sarvam AI Developer Documentation](https://docs.sarvam.ai/)
 
-### 2.4 PolyWhisper v9 (Whisper-Small + Per-Language LoRA)
-- **Description**: Multilingual ASR system pairing a frozen OpenAI Whisper-Small backbone (244M params) with rank-16 per-language LoRA adapters (~14MB each) for Hindi, Tamil, Telugu, Bengali, and Marathi. Includes ONNX INT8 export capabilities for CPU edge inference.
-- **Why Relevant**: Efficient local ASR toolkit tailored for Indic vernacular speech recognition.
-- **Where Used**: [`models/polywhisper/app.py:L1-L319`](file:///c:/game/pythoncoding/New%20folder/hackathon/models/polywhisper/app.py#L1-L319), [`models/polywhisper/README.md:L1-L276`](file:///c:/game/pythoncoding/New%20folder/hackathon/models/polywhisper/README.md#L1-L276).
-- **Citation / Link**:
-  ```bibtex
-  @misc{polywhisper2026,
-    title  = {PolyWhisper: Efficient Multilingual Indic ASR via Frozen Backbone + Per-Language LoRA},
-    author = {Eulogik},
-    year   = {2026},
-    publisher = {HuggingFace},
-    url    = {https://huggingface.co/eulogik/polywhisper}
-  }
-  ```
-
-### 2.5 Meta Llama-3-8B QLoRA SFT Fine-Tuning
-- **Description**: 4-bit quantized Low-Rank Adaptation (QLoRA) using `bitsandbytes`, `peft`, `transformers`, and `trl.SFTTrainer` for fine-tuning causal language models on Indian OPD dialogues.
-- **Why Relevant**: Reference pipeline for training custom specialized clinical dialogue LLMs.
-- **Where Used**: [`training/qlora_finetune.py:L1-L122`](file:///c:/game/pythoncoding/New%20folder/hackathon/training/qlora_finetune.py#L1-L122).
-- **Citation / Link**: Dettmers et al., *QLoRA: Efficient Finetuning of Quantized LLMs*, 2023. [arXiv:2305.14314](https://arxiv.org/abs/2305.14314)
-
-### 2.6 Tesseract.js (v7.0.0)
+### 2.4 Tesseract.js (v7.0.0)
 - **Description**: Pure JavaScript OCR engine based on Tesseract C++ engine compiled to WebAssembly.
 - **Why Relevant**: Client-side and offline fallback OCR engine for reading medical prescription images.
 - **Where Used**: [`backend/src/app.ts:L15`](file:///c:/game/pythoncoding/New%20folder/hackathon/backend/src/app.ts#L15), [`backend/src/app.ts:L627`](file:///c:/game/pythoncoding/New%20folder/hackathon/backend/src/app.ts#L627), [`frontend/package.json:L25`](file:///c:/game/pythoncoding/New%20folder/hackathon/frontend/package.json#L25).
@@ -106,10 +85,3 @@
     publisher = {HuggingFace}
   }
   ```
-
----
-
-## 4. Missing Technical References / TODO
-- **TODO: verify** DOI for MedGemma 1.5 paper when published.
-- **TODO: verify** Official NHA ABDM OpenAPI 3.0 YAML specification URL.
-- **TODO: verify** Exact publication details for PolyWhisper v9 conference or preprint submission.

@@ -2,6 +2,8 @@ export interface InterviewOption {
   value: string;
   label: string;
   label_hi?: string;
+  label_mr?: string;
+  label_bn?: string;
 }
 
 export interface RedFlagResult {
@@ -13,6 +15,8 @@ export interface InterviewQuestion {
   id: string;
   text: string;
   text_hi?: string;
+  text_mr?: string;
+  text_bn?: string;
   type: 'single_choice' | 'multi_choice' | 'text' | 'number';
   options?: InterviewOption[];
   next: (answer: string | string[]) => string | RedFlagResult | null;

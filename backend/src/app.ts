@@ -15,11 +15,18 @@ import { reasonAyushWithRag } from './rag/ayushRag';
 import Tesseract from 'tesseract.js';
 import dotenv from 'dotenv';
 import path from 'path';
+import zlib from 'zlib';
 import { supabase } from './supabase';
-import { verifyAuth } from './middleware/auth';
+import { verifyAuth, signJwt } from './middleware/auth';
+import triageRouter from './routes/triage';
 import { securityHeaders, createRateLimiter, sanitizePromptInput } from './middleware/security';
 import { getDoctorByEmail, saveDoctorAccount } from './services/doctorStore';
+import { extractPdfImages } from './services/pdfImageExtractor';
+import { rasterizePdf } from './services/pdfRasterizer';
+import { parseLabRows } from './services/labTextParser';
+import { extractDocumentDate } from './services/documentDateExtractor';
 import { orchestrate } from './orchestration/router';
+import { getCachedSemanticResponse, setCachedSemanticResponse, promptFor } from './orchestration/preseed-medgemma';
 
 dotenv.config();
 
@@ -45,6 +52,11 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map((url) => url.trim().replace(/\/$/, ''))
   : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:8080', 'http://localhost:80', 'http://localhost'];
 
+if (process.env.CORS_EXTRA_ORIGINS) {
+  const extra = process.env.CORS_EXTRA_ORIGINS.split(',').map((url) => url.trim().replace(/\/$/, '')).filter(Boolean);
+  allowedOrigins.push(...extra);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -54,7 +66,8 @@ app.use(
       if (
         allowedOrigins.includes(origin) ||
         origin.endsWith('.vercel.app') ||
-        /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(origin)
+        /^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(origin) ||
+        (process.env.NODE_ENV !== 'production' && /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(origin))
       ) {
         return callback(null, true);
       }
@@ -63,14 +76,20 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '25mb' }));
+app.use(express.raw({ limit: '25mb' }));
 
 // Simple Origin-based CSRF for prototype
 app.use((req, res, next) => {
   if (['POST', 'PATCH', 'DELETE'].includes(req.method) && !req.path.startsWith('/auth/login') && !req.path.startsWith('/api/auth/login')) {
     const origin = req.headers.origin;
     if (origin) {
-      if (!allowedOrigins.includes(origin) && !origin.endsWith('.vercel.app') && !/^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(origin)) {
+      if (
+        !allowedOrigins.includes(origin) &&
+        !origin.endsWith('.vercel.app') &&
+        !/^https?:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(origin) &&
+        !(process.env.NODE_ENV !== 'production' && /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(origin))
+      ) {
         return res.status(403).json({ error: 'CSRF token missing or invalid origin' });
       }
     }
@@ -280,6 +299,7 @@ app.post('/api/patient/visits/:sessionId/revoke', async (req: Request, res: Resp
 
 import hospitalsRouter from './routes/hospitals';
 import documentsRouter from './routes/documents';
+import analyticsRouter from './routes/analytics';
 
 // Apply Authentication Middleware to doctor/admin routes
 // Anonymous kiosk endpoints (POST /api/sessions, history-facts, answers, medical-history, ayush-assessment, sarvam, gemini, etc.) are public
@@ -299,7 +319,7 @@ app.use('/api', (req, res, next) => {
     req.path.startsWith('/fhir') ||
     req.path.startsWith('/health') ||
     req.path.startsWith('/auth') ||
-    (req.method === 'GET' && req.path === '/hospitals')
+    req.path.startsWith('/hospitals')
   ) {
     return next();
   }
@@ -314,6 +334,10 @@ app.use('/api/summary', summaryRouter);
 app.use('/api/hospitals', hospitalsRouter);
 app.use('/api/documents', documentsRouter);
 app.use('/documents', documentsRouter);
+app.use('/api/triage', triageRouter);
+app.use('/triage', triageRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/analytics', analyticsRouter);
 
 // Doctor authentication endpoint
 // Demo credentials loaded from environment variables (fallback to defaults for dev)
@@ -357,16 +381,25 @@ const handleLogin = async (req: Request, res: Response) => {
   if (
     email === DEMO_DOCTOR_EMAIL && await bcrypt.compare(password, DEMO_DOCTOR_PASSWORD_HASH)
   ) {
+    const user = {
+      doctor_id: 'd1111111-1111-1111-1111-111111111111',
+      name: 'Dr. Rajesh Varma',
+      email: email,
+      hospital_id: '11111111-1111-1111-1111-111111111111',
+      uid: 'mock-uid',
+      role: 'doctor' as const
+    };
+    const token = await signJwt({
+      uid: user.uid,
+      doctor_id: user.doctor_id,
+      name: user.name,
+      email: user.email,
+      hospital_id: user.hospital_id,
+      role: 'doctor'
+    });
     return res.json({
-      token: 'mock-doctor-token',
-      user: {
-        doctor_id: 'd1111111-1111-1111-1111-111111111111',
-        name: 'Dr. Rajesh Varma',
-        email: email,
-        hospital_id: '11111111-1111-1111-1111-111111111111',
-        uid: 'mock-uid',
-        role: 'doctor'
-      }
+      token,
+      user
     });
   }
 
@@ -500,6 +533,115 @@ app.post('/api/auth/login', authLimiter, handleLogin);
 app.post('/auth/register', authLimiter, handleRegister);
 app.post('/api/auth/register', authLimiter, handleRegister);
 
+// Triage authentication endpoint
+const handleTriageLogin = async (req: Request, res: Response) => {
+  try {
+    authSchema.parse(req.body);
+  } catch (e: any) {
+    return res.status(400).json({ error: 'Invalid input', details: e.errors });
+  }
+
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  let userPayload: any = null;
+
+  // Super Admin login (demo credentials)
+  if (
+    DEMO_ADMIN_EMAILS.includes(email) && 
+    await bcrypt.compare(password, DEMO_ADMIN_PASSWORD_HASH)
+  ) {
+    userPayload = {
+      doctor_id: 'superadmin',
+      name: 'Super Admin',
+      email: email,
+      hospital_id: 'all',
+      uid: 'admin-uid',
+      role: 'triage'
+    };
+  } else if (
+    email === DEMO_DOCTOR_EMAIL && await bcrypt.compare(password, DEMO_DOCTOR_PASSWORD_HASH)
+  ) {
+    userPayload = {
+      doctor_id: 'd1111111-1111-1111-1111-111111111111',
+      name: 'Dr. Rajesh Varma',
+      email: email,
+      hospital_id: '11111111-1111-1111-1111-111111111111',
+      uid: 'mock-uid',
+      role: 'triage'
+    };
+  } else {
+    // Check persistent store for registered doctors
+    const localDoc = getDoctorByEmail(email);
+    if (localDoc && localDoc.password_hash) {
+      const isMatch = await bcrypt.compare(password, localDoc.password_hash);
+      if (isMatch) {
+        userPayload = {
+          doctor_id: localDoc.doctor_id,
+          name: localDoc.name,
+          email: localDoc.email,
+          hospital_id: localDoc.hospital_id || null,
+          uid: localDoc.doctor_id,
+          role: 'triage'
+        };
+      }
+    }
+
+    if (!userPayload) {
+      // Database doctor login via bcrypt
+      try {
+        const { data: doctor, error } = await supabase
+          .from('doctors')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (!error && doctor && doctor.password_hash) {
+          const isMatch = await bcrypt.compare(password, doctor.password_hash);
+          if (isMatch) {
+            userPayload = {
+              doctor_id: doctor.doctor_id,
+              name: doctor.name,
+              email: doctor.email,
+              hospital_id: doctor.hospital_id,
+              uid: doctor.doctor_id,
+              role: 'triage'
+            };
+          }
+        }
+      } catch (dbErr) {
+        console.warn('Database auth check error:', dbErr);
+      }
+    }
+  }
+
+  if (!userPayload) {
+    return res.status(401).json({ error: 'Invalid credentials.' });
+  }
+
+  // Issue JWT with role='triage'
+  const token = await signJwt({
+    uid: userPayload.uid,
+    doctor_id: userPayload.doctor_id,
+    name: userPayload.name,
+    email: userPayload.email,
+    hospital_id: userPayload.hospital_id,
+    role: 'triage'
+  });
+
+  return res.json({
+    token,
+    user: userPayload
+  });
+};
+
+app.post('/auth/triage-login', authLimiter, handleTriageLogin);
+app.post('/api/auth/triage-login', authLimiter, handleTriageLogin);
+
+
 const handleVoiceMatch = async (req: Request, res: Response) => {
   const { text, options } = req.body;
   if (!text || !options || !Array.isArray(options)) {
@@ -613,40 +755,579 @@ const handleVoiceMatch = async (req: Request, res: Response) => {
 app.post('/match-voice', handleVoiceMatch);
 app.post('/api/match-voice', handleVoiceMatch);
 
-// OCR Vision endpoint with Tesseract fallback
-app.post('/ocr-vision', async (req: Request, res: Response) => {
-  const { image_base64 } = req.body;
-  if (!image_base64) {
-    return res.status(400).json({ text: null, fallback: true, error: 'Missing image_base64' });
+function isValidImageBuffer(buffer: Buffer): boolean {
+  if (!buffer || !Buffer.isBuffer(buffer) || buffer.length < 100) return false;
+  // JPEG: FF D8
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return true;
+  // PNG: 89 50 4E 47
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return true;
+  // PDF: 25 50 44 46 (%PDF)
+  if (buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46) return true;
+  // WebP: RIFF ... WEBP
+  if (
+    buffer.length >= 12 &&
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function extractPdfStrings(buffer: Buffer): string {
+  const decodeA85 = (input: string): Buffer => {
+    let str = input.replace(/\s+/g, '');
+    if (str.endsWith('~>')) str = str.slice(0, -2);
+    const out: number[] = [];
+    for (let i = 0; i < str.length; i += 5) {
+      const chunk = str.slice(i, i + 5);
+      if (chunk === 'z') { out.push(0, 0, 0, 0); continue; }
+      let val = 0;
+      for (let j = 0; j < chunk.length; j++) val = val * 85 + (chunk.charCodeAt(j) - 33);
+      for (let j = chunk.length; j < 5; j++) val = val * 85 + 84;
+      out.push((val >>> 24) & 255, (val >>> 16) & 255, (val >>> 8) & 255, val & 255);
+    }
+    return Buffer.from(out);
+  };
+
+  const s = buffer.toString('latin1');
+  const contentIds = [...s.matchAll(/\/Contents\s+(?:\[([^\]]+)\]|(\d+)\s+0\s+R)/g)]
+    .flatMap(m => m[1] ? m[1].match(/\d+/g) || [] : [m[2]])
+    .filter(Boolean);
+  const objIds = contentIds.length > 0 ? contentIds : [...s.matchAll(/(\d+)\s+0\s+obj/g)].map(m => m[1]);
+  const results: string[] = [];
+
+  for (const id of objIds) {
+    const startTag = `${id} 0 obj`;
+    const pos = s.indexOf(startTag);
+    if (pos === -1) continue;
+    const header = s.slice(pos, pos + 250);
+    if (header.includes('/FontFile') || header.includes('/XObject') || header.includes('/Image')) continue;
+    const strStart = s.indexOf('stream', pos);
+    const strEnd = s.indexOf('endstream', strStart);
+    if (strStart === -1 || strEnd === -1) continue;
+    const raw = s.slice(strStart + 6, strEnd).trim();
+    let data: Buffer;
+    if (header.includes('/ASCII85Decode') || raw.startsWith('Gb') || raw.includes('~>')) {
+      try {
+        data = decodeA85(raw);
+      } catch {
+        data = Buffer.from(raw, 'latin1');
+      }
+    } else {
+      data = Buffer.from(raw, 'latin1');
+    }
+    try {
+      const uncomp = zlib.inflateSync(data).toString('latin1');
+      const texts = [...uncomp.matchAll(/\(([^)]+)\)/g)].map(m => m[1]);
+      if (texts.length > 0) results.push(texts.join(' '));
+    } catch {}
+  }
+  return results.join('\n').replace(/\\([()\\])/g, '$1').replace(/[^\x20-\x7E\n]/g, ' ').replace(/ +/g, ' ').trim();
+}
+
+export interface StructuredLabResult {
+  test_name: string;
+  value: number | string;
+  unit: string;
+  ref_low: number | null;
+  ref_high: number | null;
+  ref_text: string;
+  flag: 'L' | 'H' | 'normal' | 'unknown';
+}
+
+function normalizeLabRow(r: any): StructuredLabResult {
+  const test_name = String(r.test_name || r.name || '').trim();
+  let rawVal = r.value !== undefined && r.value !== null ? String(r.value).trim() : '';
+  let valNum: number | null = null;
+  const numMatch = rawVal.match(/^[-+]?([0-9]*\.[0-9]+|[0-9]+)/);
+  if (numMatch) {
+    valNum = parseFloat(numMatch[0]);
+  }
+
+  let unit = String(r.unit || '').trim().replace(/[\x00-\x1F\x7F]/g, 'u').trim();
+  let ref_text = String(r.ref_text || r.reference_range || '').trim();
+  let ref_low: number | null = typeof r.ref_low === 'number' && !isNaN(r.ref_low) ? r.ref_low : null;
+  let ref_high: number | null = typeof r.ref_high === 'number' && !isNaN(r.ref_high) ? r.ref_high : null;
+
+  if (ref_text && ref_text !== '-') {
+    const lessMatch = ref_text.match(/<\s*=?\s*([0-9.]+)/);
+    if (lessMatch) {
+      ref_high = parseFloat(lessMatch[1]);
+    }
+    const greaterMatch = ref_text.match(/>\s*=?\s*([0-9.]+)/);
+    if (greaterMatch) {
+      ref_low = parseFloat(greaterMatch[1]);
+    }
+    const rangeMatch = ref_text.match(/([0-9.]+)\s*[-–—to]+\s*([0-9.]+)/i);
+    if (rangeMatch) {
+      ref_low = parseFloat(rangeMatch[1]);
+      ref_high = parseFloat(rangeMatch[2]);
+    }
+  }
+
+  // Compute flag in TS
+  let flag: 'L' | 'H' | 'normal' | 'unknown' = 'unknown';
+  const rawFlag = String(r.flag || '').toUpperCase().trim();
+  if (valNum !== null && !isNaN(valNum)) {
+    if (ref_low !== null && !isNaN(ref_low) && valNum < ref_low) {
+      flag = 'L';
+    } else if (ref_high !== null && !isNaN(ref_high) && valNum > ref_high) {
+      flag = 'H';
+    } else if (rawFlag === 'H' || rawFlag === 'HIGH') {
+      flag = 'H';
+    } else if (rawFlag === 'L' || rawFlag === 'LOW') {
+      flag = 'L';
+    } else if (ref_low !== null || ref_high !== null || ref_text === '-') {
+      flag = 'normal';
+    } else {
+      flag = rawFlag === 'NORMAL' || rawFlag === 'N' ? 'normal' : 'unknown';
+    }
+  } else {
+    flag = 'unknown';
+  }
+
+  return {
+    test_name,
+    value: valNum !== null ? valNum : rawVal,
+    unit,
+    ref_low,
+    ref_high,
+    ref_text: ref_text || (ref_low !== null && ref_high !== null ? `${ref_low} - ${ref_high}` : ref_high !== null ? `< ${ref_high}` : ref_low !== null ? `> ${ref_low}` : ''),
+    flag
+  };
+}
+
+function extractLabRowsFromText(text: string): StructuredLabResult[] {
+  const clean = text
+    .replace(/\\001/g, 'u')
+    .replace(/\\\(/g, '(')
+    .replace(/\\\)/g, ')')
+    .replace(/\\/g, ' ')
+    .replace(/\s+/g, ' ');
+
+  const testDefs = [
+    { name: 'White Blood Cell Count (WBC)', regex: /White Blood Cell Count\s*(?:\(?WBC\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(x10\s*3\s*\/\s*uL)/i },
+    { name: 'Red Blood Cell Count (RBC)', regex: /Red Blood Cell Count\s*(?:\(?RBC\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(x10\s*6\s*\/\s*uL)/i },
+    { name: 'Hemoglobin', regex: /Hemoglobin\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(g\/dL)/i },
+    { name: 'Hematocrit', regex: /Hematocrit\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'MCV', regex: /MCV\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(fL)/i },
+    { name: 'MCH', regex: /MCH\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(pg)/i },
+    { name: 'MCHC', regex: /MCHC\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(g\/dL)/i },
+    { name: 'RDW-CV', regex: /RDW-CV\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Platelet Count', regex: /Platelet Count\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(x10\s*3\s*\/\s*uL)/i },
+    { name: 'Neutrophils', regex: /Neutrophils\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Lymphocytes', regex: /Lymphocytes\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Monocytes', regex: /Monocytes\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Eosinophils', regex: /Eosinophils\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Basophils', regex: /Basophils\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Glucose, Fasting', regex: /Glucose,\s*Fasting\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mg\/dL)/i },
+    { name: 'Urea Nitrogen (BUN)', regex: /Urea Nitrogen\s*(?:\(?BUN\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mg\/dL)/i },
+    { name: 'Creatinine', regex: /Creatinine\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mg\/dL)/i },
+    { name: 'eGFR (CKD-EPI 2021)', regex: /eGFR\s*(?:\(?CKD-EPI 2021\)?)?\s*([\d.]+)\s*(H|L)?\s*([>=\s\d.]+)\s*(mL\/min\/1\.73\s*m\s*2)/i },
+    { name: 'Sodium', regex: /Sodium\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mmol\/L)/i },
+    { name: 'Potassium', regex: /Potassium\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mmol\/L)/i },
+    { name: 'Chloride', regex: /Chloride\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mmol\/L)/i },
+    { name: 'Carbon Dioxide (CO2)', regex: /Carbon Dioxide\s*(?:\(?CO\s*2\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mmol\/L)/i },
+    { name: 'Calcium', regex: /Calcium\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mg\/dL)/i },
+    { name: 'Total Protein', regex: /Total Protein\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(g\/dL)/i },
+    { name: 'Albumin', regex: /Albumin\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(g\/dL)/i },
+    { name: 'Bilirubin, Total', regex: /Bilirubin,\s*Total\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(mg\/dL)/i },
+    { name: 'Alkaline Phosphatase (ALP)', regex: /Alkaline Phosphatase\s*(?:\(?ALP\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(U\/L)/i },
+    { name: 'AST (SGOT)', regex: /AST\s*(?:\(?SGOT\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(U\/L)/i },
+    { name: 'ALT (SGPT)', regex: /ALT\s*(?:\(?SGPT\)?)?\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(U\/L)/i },
+    { name: 'Cholesterol, Total', regex: /Cholesterol,\s*Total\s*([\d.]+)\s*(H|L)?\s*(<\s*[\d.]+)\s*(mg\/dL)/i },
+    { name: 'Triglycerides', regex: /Triglycerides\s*([\d.]+)\s*(H|L)?\s*(<\s*[\d.]+)\s*(mg\/dL)/i },
+    { name: 'HDL Cholesterol', regex: /HDL Cholesterol\s*([\d.]+)\s*(H|L)?\s*(>\s*[\d.]+)\s*(mg\/dL)/i },
+    { name: 'LDL Cholesterol (calculated)', regex: /LDL Cholesterol\s*(?:\(?calculated\)?)?\s*([\d.]+)\s*(H|L)?\s*(<\s*[\d.]+)\s*(mg\/dL)/i },
+    { name: 'Non-HDL Cholesterol', regex: /Non-HDL Cholesterol\s*([\d.]+)\s*(H|L)?\s*(<\s*[\d.]+)\s*(mg\/dL)/i },
+    { name: 'Cholesterol / HDL Ratio', regex: /Cholesterol\s*\/\s*HDL Ratio\s*([\d.]+)\s*(H|L)?\s*(<\s*[\d.]+)\s*(ratio)/i },
+    { name: 'Hemoglobin A1c', regex: /Hemoglobin A1c\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(%)/i },
+    { name: 'Estimated Average Glucose', regex: /Estimated Average Glucose\s*([\d.]+)\s*(H|L)?\s*(-)\s*(mg\/dL)/i },
+    { name: 'TSH, 3rd Generation', regex: /TSH,\s*3rd Generation\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(uIU\/mL)/i },
+    { name: 'Vitamin D, 25-Hydroxy', regex: /Vitamin D,\s*25-Hydroxy\s*([\d.]+)\s*(H|L)?\s*([\d.\s-]+)\s*(ng\/mL)/i }
+  ];
+
+  const results: StructuredLabResult[] = [];
+  for (const def of testDefs) {
+    const m = clean.match(def.regex);
+    if (m) {
+      results.push(normalizeLabRow({
+        test_name: def.name,
+        value: m[1],
+        flag: m[2],
+        ref_text: m[3],
+        unit: m[4]
+      }));
+    }
+  }
+  return results;
+}
+
+// Pre-flight image/PDF validation and robust OCR handler
+const handleOcrVision = async (req: Request, res: Response) => {
+  try {
+  let buffer: Buffer | null = null;
+  const rawImage = req.body?.image_base64 || req.body?.image;
+  if (req.file && req.file.buffer) {
+    buffer = req.file.buffer;
+  } else if (Buffer.isBuffer(req.body) && req.body.length > 0) {
+    buffer = req.body;
+  } else if (rawImage && typeof rawImage === 'string') {
+    try {
+      const base64Data = rawImage.replace(/^data:[^;]+;base64,/, '').trim();
+      buffer = Buffer.from(base64Data, 'base64');
+    } catch (parseErr: any) {
+      console.warn('[OCR] Base64 decode failed:', parseErr?.message || parseErr);
+    }
+  }
+
+  if (!buffer || !isValidImageBuffer(buffer)) {
+    return res.status(400).json({
+      success: false,
+      error: 'ocr_failed',
+      message: 'Could not read document'
+    });
+  }
+
+  const isPdf = buffer.length >= 4 && buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46;
+
+  let extractedResults: StructuredLabResult[] = [];
+  let extractedText = '';
+  let docType = 'Lab Report';
+  let patientName = '';
+  let isFallback = false;
+
+  // 1. Primary: Gemini Vision OCR (supports PDF and images) with tuned prompt
+  if (process.env.GEMINI_API_KEY) {
+    try {
+        const mimeType = isPdf ? 'application/pdf' : 'image/jpeg';
+      const prompt = `You are an expert clinical laboratory data extraction system.
+Analyze this medical document and extract structured laboratory test results and any procedures or surgeries mentioned.
+
+Output MUST be a valid JSON object matching this schema:
+{
+  "document_type": "Lab Report" | "Prescription" | "Discharge Summary" | "Unknown Document",
+  "patient_name": "string",
+  "procedures": ["procedure 1", "procedure 2"],
+  "results": [
+    {
+      "test_name": "string e.g. White Blood Cell Count (WBC)",
+      "value": number or string,
+      "unit": "string e.g. x10 3 / uL or g/dL or % or mg/dL",
+      "ref_low": number or null,
+      "ref_high": number or null,
+      "ref_text": "string e.g. 4.5 - 11.0 or < 200 or >= 60",
+      "flag": "L" | "H" | "normal" | "unknown"
+    }
+  ],
+  "text": "plain text of the entire document verbatim"
+}
+
+Extraction Rules:
+1. Extract any procedures or surgeries mentioned as 'procedures' array.
+2. Extract every row from every panel. Compute flag yourself if empty.
+3. Flag rules:
+   - "H" for high (above reference range)
+   - "L" for low (below reference range)
+   - "normal" for normal (within reference range)
+   - "unknown" if reference range is missing or indeterminate
+4. Range parsing:
+   - Treat '<200' as ref_high=200, '>40' as ref_low=40.
+   - Reference '>= 60' → ref_low=60.
+Respond ONLY with valid JSON. Keep JSON-only constraint.`;
+
+      const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+      const result = await model.generateContent({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                inlineData: {
+                  mimeType,
+                  data: buffer.toString('base64')
+                }
+              },
+              { text: prompt }
+            ]
+          }
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json'
+        }
+      });
+
+      const responseText = result.response.text().trim();
+      const parsed = JSON.parse(responseText);
+      if (parsed.document_type) docType = parsed.document_type;
+      if (parsed.patient_name) patientName = parsed.patient_name;
+      if (parsed.text) extractedText = parsed.text;
+
+      const rawResults = parsed.results || parsed.lab_results || [];
+      if (Array.isArray(rawResults) && rawResults.length > 0) {
+        extractedResults = rawResults.map(normalizeLabRow);
+      }
+
+      const rawProcedures = parsed.procedures || [];
+      const sessionId = req.body?.session_id || req.query?.session_id;
+      if (sessionId && Array.isArray(rawProcedures) && rawProcedures.length > 0) {
+        for (const proc of rawProcedures) {
+          if (proc && typeof proc === 'string') {
+            try {
+              await supabase.from('history_facts').insert({
+                session_id: sessionId,
+                complaint: 'Medical Document OCR',
+                question_id: 'procedure',
+                question_text: 'Procedure / Surgery',
+                field_name: 'procedures',
+                field_value: proc,
+                answer: proc,
+                answer_value: proc,
+                provenance: 'ocr_extracted',
+                verified: false
+              });
+            } catch (hfErr) {
+              console.warn('history_facts procedure insert warning:', hfErr);
+            }
+          }
+        }
+      }
+    } catch (geminiErr: any) {
+      console.warn('[OCR] Gemini OCR extraction warning:', geminiErr?.message || geminiErr);
+    }
+  }
+
+  // 2. Fallback: For PDF or image, extract offline if Gemini quota/failed or returned < 30 rows
+  if (extractedResults.length < 30) {
+    isFallback = true;
+    let fallbackText = extractedText;
+    if (isPdf) {
+      let pdfText = '';
+      try {
+        pdfText = extractPdfStrings(buffer);
+      } catch (pdfErr: any) {
+        console.warn('[OCR] Offline PDF extraction failed:', pdfErr?.message || pdfErr);
+      }
+
+      if (pdfText && pdfText.trim().length > 50) {
+        fallbackText = pdfText.trim();
+      } else {
+        let images = await extractPdfImages(buffer);
+        let tesseractText = '';
+
+        const runTesseract = async (imgs: Buffer[]) => {
+          let textResult = '';
+          for (const img of imgs) {
+            let worker: any = null;
+            try {
+              worker = await Tesseract.createWorker('eng');
+              if (typeof worker.on === 'function') {
+                worker.on('error', (err: any) => console.warn('[OCR] worker error:', err));
+              }
+              const recognizePromise = worker.recognize(img);
+              const timeoutPromise = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Tesseract timeout')), 20000));
+              const { data: { text } } = await Promise.race([recognizePromise, timeoutPromise]);
+              if (text && text.trim().length > 0) {
+                textResult += (textResult ? '\n' : '') + text.trim();
+              }
+            } catch (tErr: any) {
+              console.warn(`[OCR] Tesseract failed for PDF image: ${tErr?.message || tErr}`);
+            } finally {
+              if (worker && typeof worker.terminate === 'function') {
+                await worker.terminate().catch((e:any) => console.warn('Worker terminate error:', e));
+              }
+            }
+          }
+          return textResult;
+        };
+
+        if (images && images.length > 0) {
+          tesseractText = await runTesseract(images);
+        }
+
+        if (!tesseractText || tesseractText.trim().length === 0) {
+          console.log('[DEBUG] tesseractText empty, calling rasterizePdf');
+          images = await rasterizePdf(buffer);
+          console.log('[DEBUG] rasterizePdf returned array of length:', images?.length);
+          if (images && images.length > 0) {
+            tesseractText = await runTesseract(images);
+            console.log('[DEBUG] Second runTesseract returned text of length:', tesseractText?.length);
+          }
+        }
+
+        if (!tesseractText || tesseractText.trim().length === 0) {
+          return res.status(422).json({ success: false, error: 'ocr_failed', message: 'PDF has no extractable text or images' });
+        }
+
+        if (tesseractText && tesseractText.trim().length > 0) {
+          const parsedRows = parseLabRows(tesseractText);
+          const nameMatch = tesseractText.match(/(?:PATIENT NAME|Patient:|Name:)\s*([A-Za-z, .]+)/i);
+          if (nameMatch && !patientName) {
+            patientName = nameMatch[1].replace(/DOB.*/i, '').trim();
+          }
+          const extractedDate = extractDocumentDate(tesseractText);
+
+          return res.status(200).json({
+            success: true,
+            document_type: 'Lab Report',
+            patient_name: patientName,
+            extracted_date: extractedDate,
+            results: parsedRows,
+            lab_results: parsedRows,
+            data: parsedRows,
+            extractions: parsedRows.map(r => ({
+              field_name: `Lab: ${r.test_name}`,
+              field_value: `${r.value} ${r.unit || ''} (${r.ref_text ? `Ref: ${r.ref_text}` : 'Ref: —'})`.trim(),
+              flag: r.flag
+            })),
+            text: tesseractText,
+            fallback: true,
+            fallback_source: 'local-parser'
+          });
+        }
+
+        return res.status(422).json({
+          success: false,
+          error: 'ocr_failed',
+          message: 'PDF has no extractable text or images'
+        });
+      }
+    } else {
+      let worker: any = null;
+      try {
+        worker = await Tesseract.createWorker('eng');
+        if (typeof worker.on === 'function') {
+          worker.on('error', (err: any) => console.warn('[OCR] worker error:', err));
+        }
+        const recognizePromise = worker.recognize(buffer);
+        const timeoutPromise = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Tesseract timeout')), 20000));
+        const { data: { text: tText } } = await Promise.race([recognizePromise, timeoutPromise]);
+        if (tText && tText.trim().length > 0) {
+          fallbackText = tText.trim();
+        }
+      } catch (err: any) {
+        console.warn(`[OCR] Tesseract failed: ${err?.message || err}`);
+      } finally {
+        if (worker && typeof worker.terminate === 'function') {
+          await worker.terminate().catch((e:any) => console.warn('Worker terminate error:', e));
+        }
+      }
+    }
+
+    if (fallbackText) {
+      if (!extractedText) extractedText = fallbackText;
+      const nameMatch = fallbackText.match(/(?:PATIENT NAME|Patient:|Name:)\s*([A-Za-z, .]+)/i);
+      if (nameMatch && !patientName) patientName = nameMatch[1].replace(/DOB.*/i, '').trim();
+
+      const parsedRows = parseLabRows(fallbackText);
+      const extractedDate = extractDocumentDate(fallbackText);
+      return res.status(200).json({
+        success: true,
+        document_type: 'Lab Report',
+        patient_name: patientName,
+        extracted_date: extractedDate,
+        results: parsedRows,
+        lab_results: parsedRows,
+        data: parsedRows,
+        extractions: parsedRows.map(r => ({
+          field_name: `Lab: ${r.test_name}`,
+          field_value: `${r.value} ${r.unit || ''} (${r.ref_text ? `Ref: ${r.ref_text}` : 'Ref: —'})`.trim(),
+          flag: r.flag
+        })),
+        text: fallbackText,
+        fallback: true,
+        fallback_source: 'local-parser'
+      });
+    }
+  }
+
+  if (extractedResults.length === 0 && !extractedText) {
+    return res.status(422).json({
+      success: false,
+      error: 'ocr_failed',
+      message: 'Could not read document'
+    });
+  }
+
+  const extractedDate = extractDocumentDate(extractedText);
+
+  return res.status(200).json({
+    success: true,
+    document_type: docType,
+    patient_name: patientName,
+    extracted_date: extractedDate,
+    results: extractedResults,
+    lab_results: extractedResults,
+    data: extractedResults,
+    row_count: extractedResults.length,
+    text: extractedText,
+    fallback: isFallback
+  });
+  } catch (err: any) {
+    console.error('[OCR FATAL]', err);
+    return res.status(422).json({ success: false, error: 'ocr_failed' });
+  }
+};
+
+app.post('/ocr-vision', upload.single('file'), handleOcrVision);
+app.post('/api/ocr-vision', upload.single('file'), handleOcrVision);
+app.post('/api/ocr/extract', upload.single('file'), handleOcrVision);
+
+// POST /api/demo/trigger-semantic
+// Task B.4: MedGemma demo trigger endpoint
+app.post('/api/demo/trigger-semantic', async (req: Request, res: Response) => {
+  const reqStart = Date.now();
+
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ error: 'Not found in production' });
+  }
+
+  const id = req.body?.id || 'yellow-eyes';
+  const cached = getCachedSemanticResponse(id);
+
+  // Early-return immediately on cache hit with actual request latency
+  if (cached) {
+    const latencyMs = Date.now() - reqStart;
+    return res.json({
+      source: 'cache',
+      provider: cached.provider,
+      response: cached.result,
+      latencyMs,
+      cachedLatencyMs: cached.latencyMs
+    });
   }
 
   try {
-    const base64Data = image_base64.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
+    const prompt = promptFor(id);
+    const start = Date.now();
+    const fresh = await orchestrate<string>('red-flag-semantic', { prompt, text: prompt });
+    const latencyMs = Date.now() - start;
 
-    const { data: { text } } = await Tesseract.recognize(buffer, 'eng');
-    
-    if (text && text.trim().length > 0) {
-      return res.status(200).json({ 
-        text: text.trim(), 
-        fallback: false 
-      });
-    }
+    setCachedSemanticResponse(id, {
+      result: fresh.result,
+      provider: fresh.provider,
+      wasFallback: fresh.wasFallback,
+      latencyMs
+    });
 
-    return res.status(200).json({ 
-      text: null, 
-      fallback: true, 
-      error: 'Tesseract OCR returned no text.' 
+    return res.json({
+      source: 'fresh',
+      provider: fresh.provider,
+      response: fresh.result,
+      latencyMs
     });
   } catch (err: any) {
-    console.error('OCR Vision Error:', err);
-    return res.status(200).json({ 
-      text: null, 
-      fallback: true, 
-      error: err.message || 'Failed to process OCR'
+    console.warn('[demo-trigger-semantic] Orchestration failed:', err?.message || err);
+    return res.status(200).json({
+      source: 'fresh',
+      provider: 'fallback',
+      response: 'Evaluation completed with fallback.',
+      error: err?.message || 'Ollama/MedGemma unavailable'
     });
   }
 });
+
 
 // (Root and health handlers defined above — duplicates removed)
 
@@ -974,8 +1655,22 @@ app.post('/api/sarvam/asr', upload.any(), async (req: Request, res: Response) =>
 
 // OCR Endpoint: Sarvam Digitise (via orchestration) → Tesseract fallback
 app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file provided.' });
+  if (!req.file || !req.file.buffer) {
+    return res.status(400).json({
+      success: false,
+      error: 'ocr_failed',
+      message: 'Could not read document: No file provided.'
+    });
+  }
+
+  // Pre-flight validation: reject < 100 bytes and invalid image magic
+  if (!isValidImageBuffer(req.file.buffer)) {
+    console.warn('[OCR] Pre-flight validation rejected uploaded file (length:', req.file.buffer.length, ')');
+    return res.status(422).json({
+      success: false,
+      error: 'ocr_failed',
+      message: 'Could not read document'
+    });
   }
 
   // Primary: Sarvam Digitise via orchestration layer
@@ -988,11 +1683,11 @@ app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Res
         || rawResult?.pages?.map((p: any) => p.text || '').join('\n')
         || '';
       if (extractedText && extractedText.trim().length > 0) {
-        return res.json({ text: extractedText.trim(), provider: r.provider });
+        return res.json({ success: true, text: extractedText.trim(), provider: r.provider });
       }
       console.warn('[OCR] Orchestration returned no text, falling back to Tesseract:', rawResult);
-    } catch (ocrErr) {
-      console.warn('[OCR] Orchestration OCR error, falling back to Tesseract:', ocrErr);
+    } catch (ocrErr: any) {
+      console.warn('[OCR] Orchestration OCR error, falling back to Tesseract:', ocrErr?.message || ocrErr);
     }
   }
 
@@ -1000,12 +1695,16 @@ app.post('/api/sarvam/ocr', upload.single('file'), async (req: Request, res: Res
   try {
     const { data: { text } } = await Tesseract.recognize(req.file.buffer, 'eng');
     if (text && text.trim().length > 0) {
-      return res.json({ text: text.trim(), provider: 'tesseract' });
+      return res.json({ success: true, text: text.trim(), provider: 'tesseract' });
     }
-    return res.status(501).json({ error: 'OCR returned no text.' });
-  } catch (err) {
-    console.error('[OCR] Tesseract fallback error:', err);
-    return res.status(500).json({ error: 'Failed to process OCR' });
+    return res.status(200).json({ success: false, error: 'ocr_failed', message: 'Could not read document' });
+  } catch (err: any) {
+    console.error(`[OCR] Tesseract failed: ${err?.message || err}`);
+    return res.status(422).json({
+      success: false,
+      error: 'ocr_failed',
+      message: 'Could not read document'
+    });
   }
 });
 // Gemini Document Entity Extraction Endpoint
@@ -1040,7 +1739,14 @@ Output MUST be a valid JSON object matching exactly this schema:
     {
       "test_name": "test name",
       "value": "numeric or categorical value",
-      "reference_range": "reference range if present"
+      "reference_range": "reference range if present",
+      "normalized": {
+        "value": 12.5,
+        "unit": "g/dL",
+        "low": 13.0,
+        "high": 17.0,
+        "flag": "low" | "normal" | "high" | "unknown"
+      }
     }
   ]
 }
@@ -1059,11 +1765,133 @@ ${text}
 
     const responseText = result.response.text().trim();
     const jsonResult = JSON.parse(responseText);
+
+    // TypeScript post-parse sanity check on normalized lab results
+    if (Array.isArray(jsonResult.lab_results)) {
+      jsonResult.lab_results = jsonResult.lab_results.map((lab: any) => {
+        const norm = lab.normalized || {};
+        let valNum: number | null = typeof norm.value === 'number' ? norm.value : null;
+        let unitStr: string = norm.unit || '';
+
+        if (valNum === null && lab.value) {
+          const m = String(lab.value).match(/([\d.]+)\s*([a-zA-Z/%μuL]+)?/);
+          if (m) {
+            valNum = parseFloat(m[1]);
+            if (!unitStr && m[2]) unitStr = m[2];
+          }
+        }
+
+        let lowVal: number | null = typeof norm.low === 'number' ? norm.low : null;
+        let highVal: number | null = typeof norm.high === 'number' ? norm.high : null;
+
+        if ((lowVal === null || highVal === null) && lab.reference_range) {
+          const rangeMatch = String(lab.reference_range).match(/([\d.]+)\s*[-–—to]+\s*([\d.]+)/i);
+          if (rangeMatch) {
+            lowVal = parseFloat(rangeMatch[1]);
+            highVal = parseFloat(rangeMatch[2]);
+          } else {
+            const lessMatch = String(lab.reference_range).match(/<\s*([\d.]+)/);
+            if (lessMatch) highVal = parseFloat(lessMatch[1]);
+            const greatMatch = String(lab.reference_range).match(/>\s*([\d.]+)/);
+            if (greatMatch) lowVal = parseFloat(greatMatch[1]);
+          }
+        }
+
+        let flag: 'low' | 'normal' | 'high' | 'unknown' = 'unknown';
+        if (valNum !== null && !isNaN(valNum)) {
+          if (lowVal !== null && !isNaN(lowVal) && valNum < lowVal) {
+            flag = 'low';
+          } else if (highVal !== null && !isNaN(highVal) && valNum > highVal) {
+            flag = 'high';
+          } else if (lowVal !== null || highVal !== null) {
+            flag = 'normal';
+          } else {
+            flag = norm.flag === 'low' || norm.flag === 'high' || norm.flag === 'normal' ? norm.flag : 'unknown';
+          }
+        }
+
+        return {
+          ...lab,
+          normalized: {
+            value: valNum,
+            unit: unitStr,
+            low: lowVal,
+            high: highVal,
+            flag
+          }
+        };
+      });
+    }
+    const sessionId = req.body?.session_id || req.query?.session_id;
+    if (sessionId && Array.isArray(jsonResult.procedures) && jsonResult.procedures.length > 0) {
+      for (const proc of jsonResult.procedures) {
+        if (proc && typeof proc === 'string') {
+          try {
+            await supabase.from('history_facts').insert({
+              session_id: sessionId,
+              complaint: 'Medical Document OCR',
+              question_id: 'procedure',
+              question_text: 'Procedure / Surgery',
+              field_name: 'procedures',
+              field_value: proc,
+              answer: proc,
+              answer_value: proc,
+              provenance: 'ocr_extracted',
+              verified: false
+            });
+          } catch (hfErr) {
+            console.warn('history_facts procedure insert warning:', hfErr);
+          }
+        }
+      }
+    }
     
     return res.json(jsonResult);
-  } catch (err) {
-    console.error('Gemini Extract Entities Error:', err);
-    return res.status(500).json({ error: 'Failed to extract entities' });
+  } catch (err: any) {
+    console.warn('Gemini Extract Entities failed, using local extraction fallback:', err?.message || err);
+    const lines = (text || '').split('\n').map((l: string) => l.trim()).filter(Boolean);
+    let patientName = '';
+    const nameMatch = text.match(/(?:PATIENT NAME|Patient:|Name:)\s*([A-Za-z, .]+)/i);
+    if (nameMatch) patientName = nameMatch[1].replace(/DOB.*/i, '').trim();
+
+    const diagnoses: string[] = [];
+    const dxMatch = text.match(/(?:PRIMARY DX|Diagnosis:|Dx:)\s*([A-Za-z0-9, .()/-]+)/i);
+    if (dxMatch) diagnoses.push(dxMatch[1].trim());
+
+    const lowerText = text.toLowerCase();
+    const docType = (lowerText.includes('lab') || lowerText.includes('report') || lowerText.includes('test result') || lowerText.includes('panel'))
+      ? 'Lab Report'
+      : (lowerText.includes('rx') || lowerText.includes('prescription'))
+      ? 'Prescription'
+      : 'Unknown Document';
+
+    const labResults: any[] = [];
+    for (const l of lines) {
+      const m = l.match(/^([A-Za-z0-9 ,/()-]+?)\s+([\d.]+)\s*([HL])?\s+([<>]?\s*[\d.]+(?:\s*[-–—to]\s*[\d.]+)?)\s*([a-zA-Z/%μuL]+)?$/i);
+      if (m) {
+        const flag = m[3] ? (m[3].toUpperCase() === 'H' ? 'high' : 'low') : 'normal';
+        const valNum = parseFloat(m[2]);
+        labResults.push({
+          test_name: m[1].trim(),
+          value: `${m[2]}${m[5] ? ' ' + m[5] : ''}`,
+          reference_range: m[4] || '',
+          normalized: {
+            value: isNaN(valNum) ? null : valNum,
+            unit: m[5] || '',
+            flag
+          }
+        });
+      }
+    }
+
+    return res.json({
+      document_type: docType,
+      patient_name: patientName,
+      diagnoses,
+      procedures: [],
+      medications: [],
+      lab_results: labResults
+    });
   }
 });
 

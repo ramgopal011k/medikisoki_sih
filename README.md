@@ -17,12 +17,14 @@ MediKiosk is an offline-resilient, touch/voice-enabled clinical triage kiosk for
 ┌──────────────────────────────────────────────────────────────────┐
 │                        PATIENT KIOSK                             │
 │  React 18 + Vite + TypeScript                                    │
-│  ├─ Multilingual UI (English / Hindi)                            │
+│  ├─ Multilingual UI (English / Hindi / Marathi / Bengali)        │
 │  ├─ ASR: Web Speech API (primary) → Sarvam ASR (fallback)        │
 │  ├─ TTS: Web Speech Synthesis (primary) → Sarvam TTS (fallback)  │
 │  ├─ OCR: Tesseract.js client-side (primary) → Sarvam Vision (fb) │
 │  └─ Offline Buffer: IndexedDB via idb-keyval                     │
 └─────────────────────────────┬────────────────────────────────────┘
+
+> **Note on Regional Language Support**: Partial regional support enabled for Marathi (`mr`) and Bengali (`bn`) across primary UI strings (consent, navigation, buttons, and triage summary views). Clinical interview question trees currently fall back to Hindi (`hi`).
                               │ HTTP / REST  (VITE_API_URL)
                               ▼
 ┌──────────────────────────────────────────────────────────────────┐
@@ -62,7 +64,7 @@ MediKiosk is an offline-resilient, touch/voice-enabled clinical triage kiosk for
 |---|---|---|
 | Frontend framework | React 18 + Vite + TypeScript | |
 | Styling | TailwindCSS + Lucide Icons | Custom sand/forest Ayurvedic theme |
-| ASR (speech input) | **Sarvam Saaras v3** (primary) | Web Speech API (fallback) |
+| ASR (speech input) | **Web Speech API** (browser-native, Chrome/Edge) | **Sarvam Saaras v3** (Indian-language cloud fallback) |
 | TTS (readback) | **Sarvam Bulbul v3** | Web Speech Synthesis fallback |
 | OCR (document scan) | **Sarvam Doc AI** (primary) | Tesseract.js client-side fallback |
 | Translation | **Sarvam Mayura v1** | Multilingual translation engine |
@@ -337,6 +339,25 @@ DEMO_AUTH_TOKEN=medikiosk-demo-token
 | AYUSH flow (12 dimensions) | `frontend/src/pages/AyushFlow.tsx` |
 | Doctor dashboard | `frontend/src/pages/Doctor/DoctorDashboard.tsx` |
 | Triage summary (9 sections) | `frontend/src/pages/TriageSummary.tsx` |
+
+---
+
+## ⚡ GitHub Actions Workflows
+
+Automated CI/CD and uptime monitoring workflows are configured in `.github/workflows/`:
+
+| Workflow | Schedule / Trigger | Purpose | Config / Secrets Required |
+|---|---|---|---|
+| **Keepalive** (`keepalive.yml`) | Every 5 min (`*/5 * * * *`) & manual (`workflow_dispatch`) | Pings backend health endpoint & Supabase REST API to prevent cold starts | `SUPABASE_URL`, `SUPABASE_ANON_KEY` (secrets) |
+| **CI** (`ci.yml`) | Push to `main`/`dev` & PR to `main` | Runs TypeScript compile check (`tsc --noEmit`), build, and tests for both `backend/` and `frontend/` | None |
+| **Daily Health Check** (`health-check.yml`) | Daily at 03:00 UTC (`0 3 * * *`) & manual (`workflow_dispatch`) | Validates backend & frontend HTTP status 200 responses | `VERCEL_URL` (repository variable) |
+
+### Required Setup in GitHub UI
+1. **Secrets** (`Settings > Secrets and variables > Actions`):
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+2. **Variables** (`Settings > Secrets and variables > Actions > Variables`):
+   - `VERCEL_URL`
 
 ---
 

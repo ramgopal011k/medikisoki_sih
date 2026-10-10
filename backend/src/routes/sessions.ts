@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { supabase } from '../supabase';
-import { generateTriageSummary } from '../summary';
+import { generateTriageSummary, humanizeQuestionId } from '../summary';
 import { sessionSchema } from '../schemas';
+import { reasonAyush } from '../services/ayushReasoning';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Invalid input', details: e.errors });
   }
 
-  const { hospital_id, patient_name, dummy_aadhaar, language, chief_complaint, age, gender, phone, patient_type, consent, consents } = req.body;
+  const { hospital_id, patient_name, dummy_aadhaar, language, chief_complaint, age, gender, phone, patient_type, consent, consents, body_regions } = req.body;
   
   if (consents && consents.clinicalCare === false) {
     return res.status(400).json({ error: 'Clinical care consent is mandatory' });
@@ -141,24 +142,105 @@ router.post('/', async (req, res) => {
           provenance: 'patient_reported'
         });
       }
+      if (req.body.caregiver_mode === true || req.body.proxy_respondent === true || req.body.proxy_respondent === 'true') {
+        initialAnswers.push({
+          session_id: sessionResult.id,
+          question_id: 'proxy_respondent',
+          answer_text: 'true',
+          provenance: 'patient_reported'
+        });
+        try {
+          await supabase.from('history_facts').insert({
+            session_id: sessionResult.id,
+            complaint: validComplaint,
+            question_id: 'proxy_respondent',
+            question_text: 'Proxy Respondent / Caregiver',
+            field_name: 'proxy_respondent',
+            field_value: 'true',
+            answer: 'true',
+            answer_value: 'true',
+            provenance: 'patient_reported'
+          });
+        } catch (hfErr) {
+          console.warn('history_facts proxy_respondent insert warning:', hfErr);
+        }
+      }
+      if (Array.isArray(body_regions) && body_regions.length > 0) {
+        const regionsStr = body_regions.join(',');
+        initialAnswers.push({
+          session_id: sessionResult.id,
+          question_id: 'body_region',
+          answer_text: regionsStr,
+          provenance: 'patient_reported'
+        });
+
+        // Store directly in history_facts table as requested
+        try {
+          await supabase.from('history_facts').insert({
+            session_id: sessionResult.id,
+            complaint: validComplaint,
+            question_id: 'body_region',
+            question_text: 'Body Region',
+            answer: regionsStr,
+            answer_value: regionsStr,
+            provenance: 'patient_reported'
+          });
+        } catch (hfErr) {
+          console.warn('history_facts insert warning:', hfErr);
+        }
+      }
       await supabase.from('answers').insert(initialAnswers);
     } catch (e) {
       console.warn('Failed to insert initial answers:', e);
     }
 
-    // Insert granular consent record
-    if (consents || consent) {
-      try {
-        await supabase.from('consent_logs').insert([
-          {
-            session_id: sessionResult.id,
-            patient_id: validAbha,
-            consent_status: JSON.stringify(consents || consent)
-          }
-        ]);
-      } catch (consentErr) {
-        console.warn('Failed to insert consent log:', consentErr);
-      }
+    // Insert 4 granular consent records: clinical_care, ai_analytics, abdm_sharing, research
+    try {
+      const rawConsents = (consents && typeof consents === 'object')
+        ? consents
+        : (consent && typeof consent === 'object')
+          ? consent
+          : {};
+      
+      const clinicalCareGranted = rawConsents.clinical_care ?? rawConsents.clinicalCare ?? (consent === true || true);
+      const aiAnalyticsGranted = rawConsents.ai_analytics ?? rawConsents.dataAnalytics ?? (consent === true || false);
+      const abdmSharingGranted = rawConsents.abdm_sharing ?? rawConsents.abdm ?? rawConsents.communications ?? (consent === true || false);
+      const researchGranted = rawConsents.research ?? (consent === true || false);
+
+      const consentRows = [
+        {
+          session_id: sessionResult.id,
+          patient_id: validAbha,
+          purpose: 'clinical_care',
+          granted: Boolean(clinicalCareGranted),
+          consent_status: Boolean(clinicalCareGranted) ? 'granted' : 'revoked'
+        },
+        {
+          session_id: sessionResult.id,
+          patient_id: validAbha,
+          purpose: 'ai_analytics',
+          granted: Boolean(aiAnalyticsGranted),
+          consent_status: Boolean(aiAnalyticsGranted) ? 'granted' : 'revoked'
+        },
+        {
+          session_id: sessionResult.id,
+          patient_id: validAbha,
+          purpose: 'abdm_sharing',
+          granted: Boolean(abdmSharingGranted),
+          consent_status: Boolean(abdmSharingGranted) ? 'granted' : 'revoked'
+        },
+        {
+          session_id: sessionResult.id,
+          patient_id: validAbha,
+          purpose: 'research',
+          granted: Boolean(researchGranted),
+          consent_status: Boolean(researchGranted) ? 'granted' : 'revoked'
+        }
+      ];
+
+      await supabase.from('consent_logs').insert(consentRows);
+    } catch (consentErr) {
+      console.warn('Failed to insert consent log:', consentErr);
     }
   }
 
@@ -180,11 +262,8 @@ router.get('/', async (req, res) => {
     
     // If a specific hospital_id is provided and is not 'all', filter by it
     if (hospital_id && hospital_id !== 'all') {
-      if (hospital_id === 'demo' || hospital_id === '11111111-1111-1111-1111-111111111111') {
-        query = query.in('hospital_id', ['demo', '11111111-1111-1111-1111-111111111111']);
-      } else {
-        query = query.eq('hospital_id', hospital_id);
-      }
+      const targetId = hospital_id === 'demo' ? '11111111-1111-1111-1111-111111111111' : String(hospital_id);
+      query = query.eq('hospital_id', targetId);
     }
     
     let { data: sessions, error } = await query;
@@ -231,6 +310,9 @@ router.get('/', async (req, res) => {
       const chiefComplaint = s.chief_complaint || complaintAnswer?.answer_text || 'General Consultation';
       const dummyAadhaar = s.dummy_aadhaar || aadhaarAnswer?.answer_text || '00000000000000';
       const redFlagCount = (sessionRedFlags.length > 0 ? sessionRedFlags.length : (s.red_flag ? 1 : 0));
+      const proxyAnswer = sessionAnswers.find((a: any) => a.question_id === 'proxy_respondent');
+      const isCaregiver = s.caregiver_mode === true || proxyAnswer?.answer_text === 'true';
+      const bodyRegionAnswer = sessionAnswers.find((a: any) => a.question_id === 'body_region');
 
       return {
         session_id: s.id,
@@ -239,10 +321,12 @@ router.get('/', async (req, res) => {
         dummy_aadhaar: dummyAadhaar,
         language: s.language || 'en',
         chief_complaint: chiefComplaint,
+        body_region: bodyRegionAnswer?.answer_text || undefined,
         status: s.status || 'active',
         session_token: s.id,
         created_at: s.created_at || new Date().toISOString(),
-        red_flag_count: redFlagCount
+        red_flag_count: redFlagCount,
+        caregiver_mode: isCaregiver
       };
     });
 
@@ -285,6 +369,18 @@ router.get('/:id/triage', async (req, res) => {
       .order('created_at', { ascending: true });
     
     const answers = answersData || [];
+
+    // Fetch history_facts
+    let historyFactsData: any[] = [];
+    try {
+      const { data: hfResult } = await supabase
+        .from('history_facts')
+        .select('*')
+        .eq('session_id', id);
+      if (hfResult) historyFactsData = hfResult;
+    } catch (e) {
+      console.warn('history_facts query warning:', e);
+    }
 
     // Fetch medical history
     let medicalHistoryData: any[] = [];
@@ -368,6 +464,10 @@ router.get('/:id/triage', async (req, res) => {
       answers.find((a: any) => a.question_id === 'dummy_aadhaar')?.answer_text ||
       '00000000000000';
 
+    const isCaregiver = session.caregiver_mode === true ||
+      answers.some((a: any) => a.question_id === 'proxy_respondent' && (a.answer_text === 'true' || a.answer_text === true)) ||
+      historyFactsData.some((f: any) => (f.question_id === 'proxy_respondent' || f.field_name === 'proxy_respondent') && (f.answer_value === 'true' || f.field_value === 'true' || f.answer === 'true'));
+
     const mappedSession = {
       session_id: session.id,
       id: session.id,
@@ -379,11 +479,12 @@ router.get('/:id/triage', async (req, res) => {
       created_at: session.created_at,
       status: session.status || 'active',
       red_flag: session.red_flag || redFlagsData.length > 0,
-      locked: session.locked || false
+      locked: session.locked || false,
+      caregiver_mode: isCaregiver
     };
 
     // Filter out internal metadata answers from the clinical interview timeline
-    const facts = answers
+    const answerFacts = answers
       .filter((a: any) => a.question_id !== 'dummy_aadhaar')
       .map((a: any) => ({
         fact_id: a.id,
@@ -391,13 +492,31 @@ router.get('/:id/triage', async (req, res) => {
         question_id: a.question_id,
         question_text: a.question_id === 'chief_complaint' 
           ? 'Chief Complaint' 
-          : a.question_id.replace(/^q_/, 'Question ').replace(/^ocr_/, 'OCR '),
+          : humanizeQuestionId(a.question_id),
         answer_text: a.answer_text,
         answer_value: a.answer_text,
         provenance: a.provenance || 'patient_reported',
         verified: a.verified ? 1 : 0,
         created_at: a.created_at
       }));
+
+    // Merge any distinct history_facts (e.g. ocr_extracted procedures, proxy respondent)
+    const existingQIds = new Set(answerFacts.map(f => f.question_id));
+    const extraFacts = historyFactsData
+      .filter(hf => hf.question_id !== 'dummy_aadhaar' && !existingQIds.has(hf.question_id))
+      .map(hf => ({
+        fact_id: hf.fact_id || hf.id,
+        id: hf.fact_id || hf.id,
+        question_id: hf.question_id || hf.field_name,
+        question_text: hf.question_text || (hf.question_id ? humanizeQuestionId(hf.question_id) : 'Fact'),
+        answer_text: hf.answer || hf.answer_value || hf.field_value,
+        answer_value: hf.answer_value || hf.answer || hf.field_value,
+        provenance: hf.provenance || 'patient_reported',
+        verified: hf.verified ? 1 : 0,
+        created_at: hf.created_at
+      }));
+
+    const facts = [...answerFacts, ...extraFacts];
 
     const redFlags = redFlagsData.length > 0 
       ? redFlagsData.map((rf: any) => ({
@@ -466,6 +585,32 @@ router.get('/:id/triage', async (req, res) => {
     const hasAyushOptIn = ayushData.length > 0 ||
       (answersData || []).some((a: any) => (a.question_id === 'ayush_opt_in' || a.question_id === 'ayush_mode') && (a.answer_text === 'true' || a.answer_text === true));
 
+    let ayush_reasoning = null;
+    if (hasAyushOptIn || ayushData.length > 0) {
+      const assessmentMap: Record<string, string> = {};
+      ayushData.forEach((item: any) => {
+        if (item.dimension && item.value) {
+          assessmentMap[item.dimension.toLowerCase()] = item.value;
+        }
+      });
+      answers.forEach((ans: any) => {
+        if (ans.question_id && typeof ans.question_id === 'string' && ans.answer_text) {
+          const qLower = ans.question_id.toLowerCase();
+          if (qLower.includes('prakriti')) assessmentMap.prakriti = ans.answer_text;
+          if (qLower.includes('vikriti')) assessmentMap.vikriti = ans.answer_text;
+          if (qLower.includes('agni')) assessmentMap.agni = ans.answer_text;
+          if (qLower.includes('koshtha')) assessmentMap.koshtha = ans.answer_text;
+        }
+      });
+      if (!assessmentMap.prakriti) assessmentMap.prakriti = 'Vata-Pitta';
+      if (!assessmentMap.vikriti) assessmentMap.vikriti = 'Vata';
+      if (!assessmentMap.agni) assessmentMap.agni = 'Manda';
+      if (!assessmentMap.koshtha) assessmentMap.koshtha = 'Krura';
+      assessmentMap.chief_complaint = chiefComplaint;
+
+      ayush_reasoning = reasonAyush(assessmentMap);
+    }
+
     res.json({
       session: {
         ...mappedSession,
@@ -476,6 +621,7 @@ router.get('/:id/triage', async (req, res) => {
       facts,
       ayush: ayushData,
       ayushAssessments,
+      ayush_reasoning,
       summary: summaryData && summaryData.length > 0 ? summaryData[0] : null,
       summaries,
       red_flag: mappedSession.red_flag,

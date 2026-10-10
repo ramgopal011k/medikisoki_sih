@@ -1,19 +1,12 @@
-function resolveApiUrl(): string {
-  try {
-    if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
-      return import.meta.env.VITE_API_URL;
-    }
-  } catch {}
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host !== 'localhost' && host !== '127.0.0.1') {
-      return 'https://medikisoki-production.up.railway.app';
-    }
-  }
-  return 'http://localhost:3001';
-}
+const rawApi = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || 'http://localhost:3001';
+const formattedApi = rawApi.startsWith('http://') || rawApi.startsWith('https://') || rawApi.startsWith('/') ? rawApi : `https://${rawApi}`;
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-export const API_URL = resolveApiUrl();
+export const API_URL =
+  isLocalhost || rawApi === 'http://localhost:3001' || rawApi === 'http://localhost:3001/' || rawApi === ''
+    ? '' // use relative — proxy handles it
+    : formattedApi.replace(/\/+$/, '');
+
 export const DEFAULT_AUTH_TOKEN = 'medikiosk-demo-token';
 
 export function getAuthToken(): string {
@@ -40,8 +33,9 @@ if (typeof window !== 'undefined' && !(window as any).__api_fetch_intercepted__)
   const originalFetch = window.fetch;
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     try {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-      if (url.startsWith(API_URL) || url.startsWith('/api/') || url.includes('/api/')) {
+      const url = typeof input === 'string' ? input : (input instanceof URL ? input.toString() : (input as Request).url || '');
+      const isBackend = (Boolean(API_URL) && url.startsWith(API_URL)) || url.startsWith('/api') || url.includes('/api/') || url.startsWith('/auth') || url.startsWith('/ayush-assessment') || url.startsWith('/medical-history');
+      if (isBackend) {
         const headers = new Headers(init?.headers || {});
         if (!headers.has('Authorization')) {
           headers.set('Authorization', `Bearer ${getAuthToken()}`);

@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { QuestionCard } from '../../components/QuestionCard';
 import { supabase } from '../../lib/supabase';
+import { prefetchPatientVisits } from '@/lib/prefetch';
 
 export default function PatientLogin() {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,11 +22,15 @@ export default function PatientLogin() {
 
     try {
       if (isLogin) {
-        const { error: authError } = await supabase.auth.signInWithPassword({
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
           email,
           password
         });
         if (authError) throw authError;
+        const pAbha = authData.user?.user_metadata?.abha_id;
+        if (pAbha) {
+          prefetchPatientVisits(pAbha);
+        }
         navigate('/patient/dashboard');
       } else {
         if (abhaId.length !== 14) {
@@ -43,6 +48,7 @@ export default function PatientLogin() {
         });
         
         if (authError) throw authError;
+        prefetchPatientVisits(abhaId);
         navigate('/patient/dashboard');
       }
     } catch (err: any) {

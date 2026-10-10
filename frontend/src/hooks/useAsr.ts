@@ -32,7 +32,8 @@ export interface UseAsrOptions {
   maxDurationSeconds?: number;
 }
 
-type AsrStatus = 'idle' | 'listening' | 'processing' | 'error' | 'unsupported';
+export type AsrStatus = 'idle' | 'listening' | 'processing' | 'error' | 'unsupported';
+export type AsrMode = 'native' | 'cloud' | 'offline' | 'unavailable';
 
 // Language tag maps: our 2-letter patient language code → BCP-47 tag for WebSpeech
 const LANG_TO_BCP47: Record<string, string> = {
@@ -120,6 +121,76 @@ async function sendAudioToBackend(
   return text.trim();
 }
 
+function startVad(stream: MediaStream, onSilence: () => void): () => void {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return () => {};
+
+    const audioCtx = new AudioCtx();
+    const source = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+
+    const buffer = new Float32Array(analyser.fftSize);
+    let sampleCount = 0;
+    let baselineNoiseMax = 0.005;
+    let threshold = 0.02;
+
+    let hasSpoken = false;
+    let silenceDurationMs = 0;
+    let active = true;
+
+    // Poll RMS every 100ms
+    const intervalId = setInterval(() => {
+      if (!active) return;
+      analyser.getFloatTimeDomainData(buffer);
+
+      let sumSq = 0;
+      for (let i = 0; i < buffer.length; i++) {
+        sumSq += buffer[i] * buffer[i];
+      }
+      const rms = Math.sqrt(sumSq / buffer.length);
+
+      // Calibrate threshold from first 300ms
+      if (sampleCount < 3) {
+        sampleCount++;
+        if (rms > baselineNoiseMax) baselineNoiseMax = rms;
+        if (sampleCount === 3) {
+          threshold = Math.max(0.015, baselineNoiseMax * 1.5);
+        }
+        return;
+      }
+
+      // Stop after 800ms silence post-speech
+      if (rms > threshold) {
+        hasSpoken = true;
+        silenceDurationMs = 0;
+      } else if (hasSpoken) {
+        silenceDurationMs += 100;
+        if (silenceDurationMs >= 800) {
+          active = false;
+          clearInterval(intervalId);
+          onSilence();
+        }
+      }
+    }, 100);
+
+    return () => {
+      active = false;
+      clearInterval(intervalId);
+      try { source.disconnect(); } catch {}
+      try { analyser.disconnect(); } catch {}
+      if (audioCtx.state !== 'closed') {
+        try { audioCtx.close(); } catch {}
+      }
+    };
+  } catch (err) {
+    console.warn('[MediKiosk ASR] WebAudio VAD init notice:', err);
+    return () => {};
+  }
+}
+
 export function useAsr() {
   const [isListening, setIsListening]   = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -127,12 +198,23 @@ export function useAsr() {
   const [status, setStatus]             = useState<AsrStatus>('idle');
   const [error, setError]               = useState<string | null>(null);
 
+  const [mode, setMode]                 = useState<AsrMode>(() => {
+    if (typeof window === 'undefined') return 'offline';
+    if (!window.isSecureContext || !navigator?.mediaDevices?.getUserMedia) return 'offline';
+    const strat = selectAsrStrategy();
+    if (strat === 'native') return 'native';
+    if (strat === 'mediarecorder') return 'cloud';
+    return 'unavailable';
+  });
+  const [reason, setReason]             = useState<string>('');
+
   const recognitionRef   = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef   = useRef<Blob[]>([]);
   const streamRef        = useRef<MediaStream | null>(null);
   const timeoutRef       = useRef<any>(null);
   const isMountedRef     = useRef(true);
+  const vadCleanupRef    = useRef<(() => void) | null>(null);
 
   const onResultCallbackRef = useRef<((text: string) => void) | undefined>(undefined);
   const onEndCallbackRef    = useRef<(() => void) | undefined>(undefined);
@@ -146,6 +228,10 @@ export function useAsr() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
+    }
+    if (vadCleanupRef.current) {
+      vadCleanupRef.current();
+      vadCleanupRef.current = null;
     }
     if (recognitionRef.current) {
       try { recognitionRef.current.abort(); } catch { /* ignore */ }
@@ -243,8 +329,8 @@ export function useAsr() {
       if (current && isMountedRef.current) {
         setTranscript(current);
         finalTranscriptRef.current = (final || current).trim();
-        if (final && onResultCallbackRef.current) {
-          onResultCallbackRef.current(finalTranscriptRef.current);
+        if (onResultCallbackRef.current) {
+          onResultCallbackRef.current(current);
         }
       }
     };
@@ -348,8 +434,14 @@ export function useAsr() {
       return;
     }
 
-    // Auto-stop timer
-    timeoutRef.current = setTimeout(() => stopListening(), duration);
+    // Auto-stop timer (6s default)
+    timeoutRef.current = setTimeout(() => {
+      stopListening();
+      if (!finalTranscriptRef.current && isMountedRef.current) {
+        setError('No speech detected. Please tap your answer.');
+        setStatus('error');
+      }
+    }, duration);
   }, [cleanupMedia, stopListening]);
 
   // ──────────────────────────────────────────────────────
@@ -447,8 +539,22 @@ export function useAsr() {
     mediaRecorderRef.current = recorder;
     recorder.start(250);
 
-    // Auto-stop timer
-    timeoutRef.current = setTimeout(() => stopListening(), duration);
+    // Attach VAD early-stop on mic stream (800ms silence post-speech)
+    if (vadCleanupRef.current) {
+      vadCleanupRef.current();
+    }
+    vadCleanupRef.current = startVad(stream, () => {
+      console.log('[MediKiosk ASR] VAD detected 800ms silence post-speech, stopping recording early');
+      stopListening();
+    });
+
+    // Auto-stop timer (6s default)
+    timeoutRef.current = setTimeout(() => {
+      stopListening();
+      if (!finalTranscriptRef.current && isMountedRef.current) {
+        setError('No speech detected. Please tap your answer.');
+      }
+    }, duration);
   }, [cleanupMedia, stopListening]);
 
   // ──────────────────────────────────────────────────────
@@ -494,7 +600,7 @@ export function useAsr() {
     }
 
     const bcpLang = getBcpTag(options);
-    const duration = (options?.maxDurationSeconds || 10) * 1000;
+    const duration = (options?.maxDurationSeconds || 6) * 1000;
 
     // Desktop Native Path: execute SpeechRecognition.start() synchronously inside user gesture handler
     if (strategy === 'native') {
@@ -559,6 +665,8 @@ export function useAsr() {
     transcript,
     status,
     error,
+    mode,
+    reason,
     startListening,
     stopListening,
     setTranscript,

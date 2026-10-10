@@ -12,12 +12,20 @@ export const sessionSchema = z.object({
   patient_type: z.string().optional().nullable(),
   consent: z.any().optional().nullable(),
   consents: z.object({
-    clinicalCare: z.boolean().default(false),
-    dataAnalytics: z.boolean().default(false),
-    research: z.boolean().default(false),
-    communications: z.boolean().default(false)
-  }).optional().nullable()
-});
+    clinical_care: z.boolean().optional(),
+    ai_analytics: z.boolean().optional(),
+    abdm_sharing: z.boolean().optional(),
+    research: z.boolean().optional(),
+    clinicalCare: z.boolean().optional(),
+    dataAnalytics: z.boolean().optional(),
+    communications: z.boolean().optional()
+  }).passthrough().optional().nullable(),
+  body_regions: z.array(z.string()).optional().nullable(),
+  ayush_opt_in: z.boolean().optional().nullable(),
+  ayush_mode: z.boolean().optional().nullable(),
+  caregiver_mode: z.boolean().optional().nullable(),
+  proxy_respondent: z.union([z.boolean(), z.string()]).optional().nullable()
+}).passthrough();
 
 export const historyFactSchema = z.object({
   session_id: z.string(),

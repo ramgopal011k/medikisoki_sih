@@ -47,60 +47,199 @@
   }
 }
 
+/* Large-text mode */
 html.large-text {
-  font-size: 130%; /* Scales up rem units globally */
+  font-size: 118%;
 }
-
-html.large-text h1 {
-  font-size: 1.2em;
+html.large-text body {
+  line-height: 1.65;
 }
-
-html.large-text p, html.large-text button, html.large-text input {
-  font-size: 1.1em;
+html.large-text button,
+html.large-text input,
+html.large-text select,
+html.large-text textarea {
+  font-size: 1.05rem;
+  min-height: 56px;
 }
+html.large-text h1 { font-size: 2rem; }
+html.large-text h2 { font-size: 1.5rem; }
+html.large-text p, html.large-text label { font-size: 1.05rem; }
 
-/* High-contrast mode for visually impaired users */
+/* High-contrast mode */
 html.high-contrast {
-  filter: contrast(1.4);
+  filter: contrast(1.25) saturate(1.1);
 }
-
 html.high-contrast body {
-  background-color: #000 !important;
-  color: #fff !important;
+  background: #ffffff;
+  color: #000000;
 }
-
-html.high-contrast .bg-sand,
-html.high-contrast .bg-white,
-html.high-contrast [class*="bg-warmgray"],
-html.high-contrast [class*="bg-[#f7f4ed]"] {
-  background-color: #111 !important;
-  color: #fff !important;
+html.high-contrast button {
+  border: 2px solid currentColor;
 }
-
-html.high-contrast button,
-html.high-contrast input,
-html.high-contrast textarea {
-  border-color: #fff !important;
-  border-width: 2px !important;
-  color: #fff !important;
-  background-color: #222 !important;
+html.high-contrast a {
+  text-decoration: underline;
 }
-
-html.high-contrast button:hover,
-html.high-contrast button:focus {
-  background-color: #444 !important;
-}
-
 html.high-contrast .text-muted,
-html.high-contrast .text-charcoal {
-  color: #eee !important;
+html.high-contrast [class*="text-charcoal"] {
+  color: #1a1a1a;
 }
 
-html.high-contrast .text-primary {
-  color: #6db3f2 !important;
+/* ── Print Optimization Styles ── */
+@media print {
+  /* Hide navigation, sidebar, interactive buttons, audio guides, accessibility controls */
+  header,
+  nav,
+  aside,
+  sidebar,
+  button,
+  .no-print,
+  [role="button"],
+  .mic-pill,
+  .voice-guide-btn,
+  .accessibility-toggle {
+    display: none !important;
+  }
+
+  /* Reset document for clean black-on-white print */
+  html,
+  body,
+  #root,
+  .min-h-screen,
+  main {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  /* Print container spacing */
+  main {
+    max-width: 100% !important;
+    padding: 0.25in !important;
+  }
+
+  /* Flatten borders & remove soft shadows */
+  section,
+  div {
+    box-shadow: none !important;
+  }
+
+  /* Page break before AYUSH section if overflowing */
+  .ayush-print-section {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /* Avoid breaking inside clinical cards, tables and lists */
+  article,
+  section,
+  table,
+  tr,
+  li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
-html.high-contrast .text-danger,
-html.high-contrast .text-destructive {
-  color: #ff6b6b !important;
+@keyframes mic-waveform-sine {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 20px;
+  }
 }
+
+.mic-waveform-bar-sine {
+  animation: mic-waveform-sine 1.2s ease-in-out infinite;
+}
+
+@keyframes checkmark-stroke {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.checkmark-draw {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+  animation: checkmark-stroke 400ms ease-out forwards;
+}
+
+@keyframes welcome-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes welcome-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--rise-dist, 12px));
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes welcome-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.welcome-fade-in {
+  animation: welcome-fade 300ms ease-out both;
+}
+
+.welcome-rise-fade {
+  animation: welcome-rise 350ms ease-out both;
+}
+
+.welcome-scale-fade {
+  animation: welcome-scale 400ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .mic-waveform-bars {
+    display: none !important;
+  }
+
+  .checkmark-draw {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .welcome-fade-in,
+  .welcome-rise-fade,
+  .welcome-scale-fade {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

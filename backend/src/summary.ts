@@ -1,7 +1,152 @@
 import { supabase } from './supabase';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { translateSummaryObject } from './clinicalTranslations';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+export const QUESTION_LABEL_MAP: Record<string, string> = {
+  // Chest pain
+  q_chest_severity: 'Severity',
+  q_chest_location: 'Location',
+  q_chest_radiation: 'Radiation',
+  q_chest_character: 'Character',
+  q_chest_duration: 'Duration',
+  q_chest_associated: 'Associated symptoms',
+  q_chest_breath: 'Shortness of breath',
+  cp_site: 'Location',
+  cp_radiation: 'Radiation',
+  cp_character: 'Character',
+  cp_exacerbating: 'Exacerbating factors',
+  cp_onset: 'Duration',
+  cp_relieving: 'Relieving factors',
+  cp_timing: 'Timing',
+  cp_severity: 'Severity',
+  cp_associated_cardiac: 'Associated cardiac symptoms',
+  cp_associated_gi: 'Associated GI symptoms',
+  cp_dizziness: 'Dizziness',
+
+  // Fever
+  q_fever_duration: 'Fever duration',
+  q_fever_temp: 'Body temperature',
+  q_fever_pattern: 'Fever pattern',
+  q_fever_rigors: 'Chills and rigors',
+  q_fever_med_response: 'Response to medication',
+  q_fever_travel: 'Recent travel',
+  q_fever_contacts: 'Sick contacts',
+  q_fever_joint_pain: 'Joint pain',
+  q_fever_associated: 'Associated symptoms',
+  q_fever_hydration: 'Hydration status',
+  fever_duration: 'Fever duration',
+  fever_temp: 'Body temperature',
+  fever_pattern: 'Fever pattern',
+  fever_rigors: 'Chills and rigors',
+  fever_med_response: 'Response to medication',
+  fever_travel: 'Recent travel',
+  fever_contacts: 'Sick contacts',
+  fever_joint_pain: 'Joint pain',
+  fever_associated: 'Associated symptoms',
+  fever_hydration: 'Hydration status',
+
+  // Headache
+  q_headache_severity: 'Severity',
+  q_headache_onset: 'Onset',
+  q_headache_location: 'Location',
+  q_headache_character: 'Character',
+  q_headache_triggers: 'Triggers',
+  q_headache_aura: 'Aura symptoms',
+  q_headache_associated: 'Associated symptoms',
+  ha_severity: 'Severity',
+  ha_onset: 'Onset',
+  ha_location: 'Location',
+  ha_character: 'Character',
+  ha_triggers: 'Triggers',
+  ha_aura: 'Aura symptoms',
+  ha_associated: 'Associated symptoms',
+
+  // Cough
+  q_cough_duration: 'Cough duration',
+  q_cough_type: 'Cough type',
+  q_cough_color: 'Sputum color',
+  q_cough_timing: 'Cough timing',
+  q_cough_exposure: 'Environmental exposure',
+  q_cough_voice: 'Voice change',
+  q_cough_associated: 'Associated symptoms',
+  q_cough_blood: 'Coughing up blood',
+  cough_duration: 'Cough duration',
+  cough_type: 'Cough type',
+  cough_color: 'Sputum color',
+  cough_timing: 'Cough timing',
+  cough_exposure: 'Environmental exposure',
+  cough_voice: 'Voice change',
+  cough_associated: 'Associated symptoms',
+
+  // Abdominal Pain
+  q_abd_site: 'Location',
+  q_abdominal_location: 'Location',
+  q_abd_onset: 'Onset',
+  q_abd_character: 'Character',
+  q_abd_radiation: 'Radiation',
+  q_abd_severity: 'Severity',
+  q_abd_associated: 'Associated symptoms',
+  q_abd_meals: 'Relation to meals',
+  q_abd_bowels: 'Bowel habits',
+  abd_site: 'Location',
+  abd_onset: 'Onset',
+  abd_character: 'Character',
+  abd_radiation: 'Radiation',
+  abd_severity: 'Severity',
+  abd_associated: 'Associated symptoms',
+  abd_meals: 'Relation to meals',
+  abd_bowels: 'Bowel habits',
+
+  // Back Pain
+  q_bp_location: 'Location',
+  q_back_location: 'Location',
+  q_bp_onset: 'Onset',
+  q_bp_radiation: 'Radiation',
+  q_bp_character: 'Character',
+  q_bp_severity: 'Severity',
+  q_bp_red_flags: 'Neurological red flags',
+  q_bp_aggravating: 'Aggravating factors',
+  bp_location: 'Location',
+  bp_onset: 'Onset',
+  bp_radiation: 'Radiation',
+  bp_character: 'Character',
+  bp_severity: 'Severity',
+  bp_red_flags: 'Neurological red flags',
+  bp_aggravating: 'Aggravating factors',
+
+  // Other / General
+  q1_description: 'Complaint description',
+  q2_duration: 'Duration',
+  q3_severity: 'Severity',
+  q4_systemic: 'Systemic symptoms',
+  q5_daily_impact: 'Daily impact',
+  q6_additional: 'Additional details',
+  body_region: 'Body region'
+};
+
+export function humanizeQuestionId(questionId: string): string {
+  if (!questionId) return '';
+  if (QUESTION_LABEL_MAP[questionId]) {
+    return QUESTION_LABEL_MAP[questionId];
+  }
+  const lower = questionId.toLowerCase();
+  if (QUESTION_LABEL_MAP[lower]) {
+    return QUESTION_LABEL_MAP[lower];
+  }
+  // Fallback for unmapped:
+  // - strip "q_" prefix
+  // - replace "_" with " "
+  // - capitalize first letter of each word
+  // e.g. "chest_severity" becomes "Chest Severity"
+  const stripped = questionId.replace(/^q_/, '').replace(/^ocr_/, '');
+  return stripped
+    .split('_')
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 export async function generateTriageSummary(sessionId: string) {
   // Fetch session data
@@ -51,7 +196,7 @@ export async function generateTriageSummary(sessionId: string) {
   
   const hpi = answers
     .filter(a => a.provenance === 'patient_reported' && a.question_id !== 'chief_complaint' && a.question_id !== 'dummy_aadhaar')
-    .map(a => `${a.question_id.replace(/^q_/, 'Question ')}: ${a.answer_text}`);
+    .map(a => `${humanizeQuestionId(a.question_id)}: ${a.answer_text}`);
 
   const getCategoryList = (categoryName: string, keywords: string[]) => {
     return [
@@ -173,26 +318,22 @@ export async function generateTriageSummary(sessionId: string) {
       console.warn("Failed to generate ICD codes:", icdErr);
     }
 
+    if (!hindiContent) {
+      try {
+        hindiContent = await translateSummaryObject(summaryContent, 'hi');
+      } catch {}
+    }
+
+    const payload: any = {
+      content: { ...summaryContent, icd_codes: icdCodes },
+      hindi_content: hindiContent,
+      doctor_verified: false
+    };
+
     if (existing && existing.id) {
-      await supabase
-        .from('summaries')
-        .update({ 
-          content: summaryContent,
-          hindi_content: hindiContent,
-          icd_codes: icdCodes,
-          doctor_verified: false
-        })
-        .eq('id', existing.id);
+      await supabase.from('summaries').update(payload).eq('id', existing.id);
     } else {
-      await supabase
-        .from('summaries')
-        .insert({ 
-          session_id: sessionId,
-          content: summaryContent,
-          hindi_content: hindiContent,
-          icd_codes: icdCodes,
-          doctor_verified: false
-        });
+      await supabase.from('summaries').insert({ session_id: sessionId, ...payload });
     }
 
     return { summary: summaryContent };

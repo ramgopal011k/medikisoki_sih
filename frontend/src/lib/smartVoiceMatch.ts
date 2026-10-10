@@ -7,8 +7,7 @@
  * 3. Numeric & duration range detection: "2 weeks", "3 to 8 weeks", "more than 2 months"
  * 4. Pain severity scale (1-10 / Mild / Moderate / Severe)
  * 5. Multi-lingual Hindi + English synonyms & colloquial affirmations
- * 6. Keyword overlap & Levenshtein fallback
- * 7. Server-side Gemini AI fallback
+ * 6. Token Overlap / Word Jaccard + Gemini fallback
  */
 
 import { API_URL, getAuthHeaders } from './api';
@@ -17,6 +16,8 @@ export interface MatchOption {
   value: string;
   label: string;
   label_hi?: string;
+  label_mr?: string;
+  label_bn?: string;
 }
 
 export interface MatchResult {
@@ -83,62 +84,46 @@ export function normalizeTranscript(text: string): string {
  * Extracts sub-phrases from option label (e.g. text inside and outside parentheses)
  * "Subacute (3 to 8 weeks)" -> ["subacute (3 to 8 weeks)", "subacute", "3 to 8 weeks", "3 to 8", "3-8 weeks"]
  */
-export function extractOptionSubPhrases(label: string, labelHi?: string): string[] {
+export function extractOptionSubPhrases(label: string, labelHi?: string, labelMr?: string, labelBn?: string): string[] {
   const phrases: string[] = [];
-  const raw = label.toLowerCase();
-  phrases.push(raw);
 
-  // Text outside parentheses
-  const outside = raw.replace(/\(.*?\)/g, '').trim();
-  if (outside && outside !== raw) {
-    phrases.push(outside);
-  }
-
-  // Text inside parentheses
-  const parenMatches = raw.match(/\((.*?)\)/g);
-  if (parenMatches) {
-    for (const match of parenMatches) {
-      const inside = match.replace(/[()]/g, '').trim();
-      if (inside) {
-        phrases.push(inside);
-        // If it contains " / ", split options e.g. "More than 8 weeks / Long standing"
-        if (inside.includes('/')) {
-          inside.split('/').forEach(part => {
-            const p = part.trim();
-            if (p) phrases.push(p);
-          });
-        }
-        // Normalize "3 to 8" -> "3-8", "3 8"
-        if (inside.includes('to')) {
-          phrases.push(inside.replace(/\bto\b/g, '-').replace(/\s+/g, ''));
-          phrases.push(inside.replace(/\bto\b/g, ' '));
+  const addLangPhrases = (text?: string) => {
+    if (!text) return;
+    const rawLang = text.toLowerCase();
+    phrases.push(rawLang);
+    const outside = rawLang.replace(/\(.*?\)/g, '').trim();
+    if (outside && outside !== rawLang) phrases.push(outside);
+    const parenMatches = rawLang.match(/\((.*?)\)/g);
+    if (parenMatches) {
+      for (const m of parenMatches) {
+        const inside = m.replace(/[()]/g, '').trim();
+        if (inside) {
+          phrases.push(inside);
+          if (inside.includes('/')) {
+            inside.split('/').forEach(part => {
+              const p = part.trim();
+              if (p) phrases.push(p);
+            });
+          }
+          if (inside.includes('to')) {
+            phrases.push(inside.replace(/\bto\b/g, '-').replace(/\s+/g, ''));
+            phrases.push(inside.replace(/\bto\b/g, ' '));
+          }
         }
       }
     }
-  }
-
-  // If label has slash
-  if (raw.includes('/')) {
-    raw.split('/').forEach(part => {
-      const p = part.trim();
-      if (p) phrases.push(p);
-    });
-  }
-
-  // Hindi label
-  if (labelHi) {
-    const rawHi = labelHi.toLowerCase();
-    phrases.push(rawHi);
-    const hiOutside = rawHi.replace(/\(.*?\)/g, '').trim();
-    if (hiOutside && hiOutside !== rawHi) phrases.push(hiOutside);
-    const hiParen = rawHi.match(/\((.*?)\)/g);
-    if (hiParen) {
-      for (const m of hiParen) {
-        const hiIn = m.replace(/[()]/g, '').trim();
-        if (hiIn) phrases.push(hiIn);
-      }
+    if (rawLang.includes('/')) {
+      rawLang.split('/').forEach(part => {
+        const p = part.trim();
+        if (p) phrases.push(p);
+      });
     }
-  }
+  };
+
+  addLangPhrases(label);
+  addLangPhrases(labelHi);
+  addLangPhrases(labelMr);
+  addLangPhrases(labelBn);
 
   return Array.from(new Set(phrases.map(p => p.toLowerCase().trim()).filter(Boolean)));
 }
@@ -263,22 +248,24 @@ function matchBinaryOrUnknown(transcript: string, options: MatchOption[]): Match
   const clean = normalizeTranscript(transcript);
 
   // Unknown / Not sure
-  const isUnknown = /\b(?:don'?t\s*know|not\s*sure|no\s*idea|unsure|pata\s*nahi|maloom\s*nahi|nahi\s*pata|yaad\s*nahi|koi\s*idea\s*nahi)\b/i.test(clean);
+  const isUnknown = /\b(?:don'?t\s*know|not\s*sure|no\s*idea|unsure|pata\s*nahi|maloom\s*nahi|nahi\s*pata|yaad\s*nahi|koi\s*idea\s*nahi|mahiti\s*nahi|thik\s*nahi|jana\s*nei|janina|thik\s*nei|माहिती नाही|माहीत नाही|জানা নেই|জানিনা)\b/i.test(clean);
   if (isUnknown) {
     const unkOpt = options.find(o => 
       o.value === 'unknown' || 
       o.value === 'not_sure' || 
       o.label.toLowerCase().includes("don't know") || 
       o.label.toLowerCase().includes('not sure') ||
-      (o.label_hi && o.label_hi.includes('नहीं पता'))
+      (o.label_hi && o.label_hi.includes('नहीं पता')) ||
+      (o.label_mr && o.label_mr.includes('माहित नाही')) ||
+      (o.label_bn && o.label_bn.includes('জানা নেই'))
     );
     if (unkOpt) return unkOpt;
   }
 
   // Affirmative (Yes)
-  const isAffirmative = /\b(?:yes|yeah|yep|yup|haan|ha|bilkul|sahi|correct|true|ji\s*haan|sure|definitely|हाँ|जी हाँ)\b/i.test(clean);
+  const isAffirmative = /\b(?:yes|yeah|yep|yup|haan|ha|bilkul|sahi|correct|true|ji\s*haan|sure|definitely|हाँ|जी हाँ|हो|होय|नक्कीच|होय नक्की|হ্যাঁ|নিশ্চয়ই)\b/i.test(clean);
   // Negative (No)
-  const isNegative = /\b(?:no|nah|nope|nahi|na|galat|false|ji\s*nahi|bilkul\s*nahi|none|नहीं|जी नहीं)\b/i.test(clean);
+  const isNegative = /\b(?:no|nah|nope|nahi|na|galat|false|ji\s*nahi|bilkul\s*nahi|none|नहीं|जी नहीं|नाही|मुळीच नाही|ना|না|কখনও না)\b/i.test(clean);
 
   if (isAffirmative && !isNegative) {
     const yesOpt = options.find(o => o.value === 'yes' || o.value === 'true' || o.value === '1' || o.label.toLowerCase() === 'yes' || o.label.toLowerCase().startsWith('yes'));
@@ -331,7 +318,7 @@ export async function smartMatchOption(
   // 4. Sub-phrase bidirectional containment
   // Check if option sub-phrases contain the cleaned transcript, OR transcript contains option sub-phrase
   for (const opt of options) {
-    const subPhrases = extractOptionSubPhrases(opt.label, opt.label_hi);
+    const subPhrases = extractOptionSubPhrases(opt.label, opt.label_hi, opt.label_mr, opt.label_bn);
     for (const phrase of subPhrases) {
       if (phrase.length < 2) continue;
 
@@ -358,7 +345,7 @@ export async function smartMatchOption(
   let bestOpt: MatchOption | null = null;
 
   for (const opt of options) {
-    const subPhrases = extractOptionSubPhrases(opt.label, opt.label_hi);
+    const subPhrases = extractOptionSubPhrases(opt.label, opt.label_hi, opt.label_mr, opt.label_bn);
     for (const phrase of subPhrases) {
       const phraseTokens = new Set(phrase.replace(/[(),/]/g, ' ').toLowerCase().split(/\s+/).filter(w => w.length > 1));
       if (phraseTokens.size === 0) continue;

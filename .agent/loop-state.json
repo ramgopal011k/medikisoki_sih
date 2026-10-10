@@ -1,0 +1,25 @@
+{
+  "loop": "2A",
+  "status": "complete",
+  "tasks": {
+    "2A.1": "done",
+    "2A.2": "PASS",
+    "2A.3": "PASS",
+    "2A.4": "PASS",
+    "2A.5": "PASS",
+    "2A.6": "PASS",
+    "2A.7": "PASS",
+    "2A.8": "PASS",
+    "2A.9": "PASS",
+    "2A.10": "PASS"
+  },
+  "verification": {
+    "tscErrors": 0,
+    "testsPassed": "36/36",
+    "timings": {
+      "voiceAdvance": "<500ms on interim intent match",
+      "hospitalsRender": "<100ms from SWR cache",
+      "sessionsRender": "<100ms from prefetch cache"
+    }
+  }
+}

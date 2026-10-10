@@ -1,6 +1,8 @@
 /**
- * Utility functions to parse and normalize spoken ASR inputs (English, Hindi, Hinglish)
+ * Utility functions to parse and normalize spoken ASR inputs (English, Hindi, Marathi, Bengali)
  */
+
+export type SupportedLanguage = 'en' | 'hi' | 'mr' | 'bn';
 
 const WORD_TO_DIGIT: Record<string, string> = {
   // English words
@@ -16,7 +18,7 @@ const WORD_TO_DIGIT: Record<string, string> = {
   eight: '8',
   nine: '9',
 
-  // Hindi words in Devanagari
+  // Devanagari numerals (Hindi & Marathi)
   '०': '0',
   '१': '1',
   '२': '2',
@@ -27,6 +29,8 @@ const WORD_TO_DIGIT: Record<string, string> = {
   '७': '7',
   '८': '8',
   '९': '9',
+
+  // Hindi number words
   'शून्य': '0',
   'एक': '1',
   'दो': '2',
@@ -40,28 +44,69 @@ const WORD_TO_DIGIT: Record<string, string> = {
   'आठ': '8',
   'नौ': '9',
 
-  // Hinglish transliterated words
+  // Marathi number words
+  'दोन': '2',
+  'पाच': '5',
+  'सहा': '6',
+  'नऊ': '9',
+
+  // Bengali numerals
+  '০': '0',
+  '১': '1',
+  '২': '2',
+  '৩': '3',
+  '৪': '4',
+  '৫': '5',
+  '৬': '6',
+  '৭': '7',
+  '৮': '8',
+  '৯': '9',
+
+  // Bengali number words
+  'এক': '1',
+  'দুই': '2',
+  'তিন': '3',
+  'চার': '4',
+  'পাঁচ': '5',
+  'ছয়': '6',
+  'ছয়': '6',
+  'সাত': '7',
+  'আট': '8',
+  'নয়': '9',
+  'নয়': '9',
+  'দশ': '10',
+
+  // Transliterations
   shunya: '0',
   ek: '1',
   do: '2',
+  don: '2',
+  dui: '2',
   teen: '3',
+  tin: '3',
   char: '4',
   chaar: '4',
   paanch: '5',
   panch: '5',
+  paach: '5',
   che: '6',
   chhe: '6',
+  saha: '6',
+  chhoy: '6',
   saat: '7',
   sat: '7',
+  shaat: '7',
   aath: '8',
   ath: '8',
+  aat: '8',
   nau: '9',
+  nauv: '9',
+  noy: '9'
 };
 
 /**
  * Extracts a sequence of digits from spoken text, handling raw digits,
- * English number words ("one two three"), Hindi number words ("एक दो तीन"),
- * and Hinglish phonetic words ("ek do teen").
+ * English number words, Hindi, Marathi, and Bengali number words and numerals.
  */
 export function extractDigitsFromSpokenText(spokenText: string): string {
   if (!spokenText) return '';
@@ -76,13 +121,12 @@ export function extractDigitsFromSpokenText(spokenText: string): string {
   let result = '';
 
   for (const token of tokens) {
-    // If token directly contains digits (e.g. "123", "91")
     if (/\d/.test(token)) {
       result += token.replace(/\D/g, '');
     } else if (WORD_TO_DIGIT[token]) {
       result += WORD_TO_DIGIT[token];
     } else {
-      // Check for compound spoken tokens or Devanagari numerals
+      // Check for compound spoken tokens or Devanagari/Bengali numerals
       for (const char of token) {
         if (WORD_TO_DIGIT[char]) {
           result += WORD_TO_DIGIT[char];
@@ -97,9 +141,9 @@ export function extractDigitsFromSpokenText(spokenText: string): string {
 }
 
 /**
- * Matches spoken language selection keywords
+ * Matches spoken language selection keywords (English, Hindi, Marathi, Bengali)
  */
-export function matchSpokenLanguage(text: string): 'en' | 'hi' | null {
+export function matchSpokenLanguage(text: string): SupportedLanguage | null {
   const lower = text.toLowerCase();
   if (
     lower.includes('hindi') ||
@@ -117,6 +161,22 @@ export function matchSpokenLanguage(text: string): 'en' | 'hi' | null {
     lower.includes('eng')
   ) {
     return 'en';
+  }
+  if (
+    lower.includes('marathi') ||
+    lower.includes('मराठी') ||
+    lower.includes('marath')
+  ) {
+    return 'mr';
+  }
+  if (
+    lower.includes('bengali') ||
+    lower.includes('bangla') ||
+    lower.includes('বাংলা') ||
+    lower.includes('बंगाली') ||
+    lower.includes('বাঙলা')
+  ) {
+    return 'bn';
   }
   return null;
 }

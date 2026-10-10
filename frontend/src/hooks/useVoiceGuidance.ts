@@ -62,9 +62,19 @@ export function useVoiceGuidance() {
         return;
       }
 
-      const isHindi = language.toLowerCase().startsWith('hi');
-      const sarvamLang = isHindi ? 'hi-IN' : 'en-IN';
-      const webSpeechLang = isHindi ? 'hi-IN' : 'en-IN';
+      const lowerLang = language.toLowerCase();
+      let sarvamLang = 'en-IN';
+      let webSpeechLang = 'en-IN';
+      if (lowerLang.startsWith('hi')) {
+        sarvamLang = 'hi-IN';
+        webSpeechLang = 'hi-IN';
+      } else if (lowerLang.startsWith('mr')) {
+        sarvamLang = 'mr-IN';
+        webSpeechLang = 'mr-IN';
+      } else if (lowerLang.startsWith('bn')) {
+        sarvamLang = 'bn-IN';
+        webSpeechLang = 'bn-IN';
+      }
 
       setIsPlaying(true);
 

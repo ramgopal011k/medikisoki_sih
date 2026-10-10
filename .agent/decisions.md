@@ -108,3 +108,11 @@ These items were identified in the Phase 4 council audit and are intentionally l
 ## Known Limitation: PII in localStorage
 Patient name, phone, age, gender are stored in browser localStorage for session continuity. In production deployment on shared kiosks, this should migrate to sessionStorage or encrypted IndexedDB with auto-clear on session end. Demo limitation only.
 
+### Batch 2 Verification Status (Audit 2026-09-18)
+- **Fix 6 (Physician EN/HI Toggle)**: PASS — Dual EN/HI caching and Sarvam Mayura translation active; Hindi placeholder literals ("None reported", "None", "Not elicited in this session", "No data") translated.
+- **Fix 7 (Abnormal Lab Highlighting)**: PARTIAL — UI rendering, range normalization, and abnormal filtering verified. End-to-end OCR extraction pipeline (upload -> Sarvam Doc AI -> Gemini extraction -> DB -> UI) unverified with live physical report (see demo/OCR_PIPELINE_TEST.md).
+- **Fix 8 (Triage Priority Alerts Relabel)**: PASS — Replaced "Emergency Red Flags" banner with "Triage Priority Alerts".
+- **Fix 9 (Kiosk Audio Auto-Play)**: PASS-WITH-CAVEAT — 2-second delayed audio trigger with silent browser autoplay policy fallback verified; dead localStorage mute check removed; physical speaker output pending real browser user gesture verification.
+- **Fix 10 (Drug Interaction Warnings)**: PASS — 10 deterministic high-yield drug interaction rules added with identical matching and mirror cross-reference headers between backend and frontend.
+
+

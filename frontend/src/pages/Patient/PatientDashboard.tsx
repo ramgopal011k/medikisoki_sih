@@ -37,10 +37,29 @@ export default function PatientDashboard() {
     };
 
     const fetchVisits = async (id: string) => {
+      // Immediately render prefetched visits if available
+      const cached = sessionStorage.getItem(`medikiosk.visits.cache.${id}`);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed?.data && Array.isArray(parsed.data) && Date.now() - parsed.timestamp < 60000) {
+            if (mounted) {
+              setVisits(parsed.data);
+              setLoading(false);
+            }
+          }
+        } catch {}
+      }
       try {
         const res = await fetch(`${API_URL}/api/patient/visits/${id}`);
         const data = await res.json();
-        if (mounted) setVisits(data.data || []);
+        if (mounted && data.data) {
+          setVisits(data.data);
+          sessionStorage.setItem(`medikiosk.visits.cache.${id}`, JSON.stringify({
+            data: data.data,
+            timestamp: Date.now()
+          }));
+        }
       } catch (err) {
         console.error('Failed to fetch visits:', err);
       } finally {
@@ -94,9 +113,17 @@ export default function PatientDashboard() {
         </header>
 
         {loading ? (
-          <div className="text-center py-12">
-            <Activity className="w-8 h-8 animate-spin mx-auto text-primary mb-4" />
-            <p className="text-muted">Loading your records...</p>
+          <div className="space-y-6 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white/80 backdrop-blur-md p-6 rounded-[24px] border border-white/50 shadow-sm space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="h-5 bg-sand rounded w-1/4" />
+                  <div className="h-4 bg-sand rounded w-1/5" />
+                </div>
+                <div className="h-4 bg-sand rounded w-3/4" />
+                <div className="h-16 bg-sand/60 rounded-xl" />
+              </div>
+            ))}
           </div>
         ) : visits.length === 0 ? (
           <div className="bg-white/80 backdrop-blur-md p-12 rounded-[24px] text-center shadow-sm">
@@ -124,7 +151,7 @@ export default function PatientDashboard() {
                         Chief Complaint: <span className="font-body text-terracotta">{visit.chief_complaint || 'N/A'}</span>
                       </h3>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
                       <Button 
                         onClick={() => handleRevokeConsent(visit.id)}
                         variant="outline"
@@ -135,6 +162,7 @@ export default function PatientDashboard() {
                       <Button 
                         onClick={() => handleDownloadFHIR(visit.id)}
                         className="bg-charcoal hover:bg-charcoal/90 text-white rounded-[12px]"
+                        aria-label="View FHIR R4 bundle (demo export)"
                       >
                         <FileJson className="w-4 h-4 mr-2" /> View FHIR Bundle
                       </Button>

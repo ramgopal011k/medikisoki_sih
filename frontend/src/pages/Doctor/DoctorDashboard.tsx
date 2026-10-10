@@ -1,12 +1,13 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ClipboardList, AlertTriangle, Search, RefreshCw, Activity,
   User, ShieldCheck, HeartPulse, Building2, LogOut,
-  Clock, Zap, ChevronDown, TrendingUp, X
+  Clock, Zap, ChevronDown, TrendingUp, X, Printer
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/api';
+import { loadHospitalsSWR } from '@/lib/hospitalsCache';
 
 interface DoctorInfo {
   doctor_id: string;
@@ -27,6 +28,8 @@ interface PatientSession {
   session_token: string;
   created_at: string;
   red_flag_count?: number;
+  body_region?: string;
+  caregiver_mode?: boolean;
 }
 
 interface HospitalItem {
@@ -94,6 +97,140 @@ export default function DoctorDashboard() {
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
   const [isOnline, setIsOnline] = useState(true);
   const [showOfflineBanner, setShowOfflineBanner] = useState(true);
+  const [hisPushNotice, setHisPushNotice] = useState<string | null>(null);
+  const [summaryLang, setSummaryLang] = useState<'en' | 'hi' | 'mr' | 'bn'>('en');
+  const summaryLangCache = useRef<Map<string, any>>(new Map());
+
+  const DASHBOARD_STRINGS: Record<string, Record<string, string>> = {
+    en: {
+      inQueue: 'In Queue',
+      pendingTriage: 'Pending triage',
+      priorityAlerts: 'Triage Priority Alerts',
+      priorityDesc: 'Routed to triage staff in production; shown here on physician dashboard for demo.',
+      systemStatus: 'System Status',
+      liveSyncing: 'Live Syncing',
+      pending: 'Pending',
+      verified: 'Verified',
+      searchPlaceholder: 'Search name, complaint, ID…',
+      all: 'All',
+      urgent: 'Urgent',
+      routine: 'Routine',
+      refresh: 'Refresh',
+      viewSummary: 'View Triage Summary',
+      pushHis: 'Push to HIS',
+      printSummary: 'Print Summary',
+      token: 'Token',
+      complaint: 'Complaint',
+      abhaAadhaar: 'ABHA / Aadhaar',
+      languageLabel: 'Language',
+      patientIndicated: 'Patient indicated:',
+      disclaimer: 'This is a clinical decision-support tool. All AI-generated content requires verification by a qualified physician. Not a diagnosis.'
+    },
+    hi: {
+      inQueue: 'कतार में',
+      pendingTriage: 'ट्राइएज लंबित',
+      priorityAlerts: 'ट्राइएज प्राथमिकता अलर्ट',
+      priorityDesc: 'उत्पादन में ट्राइएज स्टाफ को भेजा जाता है; यहां डेमो के लिए दिखाया गया है।',
+      systemStatus: 'सिस्टम स्थिति',
+      liveSyncing: 'लाइव सिंक हो रहा है',
+      pending: 'लंबित',
+      verified: 'सत्यापित',
+      searchPlaceholder: 'नाम, शिकायत, या आईडी खोजें…',
+      all: 'सभी',
+      urgent: 'अति आवश्यक',
+      routine: 'सामान्य',
+      refresh: 'रिफ्रेश करें',
+      viewSummary: 'ट्राइएज सारांश देखें',
+      pushHis: 'एचआईएस (HIS) में भेजें',
+      printSummary: 'सारांश प्रिंट करें',
+      token: 'टोकन',
+      complaint: 'शिकायत',
+      abhaAadhaar: 'आभा / आधार',
+      languageLabel: 'भाषा',
+      patientIndicated: 'मरीज द्वारा सूचित:',
+      disclaimer: 'यह एक नैदानिक निर्णय-सहायता उपकरण है। सभी एआई-जनित सामग्री का योग्य चिकित्सक द्वारा सत्यापन आवश्यक है।'
+    },
+    mr: {
+      inQueue: 'रांगेत',
+      pendingTriage: 'ट्रायज प्रलंबित',
+      priorityAlerts: 'ट्रायज प्राथमिकता सूचना',
+      priorityDesc: 'उत्पादनात ट्रायज कर्मचाऱ्यांकडे पाठवले जाते; येथे प्रात्यक्षिकासाठी दाखवले आहे.',
+      systemStatus: 'सिस्टम स्थिती',
+      liveSyncing: 'थेट सिंक होत आहे',
+      pending: 'प्रलंबित',
+      verified: 'पडताळलेले',
+      searchPlaceholder: 'नाव, तक्रार, किंवा आयडी शोधा…',
+      all: 'सर्व',
+      urgent: 'तातडीचे',
+      routine: 'सामान्य',
+      refresh: 'ताजे करा',
+      viewSummary: 'ट्रायज सारांश पहा',
+      pushHis: 'एचआयएस (HIS) मध्ये पाठवा',
+      printSummary: 'सारांश मुद्रित करा',
+      token: 'टोकन',
+      complaint: 'तक्रार',
+      abhaAadhaar: 'आभा / आधार',
+      languageLabel: 'भाषा',
+      patientIndicated: 'रुग्णाने सूचित केलेले:',
+      disclaimer: 'हे एक वैद्यकीय निर्णय-सहाय्यक साधन आहे. सर्व एआय-निर्मित मजकुराची पात्र डॉक्टरांकडून पडताळणी आवश्यक आहे.'
+    },
+    bn: {
+      inQueue: 'সারিতে',
+      pendingTriage: 'ট্রায়াজ অপেক্ষারত',
+      priorityAlerts: 'ট্রায়াজ অগ্রাধিকার সতর্কতা',
+      priorityDesc: 'উৎপাদনে ট্রায়াজ কর্মীদের কাছে পাঠানো হয়; ডেমোর জন্য এখানে দেখানো হয়েছে।',
+      systemStatus: 'সিস্টেম স্থিতি',
+      liveSyncing: 'লাইভ সিঙ্ক হচ্ছে',
+      pending: 'অপেক্ষারত',
+      verified: 'যাচাইকৃত',
+      searchPlaceholder: 'নাম, অভিযোগ, বা আইডি খুঁজুন…',
+      all: 'সকল',
+      urgent: 'জরুরি',
+      routine: 'নিয়মিত',
+      refresh: 'রিফ্রেশ করুন',
+      viewSummary: 'ট্রায়াজ সংক্ষিপ্ত বিবরণ দেখুন',
+      pushHis: 'এইচআইএস (HIS)-এ পাঠান',
+      printSummary: 'সংক্ষেপ মুদ্রণ করুন',
+      token: 'টোকেন',
+      complaint: 'অভিযোগ',
+      abhaAadhaar: 'আভা / আধার',
+      languageLabel: 'ভাষা',
+      patientIndicated: 'রোগী নির্দেশিত:',
+      disclaimer: 'এটি একটি ক্লিনিক্যাল সিদ্ধান্ত-সহায়ক সরঞ্জাম। সমস্ত এআই-উত্পন্ন সামগ্রী একজন যোগ্য চিকিৎসকের দ্বারা যাচাই করা আবশ্যক।'
+    }
+  };
+
+  const COMPLAINT_MAP: Record<string, Record<string, string>> = {
+    'chest pain': { hi: 'छाती में दर्द', mr: 'छातीत दुखणे', bn: 'বুকে ব্যথা' },
+    'fever': { hi: 'बुखार', mr: 'ताप', bn: 'জ্বর' },
+    'abdominal pain': { hi: 'पेट में दर्द', mr: 'पोटदुखी', bn: 'পেটে ব্যথা' },
+    'headache': { hi: 'सिरदर्द', mr: 'डोकेदुखी', bn: 'মাথাব্যথা' },
+    'back pain': { hi: 'पीठ में दर्द', mr: 'पाठदुखी', bn: 'পিঠে ব্যথা' },
+    'cough': { hi: 'खांसी', mr: 'खोकला', bn: 'কাশি' },
+    'other': { hi: 'अन्य', mr: 'इतर', bn: 'অন্যান্য' },
+    'shortness of breath': { hi: 'सांस लेने में तकलीफ', mr: 'श्वास घेण्यास त्रास', bn: 'শ্বাসকষ্ট' },
+    'general checkup': { hi: 'सामान्य जांच', mr: 'सामान्य तपासणी', bn: 'সাধারণ চেকআপ' },
+  };
+
+  const tDash = (key: string) => DASHBOARD_STRINGS[summaryLang]?.[key] || DASHBOARD_STRINGS.en[key] || key;
+
+  // Cache all languages on first fetch; prefetch active patients
+  useEffect(() => {
+    if (patients.length === 0) return;
+    patients.slice(0, 8).forEach(p => {
+      (['en', 'hi', 'mr', 'bn'] as const).forEach(l => {
+        const cacheKey = `${p.session_id}_${l}`;
+        if (!summaryLangCache.current.has(cacheKey)) {
+          fetch(`${API_URL}/api/summary/${p.session_id}?lang=${l}`)
+            .then(res => res.json())
+            .then(data => {
+              summaryLangCache.current.set(cacheKey, data);
+            })
+            .catch(() => {});
+        }
+      });
+    });
+  }, [patients]);
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -104,21 +241,44 @@ export default function DoctorDashboard() {
   }, [isOnline, showOfflineBanner]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/hospitals`)
-      .then(res => res.json())
-      .then(data => { if (data.data && Array.isArray(data.data)) setHospitals(data.data); })
-      .catch(err => console.error('Failed to load hospitals:', err));
+    loadHospitalsSWR((data) => {
+      if (Array.isArray(data)) setHospitals(data);
+    });
   }, []);
 
   const fetchPatients = useCallback(async (hId: string, silent = false) => {
-    if (!silent) setIsLoading(true);
+    // Render prefetched sessions immediately
+    const cached = sessionStorage.getItem(`medikiosk.sessions.cache.${hId}`);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed?.data && Array.isArray(parsed.data) && Date.now() - parsed.timestamp < 60000) {
+          setPatients(parsed.data);
+          setIsLoading(false);
+        }
+      } catch {}
+    } else if (!silent) {
+      setIsLoading(true);
+    }
     setHasError(false);
     try {
       const url = hId === 'all' ? `${API_URL}/api/sessions` : `${API_URL}/api/sessions?hospital_id=${hId}`;
-      const res = await fetch(url);
+      const token = localStorage.getItem('doctor_token') || 'mock-doctor-token';
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
-      if (data.data) { setPatients(data.data); setLastRefreshed(new Date()); }
+      if (data.data) { 
+        setPatients(data.data); 
+        setLastRefreshed(new Date());
+        sessionStorage.setItem(`medikiosk.sessions.cache.${hId}`, JSON.stringify({
+          data: data.data,
+          timestamp: Date.now()
+        }));
+      }
     } catch (err) {
       console.error('Failed to fetch patients:', err);
       setHasError(true);
@@ -201,10 +361,10 @@ export default function DoctorDashboard() {
             className="w-full py-3 px-4 rounded-xl bg-sand border border-warmgray text-charcoal font-bold text-sm hover:border-primary/40 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
           >
             <Zap className="w-4 h-4 text-primary" />
-            Quick Dev Access (Demo)
+            Quick Dev Access
           </button>
         </div>
-        <p className="text-xs text-muted">For SIH Demo: Use Quick Dev Access to bypass login</p>
+        <p className="text-xs text-muted">Use Quick Dev Access to bypass login</p>
       </div>
     </div>
   );
@@ -292,6 +452,68 @@ export default function DoctorDashboard() {
               <ChevronDown className="w-3.5 h-3.5 text-muted pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
             </div>
 
+            {/* Language Toggle: EN | HI | MR | BN */}
+            <div className="flex items-center gap-1 bg-sand border border-warmgray p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setSummaryLang('en')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                  summaryLang === 'en'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-muted hover:text-charcoal'
+                }`}
+                aria-label="Summary language: English"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setSummaryLang('hi')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                  summaryLang === 'hi'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-muted hover:text-charcoal'
+                }`}
+                aria-label="Summary language: Hindi"
+              >
+                HI
+              </button>
+              <button
+                type="button"
+                onClick={() => setSummaryLang('mr')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                  summaryLang === 'mr'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-muted hover:text-charcoal'
+                }`}
+                aria-label="Summary language: Marathi"
+              >
+                MR
+              </button>
+              <button
+                type="button"
+                onClick={() => setSummaryLang('bn')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                  summaryLang === 'bn'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-muted hover:text-charcoal'
+                }`}
+                aria-label="Summary language: Bengali"
+              >
+                BN
+              </button>
+            </div>
+
+            {summaryLang !== 'en' && (
+              <span className="hidden xl:inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 shadow-xs">
+                {summaryLang === 'hi'
+                  ? 'एआई-अनुवादित — नैदानिक उपयोग से पहले सत्यापित करें'
+                  : summaryLang === 'mr'
+                  ? 'एआय-भाषांतरित — वैद्यकीय वापरापूर्वी तपासा'
+                  : 'এআই-অনূদিত — ব্যবহারের আগে যাচাই করুন'}
+              </span>
+            )}
+
             <button
               onClick={() => navigate('/admin/hospitals')}
               className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-primary transition-colors border border-warmgray px-3 py-1.5 rounded-xl bg-white hover:border-primary/30"
@@ -355,7 +577,7 @@ export default function DoctorDashboard() {
         {/* Clinical Liability Disclaimer Banner */}
         <div className="bg-amber-50 border-2 border-amber-200 text-amber-900 text-sm p-3.5 rounded-xl font-medium flex items-center gap-2.5 shadow-sm">
           <span className="text-amber-600 text-base font-bold shrink-0">⚠</span>
-          <span>This is a clinical decision-support tool. All AI-generated content requires verification by a qualified physician. Not a diagnosis.</span>
+          <span>{tDash('disclaimer')}</span>
         </div>
 
         {/* ── Stats Row ── */}
@@ -364,23 +586,25 @@ export default function DoctorDashboard() {
           {/* Total */}
           <div className="bg-white rounded-2xl border border-warmgray p-6 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
             <div>
-              <p className="text-xs font-bold text-muted uppercase tracking-widest">In Queue</p>
+              <p className="text-xs font-bold text-muted uppercase tracking-widest">{tDash('inQueue')}</p>
               <p className="text-5xl font-display font-bold text-charcoal mt-1 leading-none">{totalCount}</p>
-              <p className="text-xs text-muted mt-2">Pending triage</p>
+              <p className="text-xs text-muted mt-2">{tDash('pendingTriage')}</p>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-primary/8 border border-primary/15 flex items-center justify-center">
               <ClipboardList className="w-7 h-7 text-primary" />
             </div>
           </div>
 
-          {/* Urgent */}
+          {/* Triage Priority Alerts */}
           <div className={`bg-white rounded-2xl border p-6 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow ${urgentCount > 0 ? 'border-danger/40' : 'border-warmgray'}`}>
-            <div>
-              <p className={`text-xs font-bold uppercase tracking-widest ${urgentCount > 0 ? 'text-danger' : 'text-muted'}`}>Urgent / Red Flags</p>
+            <div className="flex-1 pr-3">
+              <p className={`text-xs font-bold uppercase tracking-widest ${urgentCount > 0 ? 'text-danger' : 'text-muted'}`}>{tDash('priorityAlerts')}</p>
               <p className={`text-5xl font-display font-bold mt-1 leading-none ${urgentCount > 0 ? 'text-danger' : 'text-charcoal'}`}>{urgentCount}</p>
-              <p className="text-xs text-muted mt-2">{urgentCount > 0 ? 'Needs immediate attention' : 'All clear'}</p>
+              <p className="text-[11px] text-muted mt-2 font-medium leading-snug">
+                {tDash('priorityDesc')}
+              </p>
             </div>
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${urgentCount > 0 ? 'bg-danger/8 border-danger/20' : 'bg-warmgray/50 border-warmgray'}`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shrink-0 ${urgentCount > 0 ? 'bg-danger/8 border-danger/20' : 'bg-warmgray/50 border-warmgray'}`}>
               <AlertTriangle className={`w-7 h-7 ${urgentCount > 0 ? 'text-danger' : 'text-muted'}`} />
             </div>
           </div>
@@ -388,9 +612,9 @@ export default function DoctorDashboard() {
           {/* Status */}
           <div className="bg-white rounded-2xl border border-warmgray p-6 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
             <div>
-              <p className="text-xs font-bold text-muted uppercase tracking-widest">System Status</p>
+              <p className="text-xs font-bold text-muted uppercase tracking-widest">{tDash('systemStatus')}</p>
               <p className="text-xl font-display font-bold text-success mt-1 flex items-center gap-1.5">
-                <ShieldCheck className="w-5 h-5" /> Live Syncing
+                <ShieldCheck className="w-5 h-5" /> {tDash('liveSyncing')}
               </p>
               <p className="text-xs text-muted mt-2 flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Updated {timeAgo(lastRefreshed)}
@@ -411,13 +635,13 @@ export default function DoctorDashboard() {
               onClick={() => setView('pending')}
               className={`flex-1 px-4 py-2 rounded-lg transition-all whitespace-nowrap ${view === 'pending' ? 'bg-white text-charcoal shadow-sm' : 'text-muted hover:text-charcoal'}`}
             >
-              Pending ({activePatients.length})
+              {tDash('pending')} ({activePatients.length})
             </button>
             <button
               onClick={() => setView('verified')}
               className={`flex-1 px-4 py-2 rounded-lg transition-all whitespace-nowrap ${view === 'verified' ? 'bg-primary text-white shadow-sm' : 'text-muted hover:text-charcoal'}`}
             >
-              Verified ({verifiedPatients.length})
+              {tDash('verified')} ({verifiedPatients.length})
             </button>
           </div>
 
@@ -426,7 +650,7 @@ export default function DoctorDashboard() {
             <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search name, complaint, ID…"
+              placeholder={tDash('searchPlaceholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 bg-sand border border-warmgray rounded-xl text-sm text-charcoal placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
@@ -436,13 +660,13 @@ export default function DoctorDashboard() {
           {/* Filter pills */}
           <div className="flex bg-sand p-1 rounded-xl border border-warmgray text-xs font-bold gap-1">
             <button onClick={() => setFilter('all')} className={`px-3 py-2 rounded-lg transition-all ${filter === 'all' ? 'bg-white text-charcoal shadow-sm' : 'text-muted hover:text-charcoal'}`}>
-              All ({totalCount})
+              {tDash('all')} ({totalCount})
             </button>
             <button onClick={() => setFilter('urgent')} className={`px-3 py-2 rounded-lg transition-all ${filter === 'urgent' ? 'bg-danger text-white shadow-sm' : 'text-muted hover:text-danger'}`}>
-              Urgent ({urgentCount})
+              {tDash('urgent')} ({urgentCount})
             </button>
             <button onClick={() => setFilter('normal')} className={`px-3 py-2 rounded-lg transition-all ${filter === 'normal' ? 'bg-white text-charcoal shadow-sm' : 'text-muted hover:text-charcoal'}`}>
-              Routine ({totalCount - urgentCount})
+              {tDash('routine')} ({totalCount - urgentCount})
             </button>
           </div>
 
@@ -451,15 +675,43 @@ export default function DoctorDashboard() {
             className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted hover:text-charcoal border border-warmgray bg-white px-3 py-2.5 rounded-xl hover:border-charcoal/20 transition-all whitespace-nowrap"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            {tDash('refresh')}
           </button>
+        </div>
+
+        {/* Triage Priority Alerts Section */}
+        <div className="bg-red-50/80 border border-red-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-danger/10 border border-danger/20 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5 text-danger" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-danger">{tDash('priorityAlerts')}</h2>
+              <p className="text-xs text-charcoal/70">
+                {tDash('priorityDesc')}
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-danger bg-danger/10 px-2.5 py-1 rounded-full border border-danger/20 self-start sm:self-auto shrink-0">
+            {urgentCount} Priority Case{urgentCount === 1 ? '' : 's'}
+          </span>
         </div>
 
         {/* ── Patient Grid ── */}
         {isLoading && patients.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-white border border-warmgray rounded-2xl shadow-sm">
-            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-muted font-medium text-sm">Fetching triage queue…</p>
+          <div className="space-y-3 animate-pulse">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center justify-between p-4 bg-white border border-warmgray rounded-2xl shadow-xs">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-10 h-10 rounded-full bg-sand" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-sand rounded w-1/3" />
+                    <div className="h-3 bg-sand rounded w-1/2" />
+                  </div>
+                </div>
+                <div className="h-8 w-24 bg-sand rounded-xl" />
+              </div>
+            ))}
           </div>
         ) : hasError ? (
           <div className="flex flex-col items-center justify-center py-24 bg-white border border-dashed border-danger/40 rounded-2xl text-center p-6">
@@ -516,11 +768,16 @@ export default function DoctorDashboard() {
                         <div>
                           <p className="font-display font-bold text-charcoal text-base leading-tight">{p.patient_name}</p>
                           <p className="text-xs text-muted mt-0.5">{formattedDate} · {formattedTime}</p>
+                          {p.caregiver_mode && (
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                              {summaryLang === 'hi' ? 'देखभालकर्ता द्वारा सूचित' : summaryLang === 'mr' ? 'काळजीवाहू द्वारे नोंदवलेले' : summaryLang === 'bn' ? 'পরিচর্যাকর দ্বারা বর্ণিত' : 'Reported by caregiver'}
+                            </span>
+                          )}
                         </div>
                       </div>
                       {isUrgent && (
                         <span className="flex items-center gap-1 bg-danger text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm animate-pulse shrink-0">
-                          <Zap className="w-3 h-3" /> Urgent
+                          <Zap className="w-3 h-3" /> {tDash('urgent')}
                         </span>
                       )}
                     </div>
@@ -528,34 +785,74 @@ export default function DoctorDashboard() {
                     {/* Data table */}
                     <div className="bg-sand rounded-xl border border-warmgray divide-y divide-warmgray/60 text-xs overflow-hidden">
                       <div className="flex justify-between items-center px-3 py-2.5">
-                        <span className="font-bold text-muted uppercase tracking-wider">Token</span>
+                        <span className="font-bold text-muted uppercase tracking-wider">{tDash('token')}</span>
                         <span className="font-display font-bold text-primary tracking-widest text-sm">T-{p.session_id.substring(0, 4).toUpperCase()}</span>
                       </div>
                       <div className="flex justify-between items-center px-3 py-2.5">
-                        <span className="font-bold text-muted uppercase tracking-wider">Complaint</span>
-                        <span className="font-semibold text-charcoal capitalize">{p.chief_complaint || '—'}</span>
+                        <span className="font-bold text-muted uppercase tracking-wider">{tDash('complaint')}</span>
+                        <div className="text-right">
+                          <span className="font-semibold text-charcoal capitalize">
+                            {summaryLang !== 'en'
+                              ? (COMPLAINT_MAP[(p.chief_complaint || '').toLowerCase()]?.[summaryLang] ||
+                                 summaryLangCache.current.get(`${p.session_id}_${summaryLang}`)?.content?.chief_complaint ||
+                                 p.chief_complaint || '—')
+                              : (p.chief_complaint || '—')}
+                          </span>
+                          {p.body_region && (
+                            <p className="text-[11px] font-medium text-primary mt-0.5">
+                              {tDash('patientIndicated')} {p.body_region.split(',').map(r => r.replace(/-/g, ' ').replace(/_/g, ' ')).join(', ')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between items-center px-3 py-2.5">
-                        <span className="font-bold text-muted uppercase tracking-wider">ABHA / Aadhaar</span>
+                        <span className="font-bold text-muted uppercase tracking-wider">{tDash('abhaAadhaar')}</span>
                         <span className="font-mono text-charcoal">•••• {p.dummy_aadhaar ? p.dummy_aadhaar.slice(-4) : '0000'}</span>
                       </div>
                       <div className="flex justify-between items-center px-3 py-2.5">
-                        <span className="font-bold text-muted uppercase tracking-wider">Language</span>
+                        <span className="font-bold text-muted uppercase tracking-wider">{tDash('languageLabel')}</span>
                         <span className="font-bold text-charcoal uppercase">{p.language || 'en'}</span>
                       </div>
                     </div>
 
                     {/* CTA */}
-                    <button
-                      className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all border
-                        ${isUrgent
-                          ? 'bg-danger/8 border-danger/25 text-danger group-hover:bg-danger group-hover:text-white group-hover:border-danger'
-                          : 'bg-primary/8 border-primary/20 text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary'
-                        }`}
-                      onClick={(e) => { e.stopPropagation(); navigate(`/doctor/triage/${p.session_id}`); }}
-                    >
-                      View Triage Summary →
-                    </button>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <button
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all border
+                          ${isUrgent
+                            ? 'bg-danger/8 border-danger/25 text-danger group-hover:bg-danger group-hover:text-white group-hover:border-danger'
+                            : 'bg-primary/8 border-primary/20 text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary'
+                          }`}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/doctor/triage/${p.session_id}?lang=${summaryLang}`); }}
+                      >
+                        {tDash('viewSummary')} →
+                      </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          className="px-3 py-2.5 rounded-xl text-xs font-bold border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 flex items-center justify-center gap-1.5"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setHisPushNotice('FHIR R4 bundle generated and written to audit_logs. Push target is a simulation — no live ABDM sandbox or hospital HIS is connected in this build. Production integration path: ABDM Health Information Exchange via FHIR R4.');
+                          }}
+                          aria-label="Push to HIS"
+                        >
+                          {tDash('pushHis')}
+                        </button>
+                        <button
+                          type="button"
+                          className="no-print px-3 py-2.5 rounded-xl text-xs font-bold border border-warmgray bg-white text-charcoal hover:bg-sand/60 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/doctor/triage/${p.session_id}?lang=${summaryLang}&print=true`);
+                          }}
+                          aria-label="Print Summary"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>{tDash('printSummary')}</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -570,6 +867,25 @@ export default function DoctorDashboard() {
           </p>
         )}
       </main>
+
+      {hisPushNotice && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border-2 border-primary/30 relative">
+            <div className="flex items-center gap-2 text-primary font-bold text-lg mb-3">
+              <span>HIS / EMR System Notice</span>
+            </div>
+            <p className="text-charcoal text-sm leading-relaxed mb-6 font-body">
+              {hisPushNotice}
+            </p>
+            <button
+              onClick={() => setHisPushNotice(null)}
+              className="w-full py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors text-sm"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

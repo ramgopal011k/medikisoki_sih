@@ -5,6 +5,7 @@ import { MediKioskLogo } from '../components/MediKioskLogo';
 import { MandalaBackground } from '../components/MandalaBackground';
 import { AccessibilityToggle } from '../components/AccessibilityToggle';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
+import { prefetchHospitals } from '../lib/prefetch';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -107,6 +108,8 @@ export default function LandingPage() {
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate('/admin/hospitals')}
+              onMouseEnter={() => prefetchHospitals()}
+              onFocus={() => prefetchHospitals()}
               className="inline-flex items-center gap-1.5 text-primary hover:text-[#154a3a] font-semibold underline underline-offset-4 hover:no-underline transition-colors"
               aria-label="Hospital Admin"
             >

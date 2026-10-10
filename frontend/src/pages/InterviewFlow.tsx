@@ -32,10 +32,10 @@ const OFFLINE_QUEUE_KEY = 'medikiosk_offline_facts';
 export default function InterviewFlow() {
   const navigate = useNavigate();
 
-  // Initialize session from localStorage lazily to avoid setState-in-effect
+  // Initialize session from sessionStorage lazily to avoid setState-in-effect
   const [session] = useState<SessionState | null>(() => {
-    const sessionId = localStorage.getItem('patient_session') || localStorage.getItem('session_id');
-    const complaint = localStorage.getItem('patient_complaint') || localStorage.getItem('chief_complaint') || 'Chest pain';
+    const sessionId = sessionStorage.getItem('patient_session') || sessionStorage.getItem('session_id');
+    const complaint = sessionStorage.getItem('patient_complaint') || sessionStorage.getItem('chief_complaint') || 'Chest pain';
     const lang = localStorage.getItem('patient_language') || 'en';
     if (!sessionId) return null;
     return { id: sessionId, complaint, language: lang };
@@ -56,8 +56,8 @@ export default function InterviewFlow() {
       setTree(loadedTree);
       
       // Feature 20: Session Recovery
-      const savedQId = localStorage.getItem(`interview_qid_${session.id}`);
-      const savedStepCount = localStorage.getItem(`interview_step_${session.id}`);
+      const savedQId = sessionStorage.getItem(`interview_qid_${session.id}`);
+      const savedStepCount = sessionStorage.getItem(`interview_step_${session.id}`);
       
       if (savedQId) {
         setCurrentQId(savedQId);
@@ -188,16 +188,50 @@ export default function InterviewFlow() {
         }
       }
       setIsFinished(true);
-      localStorage.removeItem(`interview_qid_${session.id}`);
-      localStorage.removeItem(`interview_step_${session.id}`);
+      sessionStorage.removeItem(`interview_qid_${session.id}`);
+      sessionStorage.removeItem(`interview_step_${session.id}`);
     } else {
       setCurrentQId(nextResult);
-      localStorage.setItem(`interview_qid_${session.id}`, nextResult);
-      localStorage.setItem(`interview_step_${session.id}`, (stepCount + 1).toString());
+      sessionStorage.setItem(`interview_qid_${session.id}`, nextResult);
+      sessionStorage.setItem(`interview_step_${session.id}`, (stepCount + 1).toString());
     }
   };
 
+  const lang = session?.language || 'en';
+  const isHi = lang === 'hi';
+  const isMr = lang === 'mr';
+  const isBn = lang === 'bn';
+  const ttsLang = isMr ? 'mr-IN' : isBn ? 'bn-IN' : isHi ? 'hi-IN' : 'en-IN';
+
   if (isFinished) {
+    const redFlagTitle = isMr
+      ? 'त्वरित वैद्यकीय लक्ष आवश्यक'
+      : isBn
+      ? 'জরুরী মনোযোগ প্রয়োজন'
+      : isHi
+      ? 'तत्काल ध्यान आवश्यक'
+      : 'Immediate Attention Required';
+
+    const redFlagMsg = isMr
+      ? 'महत्त्वाची लक्षणे आढळली आहेत. कृपया रुग्णालय कर्मचाऱ्यांना कळवा किंवा मदतीची प्रतीक्षा करा.'
+      : isBn
+      ? 'গুরুত্বপূর্ণ লক্ষণ শনাক্ত হয়েছে। অনুগ্রহ করে হাসপাতাল কর্মীদের জানান বা সহায়তার জন্য অপেক্ষা করুন।'
+      : isHi
+      ? 'महत्वपूर्ण जानकारी पहचानी गई है। कृपया अस्पताल के कर्मचारियों को सूचित करें या सहायता की प्रतीक्षा करें।'
+      : 'Important information has been identified. Please notify hospital staff or wait for assistance.';
+
+    const doneTitle = isMr ? 'धन्यवाद' : isBn ? 'ধন্যবাদ' : isHi ? 'धन्यवाद' : 'Thank you';
+
+    const doneMsg = isMr
+      ? 'तुमची तपासणी पूर्ण झाली आहे. कृपया आणखी काही प्रश्नांची उत्तरे द्या.'
+      : isBn
+      ? 'আপনার ইন্টারভিউ সম্পন্ন হয়েছে। অনুগ্রহ করে আরো কয়েকটি প্রশ্নের উত্তর দিন।'
+      : isHi
+      ? 'आपका साक्षात्कार पूरा हो गया है। कृपया कुछ और सवालों के जवाब दें।'
+      : 'Your interview is complete. Please answer a few more questions.';
+
+    const continueBtn = isMr ? 'पुढे सुरू ठेवा' : isBn ? 'চালিয়ে যান' : isHi ? 'जारी रखें' : 'Continue';
+
     return (
       <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-x-hidden">
         <MandalaBackground />
@@ -208,38 +242,31 @@ export default function InterviewFlow() {
                 <span className="text-danger text-3xl">⚠</span>
               </div>
               <h1 className="font-display text-4xl text-danger mb-4">
-                {session?.language === 'hi' ? 'तत्काल ध्यान आवश्यक' : 'Immediate Attention Required'}
+                {redFlagTitle}
               </h1>
               <p className="font-body text-xl text-charcoal mb-4">
-                {session?.language === 'hi'
-                  ? 'आपके लक्षणों पर तुरंत ध्यान देने की आवश्यकता है। कृपया नर्स स्टेशन को सूचित करें।'
-                  : 'Your symptoms require immediate attention. Please alert the nurse station.'}
+                {redFlagMsg}
               </p>
               <div className="flex justify-center mb-4">
                 <VoiceGuideButton
                   clipId="red_flag_message"
-                  fallbackText="Important information has been identified. Please notify hospital staff or wait for assistance."
-                  language={session?.language || 'en'}
+                  fallbackText={redFlagMsg}
+                  language={ttsLang}
                   variant="inline"
                 />
               </div>
-              <p className="font-body text-sm text-muted">
-                Flag: {redFlagTriggered.flag_id}
-              </p>
             </>
           ) : (
             <>
               <h1 className="font-display text-4xl text-charcoal mb-4">
-                {session?.language === 'hi' ? 'धन्यवाद' : 'Thank you'}
+                {doneTitle}
               </h1>
               <p className="font-body text-xl text-muted mb-8">
-                {session?.language === 'hi'
-                  ? 'आपका साक्षात्कार पूरा हो गया है। कृपया कुछ और सवालों के जवाब दें।'
-                  : 'Your interview is complete. Please answer a few more questions.'}
+                {doneMsg}
               </p>
               <button
                 onClick={() => {
-                  if (localStorage.getItem('ayush_mode') === 'true') {
+                  if (sessionStorage.getItem('ayush_mode') === 'true') {
                     navigate('/ayush-assessment');
                   } else {
                     navigate('/records-upload');
@@ -247,7 +274,7 @@ export default function InterviewFlow() {
                 }}
                 className="w-full min-h-[64px] text-xl rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:bg-primary/90 transition-colors"
               >
-                {session?.language === 'hi' ? 'जारी रखें' : 'Continue'}
+                {continueBtn}
               </button>
             </>
           )}
@@ -260,10 +287,23 @@ export default function InterviewFlow() {
   }
 
   if (!tree || !currentQId) {
-    return <div className="min-h-screen bg-sand flex items-center justify-center"><p>Loading...</p></div>;
+    return (
+      <div className="min-h-screen bg-sand flex items-center justify-center">
+        <p className="text-charcoal font-body text-lg">
+          {isMr ? 'लोड होत आहे...' : isBn ? 'লোড হচ্ছে...' : isHi ? 'लोड हो रहा है...' : 'Loading...'}
+        </p>
+      </div>
+    );
   }
 
   const currentQ = tree.questions[currentQId];
+  const questionPrompt = isMr
+    ? (currentQ.text_mr || currentQ.text_hi || currentQ.text)
+    : isBn
+    ? (currentQ.text_bn || currentQ.text_hi || currentQ.text)
+    : isHi
+    ? (currentQ.text_hi || currentQ.text)
+    : currentQ.text;
 
   return (
     <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 relative overflow-x-hidden">
@@ -283,8 +323,8 @@ export default function InterviewFlow() {
         </div>
       )}
       <VoiceGuideButton 
-        text={currentQ ? (session?.language === 'hi' ? (currentQ.text_hi || currentQ.text) : currentQ.text) : 'Please answer the clinical interview question.'} 
-        language={session?.language === 'hi' ? 'hi-IN' : 'en-IN'} 
+        text={questionPrompt} 
+        language={ttsLang} 
       />
     </div>
   );

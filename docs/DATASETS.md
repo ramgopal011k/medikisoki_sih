@@ -7,7 +7,7 @@
 
 ## Dataset Inventory Summary
 
-The repository includes, processes, or references four distinct dataset collections covering clinical OPD dialogues, traditional Ayurvedic text collections, ICD-10 medical code mappings, and multilingual ASR benchmarks.
+The repository includes, processes, or references three distinct dataset collections covering clinical OPD dialogues, traditional Ayurvedic text collections, and ICD-10 medical code mappings.
 
 ---
 
@@ -104,42 +104,3 @@ The repository includes, processes, or references four distinct dataset collecti
 - **Model / Task it Supports**: Classical Ayush RAG reasoning engine (`ayushRag.ts`), VedaGPT domain pre-training.
 - **Citation**: Rig Veda (Ralph T.H. Griffith 1896), Black Yajur Veda (Arthur Berriedale Keith 1914), Sushruta Samhita (Kaviraj Kunja Lal Bhishagratna 1907), Rasa Jala Nidhi (Rasacharya Kaviraj Bhudeb Mookerji 1926).
 - **Privacy / Ethical Notes**: Ancient historical and classical literature; no ethical or privacy constraints.
-
----
-
-## 4. IndicVoices-ST & FLEURS Speech Datasets (PolyWhisper ASR)
-
-- **Name**: `ai4bharat/indicvoices-st` (Training) & `google/fleurs` (Evaluation)
-- **Type**: Audio Speech (.wav) & Transcripts (.txt)
-- **Source / URL**:
-  - [Hugging Face Datasets - ai4bharat/indicvoices-st](https://huggingface.co/datasets/ai4bharat/indicvoices-st)
-  - [Hugging Face Datasets - google/fleurs](https://huggingface.co/datasets/google/fleurs)
-- **Version / Hash**: FLEURS Benchmark release
-- **License**: Creative Commons Attribution (CC-BY)
-- **Size**: ~19k–20k clips per language for IndicVoices-ST
-- **Format**: Audio 16kHz WAV + UTF-8 transcript strings
-- **Local Path**: External datasets loaded during model training (eval evaluation outputs saved in [`models/polywhisper/eval_*.json`](file:///c:/game/pythoncoding/New%20folder/hackathon/models/polywhisper/))
-- **Download / Access Instructions**:
-  ```python
-  from datasets import load_dataset
-  fleurs_hi = load_dataset("google/fleurs", "hi_in")
-  indicvoices_hi = load_dataset("ai4bharat/indicvoices-st", "hi")
-  ```
-- **Preprocessing Steps**: SpecAugment time/frequency masking + 0.9x/1.1x speed perturbation applied selectively to hard languages (Bengali `bn`, Marathi `mr`), clean training for `hi`/`ta`.
-- **Train / Validation / Test Splits**: Standard FLEURS train/dev/test splits for Hindi (`hi_in`), Tamil (`ta_in`), Telugu (`te_in`), Bengali (`bn_in`), and Marathi (`mr_in`).
-- **Columns / Features / Labels**:
-  - Audio array (16,000 Hz float32 waveform)
-  - Transcription text label
-- **Target Variable**: Audio transcription string.
-- **Where Used in Code**: Reference benchmark configs and evaluation files in [`models/polywhisper/README.md`](file:///c:/game/pythoncoding/New%20folder/hackathon/models/polywhisper/README.md) and [`models/polywhisper/baselines_resumable.py`](file:///c:/game/pythoncoding/New%20folder/hackathon/models/polywhisper/baselines_resumable.py).
-- **Model / Task it Supports**: PolyWhisper ASR per-language LoRA adapter training & FLEURS word error rate (WER) benchmarking.
-- **Citation**:
-  ```bibtex
-  @inproceedings{fleurs2022,
-    title={FLEURS: Few-shot Learning Evaluation of Universal Representations of Speech},
-    author={Conneau, Alexis and et al.},
-    booktitle={IEEE SLT},
-    year={2022}
-  }
-  ```
-- **Privacy / Ethical Notes**: Open CC-BY licensed datasets recorded with contributor consent.

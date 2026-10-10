@@ -7,6 +7,7 @@ import { LeafStepIndicator } from '../components/LeafStepIndicator';
 import { Button } from '../components/ui/button';
 import { Volume2, VolumeX, Mic, ShieldCheck } from 'lucide-react';
 import { useAsr } from '@/hooks/useAsr';
+import { cleanTranscript } from '@/lib/transcriptCleaner';
 import { useAudio } from '@/hooks/useAudio';
 import { cn } from '@/lib/utils';
 import { API_URL } from '@/lib/api';
@@ -26,20 +27,72 @@ interface OfflineMedicalHistory {
 const OFFLINE_MH_QUEUE_KEY = 'medikiosk_offline_medical_history';
 
 const ROS_SYSTEMS = [
-  { id: 'general', en: 'General', hi: 'सामान्य', symptoms: ['Fever', 'Weight loss', 'Fatigue', 'Night sweats', 'None'] },
-  { id: 'cardio', en: 'Cardiovascular', hi: 'हृदय रोग', symptoms: ['Chest pain', 'Palpitations', 'Swelling (Edema)', 'None'] },
-  { id: 'resp', en: 'Respiratory', hi: 'श्वसन', symptoms: ['Cough', 'Breathlessness (Dyspnea)', 'Wheezing', 'None'] },
-  { id: 'gi', en: 'Gastrointestinal', hi: 'पेट/पाचन', symptoms: ['Nausea/Vomiting', 'Abdominal pain', 'Diarrhea', 'None'] },
-  { id: 'gu', en: 'Genitourinary', hi: 'मूत्र संबंधी', symptoms: ['Urinary issues', 'Painful urination', 'None'] },
-  { id: 'neuro', en: 'Neurological', hi: 'तंत्रिका', symptoms: ['Headache', 'Dizziness', 'Numbness/Tingling', 'None'] },
-  { id: 'msk', en: 'Musculoskeletal', hi: 'मांसपेशियां/हड्डियां', symptoms: ['Joint pain', 'Muscle weakness', 'Back pain', 'None'] }
+  { id: 'general', en: 'General', hi: 'सामान्य', mr: 'सामान्य', bn: 'সাধারণ', symptoms: ['Fever', 'Weight loss', 'Fatigue', 'Night sweats', 'None'] },
+  { id: 'cardio', en: 'Cardiovascular', hi: 'हृदय रोग', mr: 'हृदय व रक्तवाहिन्या', bn: 'হৃদযন্ত্র', symptoms: ['Chest pain', 'Palpitations', 'Swelling (Edema)', 'None'] },
+  { id: 'resp', en: 'Respiratory', hi: 'श्वसन', mr: 'श्वसन संस्था', bn: 'শ্বাসযন্ত্র', symptoms: ['Cough', 'Breathlessness (Dyspnea)', 'Wheezing', 'None'] },
+  { id: 'gi', en: 'Gastrointestinal', hi: 'पेट/पाचन', mr: 'पचनसंस्था / पोट', bn: 'পরিপাকতন্ত্র', symptoms: ['Nausea/Vomiting', 'Abdominal pain', 'Diarrhea', 'None'] },
+  { id: 'gu', en: 'Genitourinary', hi: 'मूत्र संबंधी', mr: 'मूत्रसंस्था', bn: 'মূত্রনালী', symptoms: ['Urinary issues', 'Painful urination', 'None'] },
+  { id: 'neuro', en: 'Neurological', hi: 'तंत्रिका', mr: 'मज्जासंस्था', bn: 'স্নায়ুতন্ত্র', symptoms: ['Headache', 'Dizziness', 'Numbness/Tingling', 'None'] },
+  { id: 'msk', en: 'Musculoskeletal', hi: 'मांसपेशियां/हड्डियां', mr: 'स्नायू व सांधे', bn: 'পেশী ও হাড়', symptoms: ['Joint pain', 'Muscle weakness', 'Back pain', 'None'] }
 ];
+
+const OPTION_TRANSLATIONS: Record<string, { hi: string; mr: string; bn: string }> = {
+  // Allergies
+  'Penicillin': { hi: 'पेनिसिलिन', mr: 'पेनिसिलिन', bn: 'পেনিসিলিন' },
+  'Sulfa drugs': { hi: 'सल्फा दवाएं', mr: 'सल्फा औषधे', bn: 'সালফা ওষুধ' },
+  'Peanuts': { hi: 'मूंगफली', mr: 'शेंगदाणे', bn: 'বাদাম' },
+  'Dust/Pollen': { hi: 'धूल/पराग', mr: 'धूळ / परागकण', bn: 'ধুলো / পরাগ' },
+  'None': { hi: 'कोई नहीं', mr: 'काही नाही', bn: 'কিছু নেই' },
+  'Other': { hi: 'अन्य', mr: 'इतर', bn: 'অন্যান্য' },
+
+  // Conditions & Family History
+  'Diabetes': { hi: 'मधुमेह', mr: 'मधुमेह', bn: 'ডায়াবেটিস' },
+  'Hypertension (High BP)': { hi: 'उच्च रक्तचाप (High BP)', mr: 'उच्च रक्तदाब (High BP)', bn: 'উচ্চ রক্তচাপ' },
+  'Hypertension': { hi: 'उच्च रक्तचाप', mr: 'उच्च रक्तदाब', bn: 'উচ্চ রক্তচাপ' },
+  'Asthma': { hi: 'दमा (अस्थमा)', mr: 'दमा (अस्थमा)', bn: 'হাঁপানি' },
+  'Thyroid': { hi: 'थायराइड', mr: 'थायरॉईड', bn: 'থাইরয়েড' },
+  'Heart Disease': { hi: 'हृदय रोग', mr: 'हृदयरोग', bn: 'হৃদরোগ' },
+  'Cancer': { hi: 'कैंसर', mr: 'कर्करोग (कॅन्सर)', bn: 'ক্যান্সার' },
+  'Stroke': { hi: 'स्ट्रोक (पक्षाघात)', mr: 'पक्षाघात (स्ट्रोक)', bn: 'স্ট্রোক' },
+
+  // Personal History
+  'Smoking': { hi: 'धूम्रपान', mr: 'धूम्रपान', bn: 'ধূমপান' },
+  'Alcohol': { hi: 'शराब', mr: 'मद्यपान', bn: 'মদ্যপান' },
+  'Tobacco chewing': { hi: 'तम्बाकू चबाना', mr: 'तंबाखू खाणे', bn: 'তামাক চিবানো' },
+  'Vegetarian diet': { hi: 'शाकाहारी आहार', mr: 'शाकाहारी आहार', bn: 'নিরামিষ আহার' },
+  'Non-vegetarian diet': { hi: 'मांसाहारी आहार', mr: 'मांसाहारी आहार', bn: 'আমিষ আহার' },
+  'Sedentary lifestyle': { hi: 'गतिहीन जीवनशैली', mr: 'बैठी जीवनशैली', bn: 'শারীরিক পরিশ্রমহীন জীবন' },
+  'Regular exercise': { hi: 'नियमित व्यायाम', mr: 'नियमित व्यायाम', bn: 'নিয়মিত ব্যায়াম' },
+
+  // Review of Systems
+  'Fever': { hi: 'बुखार', mr: 'ताप', bn: 'জ্বর' },
+  'Weight loss': { hi: 'वजन कम होना', mr: 'वजन कमी होणे', bn: 'ওজন হ্রাস' },
+  'Fatigue': { hi: 'थकान', mr: 'थकवा', bn: 'ক্লান্তি' },
+  'Night sweats': { hi: 'रात में पसीना आना', mr: 'रात्री घाम येणे', bn: 'রাতে ঘাম' },
+  'Chest pain': { hi: 'छाती में दर्द', mr: 'छातीत दुखणे', bn: 'বুকে ব্যথা' },
+  'Palpitations': { hi: 'धड़कन तेज होना', mr: 'धडधड वाढणे', bn: 'বুক ধড়ফড়' },
+  'Swelling (Edema)': { hi: 'सूजन', mr: 'सूज', bn: 'ফোলা ভাব' },
+  'Cough': { hi: 'खांसी', mr: 'खोकला', bn: 'কাশি' },
+  'Breathlessness (Dyspnea)': { hi: 'सांस फूलना', mr: 'श्वास लागणे', bn: 'শ্বাসকষ্ট' },
+  'Wheezing': { hi: 'घरघराहट', mr: 'घरघर आवाज', bn: 'ঘড়ঘড় শব্দ' },
+  'Nausea/Vomiting': { hi: 'उल्टी / मिचली', mr: 'उलटी / मळमळ', bn: 'বমি বমি ভাব / বমি' },
+  'Abdominal pain': { hi: 'पेट में दर्द', mr: 'पोटदुखी', bn: 'পেটে ব্যথা' },
+  'Diarrhea': { hi: 'दस्त / दस्त लगना', mr: 'जुलाब', bn: 'ডায়রিয়া' },
+  'Urinary issues': { hi: 'पेशाब की समस्या', mr: 'लघवीचा त्रास', bn: 'মূত্রনালীর সমস্যা' },
+  'Painful urination': { hi: 'पेशाब में दर्द', mr: 'लघवी करताना वेदना', bn: 'প্রস্রাবে ব্যথা' },
+  'Headache': { hi: 'सिरदर्द', mr: 'डोकेदुखी', bn: 'মাথাব্যথা' },
+  'Dizziness': { hi: 'चक्कर आना', mr: 'चक्कर येणे', bn: 'মাথা ঘোরা' },
+  'Numbness/Tingling': { hi: 'सुन्नपन / झनझनाहट', mr: 'बधीरपणा / मुंग्या येणे', bn: 'অসাড়তা / ঝিমঝিম' },
+  'Joint pain': { hi: 'जोड़ों में दर्द', mr: 'सांधेदुखी', bn: 'গাঁটে ব্যথা' },
+  'Muscle weakness': { hi: 'मांसपेशियों की कमजोरी', mr: 'स्नायूंचा अशक्तपणा', bn: 'পেশীর দুর্বলতা' },
+  'Back pain': { hi: 'पीठ में दर्द', mr: 'पाठदुखी', bn: 'পিঠে ব্যথা' }
+};
 
 export default function MedicalHistoryFlow() {
   const navigate = useNavigate();
   // Lazily initialize session
   const [session] = useState<SessionState | null>(() => {
-    const sessionId = localStorage.getItem('patient_session') || localStorage.getItem('session_id');
+    const sessionId = sessionStorage.getItem('patient_session') || sessionStorage.getItem('session_id');
     const lang = localStorage.getItem('patient_language') || 'en';
     if (!sessionId) return null;
     return { id: sessionId, language: lang };
@@ -122,12 +175,48 @@ export default function MedicalHistoryFlow() {
     return () => window.removeEventListener('online', handleOnline);
   }, [session, navigate, flushOfflineQueue]);
 
+  const userLang = session?.language || localStorage.getItem('patient_language') || 'en';
+  const isMr = userLang === 'mr';
+  const isBn = userLang === 'bn';
+  const isHi = userLang === 'hi';
+  const ttsLang = isMr ? 'mr-IN' : isBn ? 'bn-IN' : isHi ? 'hi-IN' : 'en-IN';
+  const activeLang = (isMr ? 'mr' : isBn ? 'bn' : isHi ? 'hi' : 'en') as 'en' | 'hi' | 'mr' | 'bn';
+
+  const getOptionLabel = (item: string) => {
+    if (isMr) return OPTION_TRANSLATIONS[item]?.mr || item;
+    if (isBn) return OPTION_TRANSLATIONS[item]?.bn || item;
+    if (isHi) return OPTION_TRANSLATIONS[item]?.hi || item;
+    return item;
+  };
+
   // Voice recognition handling for each step
   useEffect(() => {
     if (!transcript) return;
-    const lower = transcript.toLowerCase();
+    const cleaned = cleanTranscript(transcript, { language: activeLang });
+    const matchTranscript = cleaned || transcript;
+    const lower = matchTranscript.toLowerCase();
 
-    if (lower.includes('continue') || lower.includes('next') || lower.includes('finish') || lower.includes('submit') || lower.includes('आगे') || lower.includes('समाप्त')) {
+    const isMatch = (item: string) => {
+      const eng = item.toLowerCase().split('/')[0].split(' ')[0];
+      if (lower.includes(eng)) return true;
+      const trans = OPTION_TRANSLATIONS[item];
+      if (trans) {
+        if (trans.hi && lower.includes(trans.hi.toLowerCase())) return true;
+        if (trans.mr && lower.includes(trans.mr.toLowerCase())) return true;
+        if (trans.bn && lower.includes(trans.bn.toLowerCase())) return true;
+      }
+      return false;
+    };
+
+    const isNone = lower.includes('no') || lower.includes('none') || 
+                   lower.includes('कोई नहीं') || lower.includes('नही') || 
+                   lower.includes('काही नाही') || lower.includes('नाही') || 
+                   lower.includes('कुछ नहीं') || lower.includes('কিছু নেই') || lower.includes('না');
+
+    if (lower.includes('continue') || lower.includes('next') || lower.includes('finish') || 
+        lower.includes('submit') || lower.includes('आगे') || lower.includes('समाप्त') || 
+        lower.includes('पुढे') || lower.includes('चालू') || lower.includes('পরবর্তী') || lower.includes('চালিয়ে')) {
+      stopListening();
       const btn = document.getElementById('btn-medical-next');
       if (btn && !(btn as HTMLButtonElement).disabled) {
         btn.click();
@@ -138,13 +227,11 @@ export default function MedicalHistoryFlow() {
     if (step === 0) {
       // Allergies
       const allergyOptions = ['Penicillin', 'Sulfa drugs', 'Peanuts', 'Dust/Pollen', 'None', 'Other'];
-      if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं') || lower.includes('नही')) {
-        // eslint-disable-next-line
+      if (isNone) {
         setAllergies(['None']);
       } else {
         allergyOptions.forEach(item => {
-          if (lower.includes(item.toLowerCase().split('/')[0].split(' ')[0])) {
-            // eslint-disable-next-line
+          if (isMatch(item)) {
             toggleSelection(item, allergies, setAllergies);
           }
         });
@@ -152,61 +239,55 @@ export default function MedicalHistoryFlow() {
     } else if (step === 1) {
       // Medications - dictate text
       const base = baseMedicationsRef.current;
-      const newMeds = base ? base + (base.endsWith(', ') || base.endsWith(',') ? ' ' : ', ') + transcript : transcript;
+      const newMeds = base ? base + (base.endsWith(', ') || base.endsWith(',') ? ' ' : ', ') + matchTranscript : matchTranscript;
       setMedications(newMeds);
     } else if (step === 2) {
       // Conditions
-      if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं') || lower.includes('नही')) {
+      if (isNone) {
         setConditions(['None']);
-      } else if (lower.includes('sugar') || lower.includes('मधुमेह') || lower.includes('diabetes')) {
-        toggleSelection('Diabetes', conditions, setConditions);
-      } else if (lower.includes('bp') || lower.includes('pressure') || lower.includes('hypertension')) {
-        toggleSelection('Hypertension (High BP)', conditions, setConditions);
-      } else if (lower.includes('asthma') || lower.includes('दमा')) {
-        toggleSelection('Asthma', conditions, setConditions);
-      } else if (lower.includes('heart') || lower.includes('दिल')) {
-        toggleSelection('Heart Disease', conditions, setConditions);
-      } else if (lower.includes('thyroid')) {
-        toggleSelection('Thyroid', conditions, setConditions);
+      } else {
+        ['Diabetes', 'Hypertension (High BP)', 'Asthma', 'Thyroid', 'Heart Disease', 'Other'].forEach(item => {
+          if (isMatch(item)) {
+            toggleSelection(item, conditions, setConditions);
+          }
+        });
       }
     } else if (step === 3) {
       // Surgeries - dictate text
       const base = baseSurgeriesRef.current;
-      const newSurgs = base ? base + (base.endsWith(', ') || base.endsWith(',') ? ' ' : ', ') + transcript : transcript;
+      const newSurgs = base ? base + (base.endsWith(', ') || base.endsWith(',') ? ' ' : ', ') + matchTranscript : matchTranscript;
       setSurgeries(newSurgs);
     } else if (step === 4) {
       // Family History
-      if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं')) {
+      if (isNone) {
         setFamilyHistory(['None']);
       } else {
         ['Diabetes', 'Hypertension', 'Heart Disease', 'Cancer', 'Asthma', 'Stroke'].forEach(item => {
-          if (lower.includes(item.toLowerCase().split(' ')[0])) {
+          if (isMatch(item)) {
             toggleSelection(item, familyHistory, setFamilyHistory);
           }
         });
       }
     } else if (step === 5) {
       // Personal History
-      if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं')) {
+      if (isNone) {
         setPersonalHistory(['None']);
       } else {
-        if (lower.includes('smok') || lower.includes('धूम्र')) toggleSelection('Smoking', personalHistory, setPersonalHistory);
-        if (lower.includes('alcohol') || lower.includes('शराब')) toggleSelection('Alcohol', personalHistory, setPersonalHistory);
-        if (lower.includes('tobacco') || lower.includes('तम्बाकू')) toggleSelection('Tobacco chewing', personalHistory, setPersonalHistory);
-        if (lower.includes('vegetarian') || lower.includes('शाकाहारी')) toggleSelection('Vegetarian diet', personalHistory, setPersonalHistory);
-        if (lower.includes('non-veg') || lower.includes('मांसाहारी')) toggleSelection('Non-vegetarian diet', personalHistory, setPersonalHistory);
-        if (lower.includes('sedentary') || lower.includes('गतिहीन')) toggleSelection('Sedentary lifestyle', personalHistory, setPersonalHistory);
+        ['Smoking', 'Alcohol', 'Tobacco chewing', 'Vegetarian diet', 'Non-vegetarian diet', 'Sedentary lifestyle', 'Regular exercise'].forEach(item => {
+          if (isMatch(item)) {
+            toggleSelection(item, personalHistory, setPersonalHistory);
+          }
+        });
       }
     } else if (step === 6) {
       // ROS categorized parsing
-      if (lower.includes('no') || lower.includes('none') || lower.includes('कोई नहीं')) {
+      if (isNone) {
         setRosSymptoms(prev => ({ ...prev, [activeRosTab]: ['None'] }));
       } else {
         ROS_SYSTEMS.forEach(sys => {
           sys.symptoms.forEach(sym => {
             if (sym === 'None') return;
-            const kw = sym.toLowerCase().split('/')[0].split(' ')[0];
-            if (lower.includes(kw)) {
+            if (isMatch(sym)) {
               setRosSymptoms(prev => {
                 const current = prev[sys.id] || [];
                 let newList = current.filter(i => i !== 'None');
@@ -373,7 +454,7 @@ export default function MedicalHistoryFlow() {
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
                 >
-                  {item}
+                  {getOptionLabel(item)}
                 </button>
               ))}
             </div>
@@ -419,7 +500,7 @@ export default function MedicalHistoryFlow() {
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
                 >
-                  {item}
+                  {getOptionLabel(item)}
                 </button>
               ))}
             </div>
@@ -465,7 +546,7 @@ export default function MedicalHistoryFlow() {
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
                 >
-                  {item}
+                  {getOptionLabel(item)}
                 </button>
               ))}
             </div>
@@ -487,7 +568,7 @@ export default function MedicalHistoryFlow() {
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
                 >
-                  {item}
+                  {getOptionLabel(item)}
                 </button>
               ))}
             </div>
@@ -516,7 +597,7 @@ export default function MedicalHistoryFlow() {
                       : "bg-white text-muted border border-warmgray hover:bg-sand"
                   )}
                 >
-                  {session?.language === 'hi' ? sys.hi : sys.en}
+                  {isMr ? (sys.mr || sys.en) : isBn ? (sys.bn || sys.en) : isHi ? sys.hi : sys.en}
                 </button>
               ))}
             </div>
@@ -551,7 +632,7 @@ export default function MedicalHistoryFlow() {
                       : "border-warmgray text-charcoal hover:border-primary/40 hover:bg-sand/30"
                   )}
                 >
-                  {item}
+                  {getOptionLabel(item)}
                 </button>
               ))}
             </div>
@@ -590,7 +671,7 @@ export default function MedicalHistoryFlow() {
               {stepTitle}
             </h2>
             <button
-              onClick={() => speak(stepTitle, session?.language === 'hi' ? 'hi-IN' : 'en-US')}
+              onClick={() => speak(stepTitle, ttsLang)}
               className="w-11 h-11 rounded-full bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center transition-colors shrink-0"
               title="Listen to question"
             >
@@ -605,7 +686,7 @@ export default function MedicalHistoryFlow() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => (isListening ? stopListening() : startListening({ lang: session?.language === 'hi' ? 'hi-IN' : 'en-IN' }))}
+                onClick={() => (isListening ? stopListening() : startListening({ lang: ttsLang }))}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
                   isListening 
                     ? 'bg-primary text-white scale-105 ring-2 ring-primary/40' 
@@ -616,14 +697,31 @@ export default function MedicalHistoryFlow() {
                 <Mic className="w-5 h-5" />
               </button>
               <div className="text-left">
-                <p className="text-xs font-semibold text-charcoal">{isListening ? 'Listening...' : 'Voice Input (ASR)'}</p>
+                <p className="text-xs font-semibold text-charcoal">
+                  {isListening 
+                    ? (isMr ? 'ऐकत आहे...' : isBn ? 'শুনছি...' : isHi ? 'सुन रहा है...' : 'Listening...')
+                    : (isMr ? 'आवाज इनपुट (ASR)' : isBn ? 'ভয়েস ইনপুট (ASR)' : isHi ? 'आवाज इनपुट (ASR)' : 'Voice Input (ASR)')}
+                </p>
                 <p className="text-xs text-muted">{getStepHint()}</p>
               </div>
             </div>
             {transcript && (
-              <p className="mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                "{transcript}"
-              </p>
+              <div className="flex flex-col items-center mt-2">
+                <p className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  "{transcript}"
+                </p>
+                {(() => {
+                  const cleaned = cleanTranscript(transcript, { language: activeLang });
+                  if (cleaned && cleaned !== transcript) {
+                    return (
+                      <p className="text-[10px] text-muted font-medium italic mt-0.5">
+                        {isMr ? `संपादित: "${cleaned}"` : isBn ? `সংশোধিত: "${cleaned}"` : isHi ? `संशोधित: "${cleaned}"` : `Cleaned: "${cleaned}"`}
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
             )}
           </div>
           
@@ -643,8 +741,16 @@ export default function MedicalHistoryFlow() {
       </div>
       <VoiceGuideButton 
         clipId="medical_history"
-        fallbackText={session?.language === 'hi' ? 'अब अपनी पुरानी बीमारियों और मेडिकल इतिहास की समीक्षा करें।' : 'Now let us review your past medical history and conditions.'} 
-        language={session?.language === 'hi' ? 'hi-IN' : 'en-IN'} 
+        fallbackText={
+          isMr 
+            ? 'आता तुमचा मागील वैद्यकीय इतिहास आणि जुने आजार तपासा.'
+            : isBn
+            ? 'এখন আপনার অতীতের চিকিৎসা ইতিহাস এবং রোগ পর্যালোচনা করুন।'
+            : isHi
+            ? 'अब अपनी पुरानी बीमारियों और मेडिकल इतिहास की समीक्षा करें।'
+            : 'Now let us review your past medical history and conditions.'
+        } 
+        language={ttsLang} 
       />
     </div>
   );

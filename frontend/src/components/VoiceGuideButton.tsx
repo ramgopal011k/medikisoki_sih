@@ -22,7 +22,9 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
   const [loading, setLoading] = useState(false);
   const { speak } = useVoiceGuidance();
 
-  const isHindi = language.startsWith('hi');
+  const isHi = language.startsWith('hi');
+  const isMr = language.startsWith('mr');
+  const isBn = language.startsWith('bn');
   const targetText = fallbackText || text || '';
 
   const handleListen = async (e: React.MouseEvent) => {
@@ -30,6 +32,16 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
     if (loading) return;
     setLoading(true);
     try {
+      // Pre-recorded clips exist for hi and en; for mr and bn use direct TTS
+      if (clipId && (isHi || (!isMr && !isBn))) {
+        try {
+          const audio = new Audio(`/audio/v1/${isHi ? 'hi' : 'en'}/${clipId}.mp3`);
+          await audio.play();
+          return;
+        } catch {
+          // fallback to tts
+        }
+      }
       await speak({
         clipId,
         fallbackText: targetText,
@@ -51,7 +63,7 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
         aria-label="Listen to instructions"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
-        <span>{isHindi ? 'निर्देश सुनें' : 'Listen'}</span>
+        <span>{isMr ? 'सूचना ऐका' : isBn ? 'নির্দেশনা শুনুন' : isHi ? 'निर्देश सुनें' : 'Listen'}</span>
       </button>
     );
   }
@@ -67,7 +79,7 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
     >
       {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
       <span className="text-xs font-bold font-body tracking-wide">
-        {isHindi ? 'निर्देश सुनें (Voice Assist)' : 'Voice Assist'}
+        {isMr ? 'सूचना ऐका (Voice Assist)' : isBn ? 'নির্দেশনা শুনুন (Voice Assist)' : isHi ? 'निर्देश सुनें (Voice Assist)' : 'Voice Assist'}
       </span>
     </button>
   );

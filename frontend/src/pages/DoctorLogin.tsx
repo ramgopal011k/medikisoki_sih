@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Key, UserPlus, Building2, ChevronDown, HeartPulse, MapPin } from 'lucide-react';
 import { QuestionCard } from '@/components/QuestionCard';
 import { API_URL } from '@/lib/api';
+import { loadHospitalsSWR } from '@/lib/hospitalsCache';
+import { prefetchDoctorSessions } from '@/lib/prefetch';
 
 export interface HospitalInfo {
   hospital_id: string;
@@ -27,6 +29,9 @@ export default function DoctorLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
 
+  const [hospitals, setHospitals] = useState<HospitalInfo[]>([]);
+  const [selectedHospitalId, setSelectedHospitalId] = useState<string>('demo');
+
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
@@ -37,17 +42,14 @@ export default function DoctorLogin() {
 
   useEffect(() => {
     if (hospitalId) {
-      fetch(`${API_URL}/api/hospitals`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.data && Array.isArray(data.data)) {
-            const found = data.data.find((h: any) => h.hospital_id === hospitalId || h.id === hospitalId);
-            if (found) {
-              setHospitalInfo(found);
-            }
+      loadHospitalsSWR((data) => {
+        if (data && Array.isArray(data)) {
+          const found = data.find((h: any) => h.hospital_id === hospitalId || h.id === hospitalId);
+          if (found) {
+            setHospitalInfo(found);
           }
-        })
-        .catch(err => console.error('Failed to load hospital info:', err));
+        }
+      });
     }
   }, [hospitalId]);
 
@@ -82,6 +84,9 @@ export default function DoctorLogin() {
         hospital_id: targetHospitalId,
         role: user.role || 'doctor'
       }));
+
+      // Task 2A.7: prefetch doctor sessions post-login
+      prefetchDoctorSessions(targetHospitalId);
 
       navigate(hospitalId ? `/doctor/dashboard?h=${hospitalId}` : '/doctor/dashboard');
     } catch (err) {

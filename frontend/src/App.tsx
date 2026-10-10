@@ -3,9 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { useEffect, useState, useRef } from 'react';
 // AuthContext removed — doctor auth is handled via localStorage in DoctorLogin.tsx
 import { Clock } from 'lucide-react';
-import { get, set } from 'idb-keyval';
 import ConsentFlow from './pages/Kiosk/ConsentFlow';
-import ChiefComplaint from './pages/Kiosk/ChiefComplaint';
 import DoctorLogin from './pages/DoctorLogin';
 import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import InterviewFlow from './pages/InterviewFlow';
@@ -13,7 +11,6 @@ import MedicalHistoryFlow from './pages/MedicalHistoryFlow';
 import DocumentUploadFlow from './pages/DocumentUploadFlow';
 import AyushFlow from './pages/AyushFlow';
 import TriageSummary from './pages/TriageSummary';
-import RedFlagLock from './pages/Kiosk/RedFlagLock';
 import PatientSubmitted from './pages/Kiosk/PatientSubmitted';
 import PatientPreview from './pages/PatientPreview';
 import WelcomeScreen from './pages/Kiosk/WelcomeScreen';
@@ -21,10 +18,13 @@ import DataFiduciaryNotice from './pages/Kiosk/DataFiduciaryNotice';
 import PatientLogin from './pages/Patient/PatientLogin';
 import PatientDashboard from './pages/Patient/PatientDashboard';
 import AdminHospitals from './pages/Admin/AdminHospitals';
+import TriageDashboard from './pages/Triage/TriageDashboard';
+import AnalyticsDashboard from './pages/Admin/AnalyticsDashboard';
 import LandingPage from './pages/LandingPage';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import { AccessibilityToggle } from './components/AccessibilityToggle';
 import OrchestrationMonitor from './components/OrchestrationMonitor';
+import { prefetchHospitals } from './lib/prefetch';
 
 function AppRoutes() {
   const location = useLocation();
@@ -62,9 +62,26 @@ function AppRoutes() {
             setCountdown((prev) => {
               if (prev <= 1) {
                 // Time is up, hard reload
-                localStorage.removeItem('patient_session');
-                localStorage.removeItem('patient_complaint');
-                sessionStorage.clear(); // Ensure all is cleared
+                const kioskKeys = [
+                  'patient_session', 'session_id', 'chief_complaint', 'patient_complaint',
+                  'patient_name', 'patient_age', 'patient_gender', 'patient_phone',
+                  'patient_language', 'ayush_mode'
+                ];
+                kioskKeys.forEach(k => {
+                  localStorage.removeItem(k);
+                  sessionStorage.removeItem(k);
+                });
+                Object.keys(localStorage).forEach(key => {
+                  if (key.startsWith('interview_')) {
+                    localStorage.removeItem(key);
+                  }
+                });
+                Object.keys(sessionStorage).forEach(key => {
+                  if (key.startsWith('interview_')) {
+                    sessionStorage.removeItem(key);
+                  }
+                });
+                sessionStorage.removeItem('seen_data_fiduciary_notice');
                 window.location.href = '/'; 
                 return 0;
               }
@@ -90,6 +107,21 @@ function AppRoutes() {
       window.removeEventListener('click', resetTimer);
     };
   }, [location.pathname]);
+
+  // Task 2A.7: Prefetch /admin/hospitals on link hover
+  useEffect(() => {
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest('a, button');
+      if (!target) return;
+      const href = target.getAttribute('href') || target.getAttribute('data-href');
+      const label = target.getAttribute('aria-label');
+      if (href?.includes('/admin/hospitals') || label === 'Hospital Admin' || target.textContent?.includes('Hospital Admin')) {
+        prefetchHospitals();
+      }
+    };
+    window.addEventListener('mouseover', handleMouseOver);
+    return () => window.removeEventListener('mouseover', handleMouseOver);
+  }, []);
 
   return (
     <>
@@ -127,18 +159,18 @@ function AppRoutes() {
         <Route path="/hospital/:hospitalId/notice" element={<DataFiduciaryNotice />} />
         <Route path="/hospital/:hospitalId/consent" element={<ConsentFlow />} />
         <Route path="/hospital/:hospitalId/doctor" element={<DoctorLogin />} />
+        <Route path="/hospital/:id/triage" element={<TriageDashboard />} />
+        <Route path="/hospital/:hospitalId/triage" element={<TriageDashboard />} />
+        <Route path="/hospital/:id/analytics" element={<AnalyticsDashboard />} />
+        <Route path="/hospital/:hospitalId/analytics" element={<AnalyticsDashboard />} />
         
         {/* Generic patient kiosk flow */}
         <Route path="/welcome" element={<WelcomeScreen />} />
         <Route path="/notice" element={<DataFiduciaryNotice />} />
         <Route path="/consent" element={<ConsentFlow />} />
-        <Route path="/chief-complaint" element={<ChiefComplaint />} />
         <Route path="/interview" element={<InterviewFlow />} />
         <Route path="/ayush-assessment" element={<AyushFlow />} />
-        <Route path="/ayush" element={<AyushFlow />} />
         <Route path="/records-upload" element={<DocumentUploadFlow />} />
-        <Route path="/upload" element={<DocumentUploadFlow />} />
-        <Route path="/red-flag-alert" element={<RedFlagLock />} />
         <Route path="/submitted" element={<PatientSubmitted />} />
         <Route path="/preview" element={<PatientPreview />} />
         <Route path="/medical-history" element={<MedicalHistoryFlow />} />

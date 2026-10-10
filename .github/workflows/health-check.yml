@@ -1,0 +1,23 @@
+name: Daily Health Check
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backend
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            https://medikisoki-production.up.railway.app/api/hospitals)
+          echo "Backend: $STATUS"
+          [ "$STATUS" = "200" ] || exit 1
+
+      - name: Frontend
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            ${{ vars.VERCEL_URL }})
+          echo "Frontend: $STATUS"
+          [ "$STATUS" = "200" ] || exit 1

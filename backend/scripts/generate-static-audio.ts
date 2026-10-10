@@ -148,6 +148,101 @@ export const STATIC_CLIPS: StaticClip[] = [
     id: 'confirmation_thank_you',
     en: 'Thank you.',
     hi: 'धन्यवाद।'
+  },
+  {
+    id: 'patient_type',
+    en: 'Please select whether you have an existing ABHA health ID or want to register as a new patient.',
+    hi: 'कृपया चुनें कि क्या आपके पास पहले से आभा आईडी है या आप एक नए मरीज हैं।'
+  },
+  {
+    id: 'abha',
+    en: 'Please enter your 14-digit Ayushman Bharat Health Account number or speak the digits clearly.',
+    hi: 'कृपया अपना 14 अंकों का आभा नंबर दर्ज करें या अंक स्पष्ट रूप से बोलें।'
+  },
+  {
+    id: 'identity',
+    en: 'Please enter your 14-digit Ayushman Bharat Health Account number or speak the digits clearly.',
+    hi: 'कृपया अपना 14 अंकों का आभा नंबर दर्ज करें या अंक स्पष्ट रूप से बोलें।'
+  },
+  {
+    id: 'otp',
+    en: 'A verification code has been sent to your mobile phone. Please enter the 6-digit OTP to continue.',
+    hi: 'आपके मोबाइल फोन पर एक सत्यापन कोड भेजा गया है। जारी रखने के लिए कृपया 6 अंकों का ओटीपी दर्ज करें।'
+  },
+  {
+    id: 'consent_terms',
+    en: 'Please review and check the consent options to share your data for clinical assessment and care.',
+    hi: 'नैदानिक मूल्यांकन और देखभाल के लिए अपना डेटा साझा करने हेतु कृपया सहमति विकल्पों की समीक्षा करें।'
+  },
+  {
+    id: 'complaint',
+    en: 'Please select your primary health concern or symptom to start your assessment.',
+    hi: 'अपना मूल्यांकन शुरू करने के लिए कृपया अपनी मुख्य स्वास्थ्य समस्या या लक्षण चुनें।'
+  },
+  {
+    id: 'patient_name',
+    en: 'New patient registration. Please provide your full name, age, and gender to proceed.',
+    hi: 'नया मरीज पंजीकरण। कृपया आगे बढ़ने के लिए अपना पूरा नाम, आयु और लिंग दर्ज करें।'
+  },
+  {
+    id: 'name',
+    en: 'New patient registration. Please provide your full name, age, and gender to proceed.',
+    hi: 'नया मरीज पंजीकरण। कृपया आगे बढ़ने के लिए अपना पूरा नाम, आयु और लिंग दर्ज करें।'
+  },
+  {
+    id: 'ayush_supp_ahara_vihara',
+    en: 'Ahara and Vihara: Please describe your daily diet, meal regularity, and lifestyle habits.',
+    hi: 'आहार और विहार: कृपया अपने दैनिक आहार, भोजन के समय और दिनचर्या का वर्णन करें।'
+  },
+  {
+    id: 'ayush_supp_agni',
+    en: 'Agni Assessment: How is your digestive fire, metabolic rhythm, and bowel regularity?',
+    hi: 'अग्नि मूल्यांकन: आपकी जठराग्नि, पाचन लय और पेट की सफाई कैसी रहती है?'
+  },
+  {
+    id: 'ayush_supp_koshtha',
+    en: 'Koshtha Assessment: Describe your bowel movement tendency, whether hard, soft, or normal.',
+    hi: 'कोष्ठ मूल्यांकन: अपनी मल प्रवृत्ति का वर्णन करें, क्या यह क्रूर, मृदु या मध्यम है?'
+  },
+  {
+    id: 'interview_question',
+    en: 'Please answer the clinical interview question. You can tap an option or speak your answer.',
+    hi: 'कृपया इस प्रश्न का उत्तर दें। आप विकल्प चुन सकते हैं या बोल सकते हैं।'
+  },
+  {
+    id: 'cp_site',
+    en: 'Where exactly is your chest pain located? Is it in the center, left, or right?',
+    hi: 'आपकी छाती में दर्द ठीक कहाँ हो रहा है? बीच में, बाईं ओर, या दाईं ओर?'
+  },
+  {
+    id: 'fever_duration',
+    en: 'How many days have you had this fever?',
+    hi: 'आपको कितने दिनों से बुखार आ रहा है?'
+  },
+  {
+    id: 'ap_site',
+    en: 'Where in your abdomen is the pain located?',
+    hi: 'आपके पेट में दर्द कहाँ हो रहा है?'
+  },
+  {
+    id: 'ha_onset',
+    en: 'How quickly did this headache come on?',
+    hi: 'यह सिरदर्द कितनी तेजी से शुरू हुआ?'
+  },
+  {
+    id: 'bp_location',
+    en: 'Where is your back pain located? Lower back, upper back, or neck?',
+    hi: 'आपकी पीठ में दर्द कहाँ हो रहा है? निचली पीठ, ऊपरी पीठ, या गर्दन?'
+  },
+  {
+    id: 'cough_duration',
+    en: 'How long have you had this cough?',
+    hi: 'आपको कितने समय से खांसी आ रही है?'
+  },
+  {
+    id: 'q1_description',
+    en: 'Please describe what health problem is bothering you today.',
+    hi: 'कृपया बताएं कि आज आपको क्या स्वास्थ्य समस्या परेशान कर रही है।'
   }
 ];
 
@@ -221,39 +316,71 @@ async function main() {
   fs.mkdirSync(enDir, { recursive: true });
   fs.mkdirSync(hiDir, { recursive: true });
 
-  let successEnCount = 0;
-  let successHiCount = 0;
+  let skippedCount = 0;
+  let newEnCount = 0;
+  let newHiCount = 0;
+
+  // Aliases mapping: targetId -> sourceId
+  const aliases: Record<string, string> = {
+    consent_terms: 'consent',
+    complaint: 'chief_complaint',
+    identity: 'abha',
+    name: 'patient_name',
+    ayush_supp_agni: 'ayush_11_agni',
+    ayush_supp_koshtha: 'ayush_12_koshtha'
+  };
 
   for (const clip of STATIC_CLIPS) {
     // 1. English
     const enFile = path.join(enDir, `${clip.id}.mp3`);
-    console.log(`Generating [en] ${clip.id}...`);
-    let enAudio = await synthesizeClip(clip.en, 'en-IN');
-    if (!enAudio) {
-      console.warn(`⚠️ Falling back to clean MP3 binary placeholder for [en] ${clip.id}`);
-      enAudio = createFallbackMp3Buffer();
+    if (fs.existsSync(enFile) && fs.statSync(enFile).size > 5000) {
+      console.log(`[en] ${clip.id}.mp3 exists (${(fs.statSync(enFile).size / 1024).toFixed(1)} KB) - skipping`);
+      skippedCount++;
+    } else if (aliases[clip.id] && fs.existsSync(path.join(enDir, `${aliases[clip.id]}.mp3`))) {
+      fs.copyFileSync(path.join(enDir, `${aliases[clip.id]}.mp3`), enFile);
+      console.log(`[en] ${clip.id}.mp3 copied from alias ${aliases[clip.id]}.mp3`);
+      newEnCount++;
+    } else {
+      console.log(`Synthesizing [en] ${clip.id}...`);
+      let enAudio = await synthesizeClip(clip.en, 'en-IN');
+      if (!enAudio) {
+        console.warn(`⚠️ Falling back to clean MP3 binary placeholder for [en] ${clip.id}`);
+        enAudio = createFallbackMp3Buffer();
+      }
+      fs.writeFileSync(enFile, enAudio);
+      console.log(`  ✓ Saved [en] ${clip.id}.mp3 (${(enAudio.length / 1024).toFixed(1)} KB)`);
+      newEnCount++;
+      await sleep(250);
     }
-    fs.writeFileSync(enFile, enAudio);
-    successEnCount++;
-    await sleep(200);
 
     // 2. Hindi
     const hiFile = path.join(hiDir, `${clip.id}.mp3`);
-    console.log(`Generating [hi] ${clip.id}...`);
-    let hiAudio = await synthesizeClip(clip.hi, 'hi-IN');
-    if (!hiAudio) {
-      console.warn(`⚠️ Falling back to clean MP3 binary placeholder for [hi] ${clip.id}`);
-      hiAudio = createFallbackMp3Buffer();
+    if (fs.existsSync(hiFile) && fs.statSync(hiFile).size > 5000) {
+      console.log(`[hi] ${clip.id}.mp3 exists (${(fs.statSync(hiFile).size / 1024).toFixed(1)} KB) - skipping`);
+      skippedCount++;
+    } else if (aliases[clip.id] && fs.existsSync(path.join(hiDir, `${aliases[clip.id]}.mp3`))) {
+      fs.copyFileSync(path.join(hiDir, `${aliases[clip.id]}.mp3`), hiFile);
+      console.log(`[hi] ${clip.id}.mp3 copied from alias ${aliases[clip.id]}.mp3`);
+      newHiCount++;
+    } else {
+      console.log(`Synthesizing [hi] ${clip.id}...`);
+      let hiAudio = await synthesizeClip(clip.hi, 'hi-IN');
+      if (!hiAudio) {
+        console.warn(`⚠️ Falling back to clean MP3 binary placeholder for [hi] ${clip.id}`);
+        hiAudio = createFallbackMp3Buffer();
+      }
+      fs.writeFileSync(hiFile, hiAudio);
+      console.log(`  ✓ Saved [hi] ${clip.id}.mp3 (${(hiAudio.length / 1024).toFixed(1)} KB)`);
+      newHiCount++;
+      await sleep(250);
     }
-    fs.writeFileSync(hiFile, hiAudio);
-    successHiCount++;
-    await sleep(200);
   }
 
   console.log('\n=== Generation Complete ===');
-  console.log(`English MP3s: ${successEnCount} / ${STATIC_CLIPS.length} saved to ${enDir}`);
-  console.log(`Hindi MP3s:   ${successHiCount} / ${STATIC_CLIPS.length} saved to ${hiDir}`);
-  console.log(`Total MP3 assets generated: ${successEnCount + successHiCount}`);
+  console.log(`Skipped existing clips: ${skippedCount}`);
+  console.log(`New English MP3s: ${newEnCount}`);
+  console.log(`New Hindi MP3s:   ${newHiCount}`);
+  console.log(`Total new assets created: ${newEnCount + newHiCount}`);
 }
 
 main().catch(err => {
