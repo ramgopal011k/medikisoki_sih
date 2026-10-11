@@ -2,7 +2,7 @@ import type { InterviewTree, InterviewQuestion, RedFlagResult } from '@/types/in
 import { isRedFlag } from '@/types/interview-tree';
 import type { Tier, DifferentialPanel, ExpectedSeverityResult } from './expectedSeverity';
 import { computeExpectedSeverity } from './expectedSeverity';
-import { API_URL, getAuthHeaders } from './api';
+import { API_URL, getAuthHeaders, getAuthToken } from './api';
 
 export const isReplannerEnabled = (): boolean => {
   if (typeof sessionStorage !== 'undefined') {
@@ -151,12 +151,21 @@ export async function scoreDifferentialPanel(
     fired_flags: state.firedFlags || []
   };
 
+  const token = getAuthToken();
+  if (!token) {
+    console.warn('[replan] No auth token available, skipping differential panel call');
+    return null;
+  }
+
   pendingPanelPromise = (async () => {
     try {
       lastPanelCallTimestamp = Date.now();
       const res = await fetch(`${API_URL}/api/ai/differential-panel`, {
         method: 'POST',
-        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
 

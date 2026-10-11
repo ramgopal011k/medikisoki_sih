@@ -10,7 +10,33 @@ export const API_URL =
 export const DEFAULT_AUTH_TOKEN = 'medikiosk-demo-token';
 
 export function getAuthToken(): string {
-  return localStorage.getItem('doctor_token') || DEFAULT_AUTH_TOKEN;
+  if (typeof window === 'undefined') {
+    return DEFAULT_AUTH_TOKEN;
+  }
+
+  const stored =
+    localStorage.getItem('doctor_token') ||
+    sessionStorage.getItem('doctor_token') ||
+    localStorage.getItem('triage_token') ||
+    sessionStorage.getItem('token') ||
+    DEFAULT_AUTH_TOKEN;
+
+  // Validate JWT expiration if formatted as JWT
+  if (stored && stored.includes('.')) {
+    try {
+      const parts = stored.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1]));
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+          return DEFAULT_AUTH_TOKEN;
+        }
+      }
+    } catch {
+      return DEFAULT_AUTH_TOKEN;
+    }
+  }
+
+  return stored || DEFAULT_AUTH_TOKEN;
 }
 
 export function getAuthHeaders(customHeaders: HeadersInit = {}): Headers {
