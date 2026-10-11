@@ -49,7 +49,15 @@ export default function InterviewFlow() {
   const [isFinished, setIsFinished] = useState(false);
   const [redFlagTriggered, setRedFlagTriggered] = useState<RedFlagResult | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [replannerTier, setReplannerTier] = useState<Tier>('low');
+  const [replannerTier, setReplannerTier] = useState<Tier | null>(() => {
+    const saved = sessionStorage.getItem('current_tier');
+    return (saved as Tier) || null;
+  });
+  const [currentEs, setCurrentEs] = useState<number | null>(() => {
+    const saved = sessionStorage.getItem('current_es');
+    return saved ? parseFloat(saved) : null;
+  });
+  const [firedFlags, setFiredFlags] = useState<string[]>([]);
   const [accumulatedAnswers, setAccumulatedAnswers] = useState<Record<string, string | string[]>>({});
   const [answerHistory, setAnswerHistory] = useState<Array<{ question_id: string; question_text: string; answer: string }>>([]);
   const [panelUnavailable, setPanelUnavailable] = useState(false);
@@ -71,6 +79,11 @@ export default function InterviewFlow() {
         setStepCount(savedStepCount ? parseInt(savedStepCount, 10) : 0);
       } else {
         setCurrentQId(loadedTree.start_question_id);
+        sessionStorage.removeItem('current_tier');
+        sessionStorage.removeItem('current_es');
+        setReplannerTier(null);
+        setCurrentEs(null);
+        setFiredFlags([]);
       }
     } else {
       setIsFinished(true);
@@ -176,7 +189,57 @@ export default function InterviewFlow() {
       await set(OFFLINE_QUEUE_KEY, queue);
     }
 
-    // Record answers in replanner state
+    // FLAG OFF PATH: 100% legacy behavior
+    if (!isReplannerEnabled()) {
+      setStepCount(prev => prev + 1);
+
+      if (nextResult === null || isRedFlag(nextResult)) {
+        if (redFlag) {
+          setRedFlagTriggered(redFlag);
+          // Persist red flag to dedicated table (fire and forget)
+          if (navigator.onLine) {
+            fetch(`${API_URL}/red-flags`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                session_id: session.id,
+                rule_id: redFlag.flag_id,
+              })
+            }).catch(console.error);
+          }
+        }
+        setIsFinished(true);
+        sessionStorage.removeItem(`interview_qid_${session.id}`);
+        sessionStorage.removeItem(`interview_step_${session.id}`);
+      } else {
+        setCurrentQId(nextResult);
+        sessionStorage.setItem(`interview_qid_${session.id}`, nextResult);
+        sessionStorage.setItem(`interview_step_${session.id}`, (stepCount + 1).toString());
+      }
+      return;
+    }
+
+    // FLAG ON PATH: Expected Severity replanner decides next action
+    // 1. Mark flag as fired (do NOT short-circuit interview immediately)
+    let updatedFiredFlags = firedFlags;
+    if (redFlag) {
+      if (!updatedFiredFlags.includes(redFlag.flag_id)) {
+        updatedFiredFlags = [...updatedFiredFlags, redFlag.flag_id];
+        setFiredFlags(updatedFiredFlags);
+      }
+      if (navigator.onLine) {
+        fetch(`${API_URL}/red-flags`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: session.id,
+            rule_id: redFlag.flag_id,
+          })
+        }).catch(console.error);
+      }
+    }
+
+    // 2. Record answers in replanner state
     const updatedAnswers = { ...accumulatedAnswers, [currentQId]: value };
     const updatedHistory = [
       ...answerHistory,
@@ -189,95 +252,87 @@ export default function InterviewFlow() {
 
     let activeTier = replannerTier;
 
-    // Feature Flag: If VITE_INTERVIEW_REPLANNER is enabled, evaluate replan & differential panel
-    if (isReplannerEnabled()) {
-      // Debounced panel refresh: only re-run after 2+ new answers OR when red flag fires
-      if (newAnswersCount >= 2 || redFlag) {
-        try {
-          const panelResult = await scoreDifferentialPanel(session.complaint, {
-            currentQId,
-            answers: updatedAnswers,
-            history: updatedHistory,
-            firedFlags: redFlag ? [redFlag.flag_id] : []
-          });
+    // 3. Differential panel refresh (after 2+ answers, red flag, or uninitialized tier)
+    if (newAnswersCount >= 2 || redFlag || activeTier === null) {
+      try {
+        const patientAge = sessionStorage.getItem('patient_age');
+        const patientGender = sessionStorage.getItem('patient_gender');
 
-          if (panelResult) {
-            activeTier = panelResult.tier;
-            setReplannerTier(panelResult.tier);
-            sessionStorage.setItem('current_es', String(panelResult.expected_severity));
-            sessionStorage.setItem('current_tier', panelResult.tier);
-            setAnswersSinceLastPanel(0);
-            setPanelUnavailable(false);
-          } else {
-            setPanelUnavailable(true);
+        const panelResult = await scoreDifferentialPanel(session.complaint, {
+          currentQId,
+          answers: updatedAnswers,
+          history: updatedHistory,
+          firedFlags: updatedFiredFlags,
+          patientContext: {
+            age: patientAge ? parseInt(patientAge, 10) : null,
+            sex: (patientGender as any) || null
           }
-        } catch (panelErr) {
-          console.warn('[InterviewFlow] panel error fallback:', panelErr);
+        });
+
+        if (panelResult) {
+          activeTier = panelResult.tier;
+          setReplannerTier(panelResult.tier);
+          setCurrentEs(panelResult.expected_severity);
+          sessionStorage.setItem('current_es', String(panelResult.expected_severity));
+          sessionStorage.setItem('current_tier', panelResult.tier);
+          setAnswersSinceLastPanel(0);
+          setPanelUnavailable(false);
+        } else {
           setPanelUnavailable(true);
         }
-      }
-
-      // If critical tier triggered, lock interview immediately
-      if (activeTier === 'critical') {
-        const critFlag: RedFlagResult = { type: 'red_flag', flag_id: 'PANEL_CRITICAL' };
-        setRedFlagTriggered(critFlag);
-        setIsFinished(true);
-        sessionStorage.removeItem(`interview_qid_${session.id}`);
-        sessionStorage.removeItem(`interview_step_${session.id}`);
-        return;
+      } catch (panelErr) {
+        console.warn('[InterviewFlow] panel error fallback:', panelErr);
+        setPanelUnavailable(true);
       }
     }
 
-    // If replanner is enabled and not critical, query replan()
-    if (isReplannerEnabled() && activeTier !== 'critical') {
-      const replanned = replan(
-        tree,
-        {
-          currentQId,
-          answers: updatedAnswers,
-          history: updatedHistory
-        },
-        activeTier
-      );
+    // 4. If critical tier triggered by ES panel, lock interview immediately
+    if (activeTier === 'critical') {
+      const critFlag: RedFlagResult = redFlag || { type: 'red_flag', flag_id: 'PANEL_CRITICAL' };
+      setRedFlagTriggered(critFlag);
+      setIsFinished(true);
+      sessionStorage.removeItem(`interview_qid_${session.id}`);
+      sessionStorage.removeItem(`interview_step_${session.id}`);
+      return;
+    }
 
-      if (replanned === null) {
-        nextResult = null;
-      } else if (typeof replanned === 'string') {
-        nextResult = replanned;
-      } else if (isRedFlag(replanned as any)) {
-        nextResult = replanned as RedFlagResult;
-      } else if (typeof replanned === 'object' && 'id' in replanned) {
-        nextResult = (replanned as any).id;
-      }
+    // 5. Let replan() decide next action based on tier
+    const replanned = replan(
+      tree,
+      {
+        currentQId,
+        answers: updatedAnswers,
+        history: updatedHistory,
+        firedFlags: updatedFiredFlags
+      },
+      activeTier || 'low'
+    );
+
+    let nextQId: string | null = null;
+    if (replanned === null) {
+      nextQId = null;
+    } else if (typeof replanned === 'string') {
+      nextQId = replanned;
+    } else if (typeof replanned === 'object' && 'id' in replanned) {
+      nextQId = (replanned as any).id;
+    } else if (isRedFlag(replanned as any)) {
+      setRedFlagTriggered(replanned as RedFlagResult);
+      setIsFinished(true);
+      sessionStorage.removeItem(`interview_qid_${session.id}`);
+      sessionStorage.removeItem(`interview_step_${session.id}`);
+      return;
     }
 
     // Advance the interview
     setStepCount(prev => prev + 1);
 
-    if (nextResult === null || isRedFlag(nextResult)) {
-      if (redFlag || isRedFlag(nextResult)) {
-        const finalFlag = redFlag || (isRedFlag(nextResult) ? nextResult : null);
-        if (finalFlag) {
-          setRedFlagTriggered(finalFlag);
-          // Persist red flag to dedicated table (fire and forget)
-          if (navigator.onLine) {
-            fetch(`${API_URL}/red-flags`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                session_id: session.id,
-                rule_id: finalFlag.flag_id,
-              })
-            }).catch(console.error);
-          }
-        }
-      }
+    if (nextQId === null) {
       setIsFinished(true);
       sessionStorage.removeItem(`interview_qid_${session.id}`);
       sessionStorage.removeItem(`interview_step_${session.id}`);
     } else {
-      setCurrentQId(nextResult);
-      sessionStorage.setItem(`interview_qid_${session.id}`, nextResult);
+      setCurrentQId(nextQId);
+      sessionStorage.setItem(`interview_qid_${session.id}`, nextQId);
       sessionStorage.setItem(`interview_step_${session.id}`, (stepCount + 1).toString());
     }
   };
@@ -394,9 +449,25 @@ export default function InterviewFlow() {
     <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 relative overflow-x-hidden">
       <MandalaBackground />
       <div className="z-10 w-full box-border">
-         {isReplannerEnabled() && replannerTier === 'high' && (
-           <div className="max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs sm:text-sm font-bold shadow-xs">
-             <span className="flex items-center gap-1.5">⚡ Priority: High</span>
+         {isReplannerEnabled() && replannerTier && (
+           <div
+             className={`max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold shadow-xs ${
+               replannerTier === 'critical'
+                 ? 'bg-red-500/10 border-red-500/30 text-red-700'
+                 : replannerTier === 'high'
+                 ? 'bg-orange-500/10 border-orange-500/30 text-orange-700'
+                 : replannerTier === 'moderate'
+                 ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-800'
+                 : 'bg-gray-500/10 border-gray-500/30 text-gray-700'
+             }`}
+           >
+             <span className="flex items-center gap-1.5">
+               {replannerTier === 'critical' && 'CRITICAL'}
+               {replannerTier === 'high' && 'HIGH PRIORITY'}
+               {replannerTier === 'moderate' && 'MODERATE'}
+               {replannerTier === 'low' && 'LOW'}
+               {currentEs !== null && !isNaN(currentEs) ? ` (ES: ${currentEs.toFixed(1)})` : ''}
+             </span>
              {panelUnavailable && (
                <span className="text-[11px] text-muted font-normal">Panel unavailable</span>
              )}

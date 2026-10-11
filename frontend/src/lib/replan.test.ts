@@ -158,4 +158,40 @@ describe('Expected Severity & Differential Panel', () => {
     const result = replan(mockTree, state, 'critical');
     expect(result).toBeNull();
   });
+
+  it('Replanner continues interview on red flag when tier is moderate or high', () => {
+    const mockTree: InterviewTree = {
+      complaint: 'Chest pain',
+      start_question_id: 'q1',
+      questions: {
+        q1: {
+          id: 'q1',
+          text: 'Radiation',
+          type: 'single_choice',
+          options: [
+            { value: 'left_arm', label: 'Left arm' },
+            { value: 'none', label: 'None' }
+          ],
+          next: (ans) => ans === 'left_arm' ? { type: 'red_flag', flag_id: 'R2' } : 'q2'
+        },
+        q2: {
+          id: 'q2',
+          text: 'Character',
+          type: 'single_choice',
+          next: () => null
+        }
+      }
+    };
+
+    const state = {
+      currentQId: 'q1',
+      answers: { q1: 'left_arm' }
+    };
+
+    const result = replan(mockTree, state, 'moderate');
+    expect(result).not.toBeNull();
+    const nextId = typeof result === 'object' && result && 'id' in result ? result.id : result;
+    expect(nextId).toBe('q2');
+  });
 });
+

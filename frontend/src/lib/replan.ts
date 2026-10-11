@@ -207,11 +207,48 @@ export function replan(
   const standardNext = currentAnswer !== undefined ? currentQ.next(currentAnswer) : null;
 
   // If a red flag was returned by next()
-  if (isRedFlag(standardNext)) {
-    return standardNext;
-  }
+  let nextCandidateId: string | null = null;
 
-  let nextCandidateId: string | null = typeof standardNext === 'string' ? standardNext : null;
+  if (isRedFlag(standardNext)) {
+    // Under replanner mode, a red flag alone does not terminate if tier is not critical.
+    // Try to find the continuation question from alternative branches first
+    if (currentQ.options) {
+      for (const opt of currentQ.options) {
+        const altNext = currentQ.next(opt.value);
+        if (typeof altNext === 'string' && !state.answers[altNext]) {
+          nextCandidateId = altNext;
+          break;
+        }
+      }
+    }
+
+    // If tier is high, see if a higher-priority probe should take precedence
+    if (tier === 'high') {
+      const probes = getProbes(tree, state, tier);
+      if (probes.length > 0) {
+        probes.sort((a, b) => getQuestionPriorityScore(b, tier) - getQuestionPriorityScore(a, tier));
+        return probes[0];
+      }
+    }
+
+    // Fallback to first unasked question in the tree
+    if (!nextCandidateId) {
+      for (const qId of Object.keys(tree.questions)) {
+        if (!state.answers[qId] && qId !== state.currentQId && !isQuestionSkipped(qId, state)) {
+          nextCandidateId = qId;
+          break;
+        }
+      }
+    }
+
+    if (nextCandidateId) {
+      return tree.questions[nextCandidateId] || nextCandidateId;
+    }
+
+    return null;
+  } else {
+    nextCandidateId = typeof standardNext === 'string' ? standardNext : null;
+  }
 
   // Apply Rule 1: SKIP — skip questions whose prerequisites are unmet
   while (nextCandidateId && isQuestionSkipped(nextCandidateId, state)) {
