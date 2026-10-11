@@ -13,6 +13,12 @@
       "skillPath": "skills/algorithmic-art/SKILL.md",
       "computedHash": "987b24aa98171a0d3690420173b2cdb6eaafd57981ed716b5d50371affa82ea3"
     },
+    "ask-user": {
+      "source": "desplega-ai/ai-toolbox",
+      "sourceType": "github",
+      "skillPath": "cc-plugin/base/skills/ask-user/SKILL.md",
+      "computedHash": "82dcfc041a12d7b23b041ec12782ef738dc008a0e12d53ae9f96f6099e53e192"
+    },
     "brand-guidelines": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -30,6 +36,12 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/council/SKILL.md",
       "computedHash": "7afda98df7c550d20638df048774b6e4db32ac0c82aba14cf00fc90dd36b3b70"
+    },
+    "create-viz": {
+      "source": "anthropics/knowledge-work-plugins",
+      "sourceType": "github",
+      "skillPath": "data/skills/create-viz/SKILL.md",
+      "computedHash": "39c6f3051afdd3249544c3173ff927a18fc463eff1bcd6b8d6918af29baea542"
     },
     "debugkit": {
       "source": "mimukit/skills",

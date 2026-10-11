@@ -1,0 +1,15 @@
+{
+  "dev-loop": {
+    "path": ".agents/skills/dev-loop/SKILL.md",
+    "invocation": "/dev-loop",
+    "description": "Five-agent development loop with dynamic Mattpock skill integration",
+    "version": "2.1.0",
+    "agents": [
+      "planner-adviser",
+      "worker",
+      "tester",
+      "guard",
+      "reviewer"
+    ]
+  }
+}
