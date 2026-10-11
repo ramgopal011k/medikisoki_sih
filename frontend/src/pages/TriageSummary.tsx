@@ -336,6 +336,10 @@ export default function TriageSummary() {
   const [notesSaved, setNotesSaved] = useState(false);
   const [verifiedFields, setVerifiedFields] = useState<Set<string>>(new Set());
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
+  const [differentialPanel, setDifferentialPanel] = useState<any[]>([]);
+  const [panelExpectedSeverity, setPanelExpectedSeverity] = useState<number | null>(null);
+  const [panelOverride, setPanelOverride] = useState<boolean>(false);
+  const [panelOverrideReason, setPanelOverrideReason] = useState<string | null>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const rawLangParam = (searchParams.get('lang') || 'en').toLowerCase();
@@ -487,6 +491,36 @@ export default function TriageSummary() {
           setExtractions(triageData.extractions || []);
           setSummaries(triageData.summaries || []);
           setIsLoading(false);
+
+          fetch(`${API_URL}/api/ai/differential-panel`, {
+            method: 'POST',
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({
+              chief_complaint: triageData.session?.chief_complaint,
+              answers: (triageData.facts || []).map((f: any) => ({
+                question_id: f.question_id || f.fact_id,
+                question_text: f.question_text || f.field_name,
+                answer: f.answer_value || f.answer
+              })),
+              patient_context: {
+                age: triageData.session?.age || null,
+                sex: triageData.session?.sex || null,
+                comorbidities: (triageData.medicalHistory || []).map((m: any) => m.value),
+                medications: []
+              },
+              fired_flags: (triageData.redFlags || []).map((r: any) => r.rule_id)
+            })
+          })
+            .then(r => r.json())
+            .then(resData => {
+              if (!ignore && resData.panel) {
+                setDifferentialPanel(resData.panel);
+                setPanelExpectedSeverity(resData.expected_severity);
+                setPanelOverride(Boolean(resData.safety_override));
+                setPanelOverrideReason(resData.override_reason || null);
+              }
+            })
+            .catch(() => {});
 
           const combinedText = [
             triageData.session.chief_complaint,
@@ -852,6 +886,73 @@ export default function TriageSummary() {
             })()}
           </div>
         </section>
+
+        {/* ── Differential Panel (Probabilistic Severity) ── */}
+        <CollapsibleSection
+          title="Differential Diagnosis Panel (Expected Severity)"
+          defaultOpen={true}
+          icon={Activity}
+          badge={panelExpectedSeverity !== null ? `ES: ${panelExpectedSeverity.toFixed(2)}` : undefined}
+          urgent={panelOverride}
+        >
+          <div className="space-y-4">
+            <div className="overflow-x-auto rounded-xl border border-warmgray">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-sand/70 text-muted uppercase font-bold tracking-wider border-b border-warmgray">
+                  <tr>
+                    <th className="py-2.5 px-3">Condition</th>
+                    <th className="py-2.5 px-3 text-right">Probability</th>
+                    <th className="py-2.5 px-3 text-center">Severity (ESI)</th>
+                    <th className="py-2.5 px-3">Guideline Source</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-warmgray/40">
+                  {differentialPanel.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-muted italic">
+                        Computing differential panel...
+                      </td>
+                    </tr>
+                  ) : (
+                    differentialPanel.map((item: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-sand/20 transition-colors">
+                        <td className="py-2.5 px-3 font-semibold text-charcoal">{item.name}</td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-primary">
+                          {(item.probability * 100).toFixed(1)}%
+                        </td>
+                        <td className="py-2.5 px-3 text-center font-mono">
+                          <span className={`inline-block px-2 py-0.5 rounded-md font-bold text-[11px] ${
+                            item.severity >= 85 ? 'bg-danger/10 text-danger border border-danger/30' :
+                            item.severity >= 50 ? 'bg-amber-500/10 text-amber-700 border border-amber-500/30' :
+                            'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30'
+                          }`}>
+                            {item.severity}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-muted">{item.source}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-sand/60 rounded-xl text-xs">
+              <div>
+                <span className="text-muted">Expected Severity (Σ prob × sev): </span>
+                <span className="font-mono font-bold text-charcoal text-sm">
+                  {panelExpectedSeverity !== null ? panelExpectedSeverity.toFixed(2) : '—'}
+                </span>
+              </div>
+              {panelOverride && (
+                <div className="text-danger font-semibold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>Override triggered: {panelOverrideReason || 'High probability life-threatening rule-out'}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </CollapsibleSection>
 
         {/* ── Clinical History (standard 8-part format) ── */}
         {(() => {

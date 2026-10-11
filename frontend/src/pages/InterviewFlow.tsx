@@ -10,6 +10,8 @@ import { get, set } from 'idb-keyval';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/api';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
+import { isReplannerEnabled, replan, scoreDifferentialPanel } from '../lib/replan';
+import type { Tier } from '../lib/expectedSeverity';
 
 interface SessionState {
   id: string;
@@ -47,6 +49,11 @@ export default function InterviewFlow() {
   const [isFinished, setIsFinished] = useState(false);
   const [redFlagTriggered, setRedFlagTriggered] = useState<RedFlagResult | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [replannerTier, setReplannerTier] = useState<Tier>('low');
+  const [accumulatedAnswers, setAccumulatedAnswers] = useState<Record<string, string | string[]>>({});
+  const [answerHistory, setAnswerHistory] = useState<Array<{ question_id: string; question_text: string; answer: string }>>([]);
+  const [panelUnavailable, setPanelUnavailable] = useState(false);
+  const [answersSinceLastPanel, setAnswersSinceLastPanel] = useState(0);
 
   // Load tree logic
   useEffect(() => {
@@ -139,7 +146,7 @@ export default function InterviewFlow() {
     const currentQ = tree.questions[currentQId];
 
     // Calculate next step first so we know if it's a red flag
-    const nextResult = currentQ.next(value);
+    let nextResult = currentQ.next(value);
     const redFlag = isRedFlag(nextResult) ? nextResult : null;
 
     // Prepare fact payload
@@ -169,22 +176,100 @@ export default function InterviewFlow() {
       await set(OFFLINE_QUEUE_KEY, queue);
     }
 
+    // Record answers in replanner state
+    const updatedAnswers = { ...accumulatedAnswers, [currentQId]: value };
+    const updatedHistory = [
+      ...answerHistory,
+      { question_id: currentQId, question_text: currentQ.text, answer: answerText }
+    ];
+    setAccumulatedAnswers(updatedAnswers);
+    setAnswerHistory(updatedHistory);
+    const newAnswersCount = answersSinceLastPanel + 1;
+    setAnswersSinceLastPanel(newAnswersCount);
+
+    let activeTier = replannerTier;
+
+    // Feature Flag: If VITE_INTERVIEW_REPLANNER is enabled, evaluate replan & differential panel
+    if (isReplannerEnabled()) {
+      // Debounced panel refresh: only re-run after 2+ new answers OR when red flag fires
+      if (newAnswersCount >= 2 || redFlag) {
+        try {
+          const panelResult = await scoreDifferentialPanel(session.complaint, {
+            currentQId,
+            answers: updatedAnswers,
+            history: updatedHistory,
+            firedFlags: redFlag ? [redFlag.flag_id] : []
+          });
+
+          if (panelResult) {
+            activeTier = panelResult.tier;
+            setReplannerTier(panelResult.tier);
+            sessionStorage.setItem('current_es', String(panelResult.expected_severity));
+            sessionStorage.setItem('current_tier', panelResult.tier);
+            setAnswersSinceLastPanel(0);
+            setPanelUnavailable(false);
+          } else {
+            setPanelUnavailable(true);
+          }
+        } catch (panelErr) {
+          console.warn('[InterviewFlow] panel error fallback:', panelErr);
+          setPanelUnavailable(true);
+        }
+      }
+
+      // If critical tier triggered, lock interview immediately
+      if (activeTier === 'critical') {
+        const critFlag: RedFlagResult = { type: 'red_flag', flag_id: 'PANEL_CRITICAL' };
+        setRedFlagTriggered(critFlag);
+        setIsFinished(true);
+        sessionStorage.removeItem(`interview_qid_${session.id}`);
+        sessionStorage.removeItem(`interview_step_${session.id}`);
+        return;
+      }
+    }
+
+    // If replanner is enabled and not critical, query replan()
+    if (isReplannerEnabled() && activeTier !== 'critical') {
+      const replanned = replan(
+        tree,
+        {
+          currentQId,
+          answers: updatedAnswers,
+          history: updatedHistory
+        },
+        activeTier
+      );
+
+      if (replanned === null) {
+        nextResult = null;
+      } else if (typeof replanned === 'string') {
+        nextResult = replanned;
+      } else if (isRedFlag(replanned as any)) {
+        nextResult = replanned as RedFlagResult;
+      } else if (typeof replanned === 'object' && 'id' in replanned) {
+        nextResult = (replanned as any).id;
+      }
+    }
+
     // Advance the interview
     setStepCount(prev => prev + 1);
 
     if (nextResult === null || isRedFlag(nextResult)) {
-      if (redFlag) {
-        setRedFlagTriggered(redFlag);
-        // Persist red flag to dedicated table (fire and forget)
-        if (navigator.onLine) {
-          fetch(`${API_URL}/red-flags`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              session_id: session.id,
-              rule_id: redFlag.flag_id,
-            })
-          }).catch(console.error);
+      if (redFlag || isRedFlag(nextResult)) {
+        const finalFlag = redFlag || (isRedFlag(nextResult) ? nextResult : null);
+        if (finalFlag) {
+          setRedFlagTriggered(finalFlag);
+          // Persist red flag to dedicated table (fire and forget)
+          if (navigator.onLine) {
+            fetch(`${API_URL}/red-flags`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                session_id: session.id,
+                rule_id: finalFlag.flag_id,
+              })
+            }).catch(console.error);
+          }
         }
       }
       setIsFinished(true);
@@ -309,6 +394,14 @@ export default function InterviewFlow() {
     <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 relative overflow-x-hidden">
       <MandalaBackground />
       <div className="z-10 w-full box-border">
+         {isReplannerEnabled() && replannerTier === 'high' && (
+           <div className="max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs sm:text-sm font-bold shadow-xs">
+             <span className="flex items-center gap-1.5">⚡ Priority: High</span>
+             {panelUnavailable && (
+               <span className="text-[11px] text-muted font-normal">Panel unavailable</span>
+             )}
+           </div>
+         )}
          <InterviewQuestion
            question={currentQ}
            totalSteps={Object.keys(tree.questions).length}

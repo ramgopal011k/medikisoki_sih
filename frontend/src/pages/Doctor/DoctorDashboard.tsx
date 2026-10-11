@@ -382,9 +382,13 @@ export default function DoctorDashboard() {
       (p.chief_complaint || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.dummy_aadhaar || '').includes(searchTerm);
     if (!matchesSearch) return false;
-    if (filter === 'urgent') return (p.red_flag_count || 0) > 0;
-    if (filter === 'normal') return (p.red_flag_count || 0) === 0;
+    if (filter === 'urgent') return (p.red_flag_count || 0) > 0 || (p as any).tier === 'critical' || (p as any).tier === 'high';
+    if (filter === 'normal') return (p.red_flag_count || 0) === 0 && (p as any).tier !== 'critical' && (p as any).tier !== 'high';
     return true;
+  }).sort((a: any, b: any) => {
+    const esA = typeof a.expected_severity === 'number' ? a.expected_severity : (a.red_flag_count ? 80 : 20);
+    const esB = typeof b.expected_severity === 'number' ? b.expected_severity : (b.red_flag_count ? 80 : 20);
+    return esB - esA;
   });
 
   const timeAgo = (date: Date) => {
@@ -780,11 +784,42 @@ export default function DoctorDashboard() {
                           )}
                         </div>
                       </div>
-                      {isUrgent && (
-                        <span className="flex items-center gap-1 bg-danger text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm animate-pulse shrink-0">
-                          <Zap className="w-3 h-3" /> {tDash('urgent')}
-                        </span>
-                      )}
+                      {(() => {
+                        const patientEs = typeof (p as any).expected_severity === 'number'
+                          ? (p as any).expected_severity
+                          : ((p.red_flag_count || 0) > 0 ? 80 : 20);
+
+                        const patientTier: 'critical' | 'high' | 'moderate' | 'low' =
+                          (p as any).tier ||
+                          (patientEs >= 80 || (p.red_flag_count || 0) > 0 ? 'critical' :
+                           patientEs >= 50 ? 'high' :
+                           patientEs >= 25 ? 'moderate' : 'low');
+
+                        return (
+                          <div className="flex flex-col items-end gap-1 shrink-0">
+                            {patientTier === 'critical' ? (
+                              <span className="flex items-center gap-1 bg-danger text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm animate-pulse">
+                                <Zap className="w-3 h-3" /> CRITICAL
+                              </span>
+                            ) : patientTier === 'high' ? (
+                              <span className="flex items-center gap-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                                HIGH
+                              </span>
+                            ) : patientTier === 'moderate' ? (
+                              <span className="flex items-center gap-1 bg-amber-200 text-amber-900 border border-amber-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                                MODERATE
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 bg-gray-100 text-gray-700 border border-gray-200 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                                LOW
+                              </span>
+                            )}
+                            <span className="text-[10px] font-mono font-bold text-muted">
+                              ES: {patientEs.toFixed(2)}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* Data table */}
