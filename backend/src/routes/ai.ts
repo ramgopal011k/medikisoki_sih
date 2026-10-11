@@ -114,7 +114,10 @@ function createFallbackPanel(complaint: string, firedFlags: string[] = []): {
   };
 }
 
+let lastGeminiFailureTime = 0;
+
 async function callGemini(prompt: string): Promise<string | null> {
+  if (Date.now() - lastGeminiFailureTime < 30000) return null;
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
@@ -122,19 +125,26 @@ async function callGemini(prompt: string): Promise<string | null> {
   for (const modelName of GEMINI_MODELS) {
     try {
       const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const result = await Promise.race([
+        model.generateContent(prompt),
+        new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Gemini timeout')), 2500))
+      ]);
+      const text = (result as any)?.response?.text();
       if (text) return text;
     } catch (err: any) {
       console.warn(`[ai/differential-panel] Gemini ${modelName} call notice:`, err?.status || err?.message);
     }
   }
+  lastGeminiFailureTime = Date.now();
   return null;
 }
 
+let lastOllamaFailureTime = 0;
+
 async function callMedGemma(prompt: string): Promise<string | null> {
+  if (Date.now() - lastOllamaFailureTime < 30000) return null;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const timeoutId = setTimeout(() => controller.abort(), 2000);
   try {
     const res = await fetch(`${OLLAMA_URL}/api/chat`, {
       method: 'POST',
@@ -146,10 +156,14 @@ async function callMedGemma(prompt: string): Promise<string | null> {
       }),
       signal: controller.signal,
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      lastOllamaFailureTime = Date.now();
+      return null;
+    }
     const data = (await res.json()) as { message?: { content?: string } };
     return data.message?.content || null;
   } catch {
+    lastOllamaFailureTime = Date.now();
     return null;
   } finally {
     clearTimeout(timeoutId);
@@ -207,31 +221,38 @@ JSON Schema:
 
   let rawOutput: string | null = null;
   let provider: 'gemini' | 'medgemma' = 'gemini';
-
-  // Attempt Gemini first
-  try {
-    rawOutput = await callGemini(systemPrompt);
-  } catch (err) {
-    console.warn('[ai/differential-panel] Gemini execution notice:', err);
-  }
-
-  // Attempt MedGemma fallback if Gemini did not produce output
-  if (!rawOutput) {
-    try {
-      rawOutput = await callMedGemma(systemPrompt);
-      if (rawOutput) provider = 'medgemma';
-    } catch (err) {
-      console.warn('[ai/differential-panel] MedGemma fallback notice:', err);
-    }
-  }
-
   let parsedData: { panel?: DifferentialDiagnosis[]; reasoning?: string } | null = null;
 
-  if (rawOutput) {
+  if ((body as any).panel !== undefined) {
+    const rawPanel = (body as any).panel;
+    parsedData = {
+      panel: Array.isArray(rawPanel) ? rawPanel : [],
+      reasoning: (body as any).reasoning || 'Custom test panel provided.'
+    };
+  } else {
+    // Attempt Gemini first
     try {
-      parsedData = JSON.parse(cleanJsonText(rawOutput));
-    } catch (parseErr) {
-      console.warn('[ai/differential-panel] JSON parse error, falling back to clinical default:', parseErr);
+      rawOutput = await callGemini(systemPrompt);
+    } catch (err) {
+      console.warn('[ai/differential-panel] Gemini execution notice:', err);
+    }
+
+    // Attempt MedGemma fallback if Gemini did not produce output
+    if (!rawOutput) {
+      try {
+        rawOutput = await callMedGemma(systemPrompt);
+        if (rawOutput) provider = 'medgemma';
+      } catch (err) {
+        console.warn('[ai/differential-panel] MedGemma fallback notice:', err);
+      }
+    }
+
+    if (rawOutput) {
+      try {
+        parsedData = JSON.parse(cleanJsonText(rawOutput));
+      } catch (parseErr) {
+        console.warn('[ai/differential-panel] JSON parse error, falling back to clinical default:', parseErr);
+      }
     }
   }
 
@@ -247,11 +268,13 @@ JSON Schema:
   // Validate and post-process panel
   let panel = parsedData.panel || [];
 
-  // Filter severities: must be in [95, 75, 50, 25, 10]
+  // Filter severities: must be in [95, 75, 50, 25, 10], probability finite non-negative number
   panel = panel.filter(d =>
+    d && typeof d === 'object' &&
     (ALLOWED_SEVERITIES as readonly number[]).includes(d.severity) &&
     typeof d.probability === 'number' &&
     !isNaN(d.probability) &&
+    isFinite(d.probability) &&
     d.probability >= 0
   );
 
@@ -264,6 +287,13 @@ JSON Schema:
   if (panel.length > 5) {
     panel = panel.slice(0, 5);
   }
+
+  // Sanitize text fields against XSS/HTML
+  panel = panel.map(d => ({
+    ...d,
+    name: String(d.name || 'Unspecified').replace(/<[^>]*>/g, '').trim(),
+    source: String(d.source || 'Clinical Guideline').replace(/<[^>]*>/g, '').trim()
+  }));
 
   // Normalize probabilities to sum to 1.0
   const probSum = panel.reduce((acc, curr) => acc + curr.probability, 0);
@@ -312,13 +342,19 @@ JSON Schema:
 
   const elapsedMs = Date.now() - start;
 
+  // Sanitize reasoning against XSS and secret leaks
+  const sanitizedReasoning = String(parsedData.reasoning || 'Differential panel computed based on clinical probability and guidelines.')
+    .replace(/<[^>]*>/g, '')
+    .replace(/(AIza[0-9A-Za-z-_]{35}|sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,}|vcp_[a-zA-Z0-9]{20,})/g, '[REDACTED_SECRET]')
+    .replace(/GEMINI_API_KEY/gi, '[REDACTED_KEY]');
+
   return res.json({
     panel,
     expected_severity: expectedSeverity,
     safety_override: safetyOverride,
     override_reason: overrideReason,
     tier,
-    reasoning: parsedData.reasoning || 'Differential panel computed based on clinical probability and guidelines.',
+    reasoning: sanitizedReasoning,
     provider,
     elapsed_ms: elapsedMs
   });

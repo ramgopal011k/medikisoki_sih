@@ -5,6 +5,14 @@ import { computeExpectedSeverity } from './expectedSeverity';
 import { API_URL, getAuthHeaders } from './api';
 
 export const isReplannerEnabled = (): boolean => {
+  if (typeof sessionStorage !== 'undefined') {
+    const override = sessionStorage.getItem('VITE_INTERVIEW_REPLANNER');
+    if (override === 'true') return true;
+    if (override === 'false') return false;
+  }
+  if (typeof window !== 'undefined' && (window as any).__VITE_INTERVIEW_REPLANNER !== undefined) {
+    return (window as any).__VITE_INTERVIEW_REPLANNER === true;
+  }
   return typeof import.meta !== 'undefined' && import.meta.env?.VITE_INTERVIEW_REPLANNER === 'true';
 };
 
