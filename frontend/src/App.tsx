@@ -18,6 +18,8 @@ import DataFiduciaryNotice from './pages/Kiosk/DataFiduciaryNotice';
 import PatientLogin from './pages/Patient/PatientLogin';
 import PatientDashboard from './pages/Patient/PatientDashboard';
 import AdminHospitals from './pages/Admin/AdminHospitals';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminGuard from './components/AdminGuard';
 import TriageDashboard from './pages/Triage/TriageDashboard';
 import AnalyticsDashboard from './pages/Admin/AnalyticsDashboard';
 import LandingPage from './pages/LandingPage';
@@ -25,6 +27,8 @@ import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import { AccessibilityToggle } from './components/AccessibilityToggle';
 import OrchestrationMonitor from './components/OrchestrationMonitor';
 import { prefetchHospitals } from './lib/prefetch';
+
+const AdminProtectedRoute = AdminGuard;
 
 function AppRoutes() {
   const location = useLocation();
@@ -187,8 +191,10 @@ function AppRoutes() {
         <Route path="/doctor" element={<Navigate to="/doctor/dashboard" replace />} />
 
         {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/hospitals" replace />} />
-        <Route path="/admin/hospitals" element={<AdminHospitals />} />
+        <Route path="/admin/hospitals" element={<AdminGuard><AdminHospitals /></AdminGuard>} />
+        <Route path="/admin/*" element={<AdminGuard><AdminHospitals /></AdminGuard>} />
 
         {/* Catch-all wildcard redirect to eliminate dead/404 pages */}
         <Route path="*" element={<Navigate to="/" replace />} />

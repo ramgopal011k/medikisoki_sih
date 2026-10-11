@@ -26,3 +26,14 @@ frontend/test-results/
 frontend/reports/
 demo/
 
+# Local debug, scratch and test artifacts
+scratch/
+screenshots/
+frontend/screenshots/
+frontend/scripts/
+frontend/capture.mjs
+backend/test_triage.js
+patch.py
+patch2.py
+payload_*.json
+.agents/skills/dev-loop/last-run.md

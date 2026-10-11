@@ -453,10 +453,14 @@ export default function TriageSummary() {
     let ignore = false;
     const loadData = async () => {
       try {
-        const triageRes = await fetch(`${API_URL}/api/sessions/${sessionId}/triage`, {
-          headers: getAuthHeaders()
-        });
-        const triageData = await triageRes.json();
+        const { getCachedTriage } = await import('@/lib/triageCache');
+        let triageData = getCachedTriage(sessionId!);
+        if (!triageData) {
+          const triageRes = await fetch(`${API_URL}/api/sessions/${sessionId}/triage`, {
+            headers: getAuthHeaders()
+          });
+          triageData = await triageRes.json();
+        }
         if (!ignore && triageData.session) {
           setSession(triageData.session);
           setFacts(triageData.facts || []);

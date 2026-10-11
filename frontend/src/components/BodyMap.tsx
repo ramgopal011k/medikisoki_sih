@@ -45,6 +45,7 @@ export interface BodyMapProps {
   onToggleRegion: (regionId: string) => void;
   language?: 'en' | 'hi' | string;
   className?: string;
+  ayushMode?: boolean;
 }
 
 export const BodyMap: React.FC<BodyMapProps> = ({
@@ -52,8 +53,10 @@ export const BodyMap: React.FC<BodyMapProps> = ({
   onToggleRegion,
   language = 'en',
   className = '',
+  ayushMode = false,
 }) => {
   const [view, setView] = useState<'front' | 'back'>('front');
+  const [mobileTab, setMobileTab] = useState<'map' | 'list'>('map');
   const isHi = language.startsWith('hi');
   const isMr = language.startsWith('mr');
   const isBn = language.startsWith('bn');
@@ -67,12 +70,12 @@ export const BodyMap: React.FC<BodyMapProps> = ({
 
   const isSelected = (id: string) => selectedRegions.includes(id);
 
-  const getFill = (id: string, defaultFill = '#E2E8F0') => {
+  const getFill = (id: string) => {
     if (isSelected(id)) {
-      if (id === 'chest' || id === 'left-arm') return '#DC2626'; // Red highlight for cardiac/chest
-      return '#0D5C3A'; // Primary green highlight
+      if (id === 'chest' || id === 'left-arm') return 'url(#grad-selected-red)';
+      return 'url(#grad-selected-green)';
     }
-    return defaultFill;
+    return 'url(#grad-unselected)';
   };
 
   const getStroke = (id: string) => {
@@ -81,55 +84,59 @@ export const BodyMap: React.FC<BodyMapProps> = ({
   };
 
   return (
-    <div className={`w-full max-w-2xl mx-auto bg-white rounded-2xl border-2 border-warmgray p-5 shadow-sm ${className}`}>
-      {/* Header with Title and Front/Back Toggle */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-warmgray/60 mb-4">
-        <div className="text-left w-full sm:w-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              {isMr ? 'परस्परसंवादी शरीर नकाशा' : isBn ? 'ইন্টারেক্টিভ বডি ম্যাপ' : isHi ? 'शरीर मानचित्र' : 'Interactive Body Map'}
-            </span>
-            {selectedRegions.length > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">
-                {selectedRegions.length} {isMr ? 'स्थान निवडले' : isBn ? 'স্থান নির্বাচিত' : isHi ? 'स्थान चयनित' : 'selected'}
-              </span>
-            )}
-          </div>
-          <h3 className="font-display font-bold text-lg text-charcoal mt-1">
-            {isMr ? 'त्रास होत असलेले स्थान निवडा (पर्यायी)' : isBn ? 'কোথায় সমস্যা হচ্ছে তা বেছে নিন (ঐচ্ছিক)' : isHi ? 'दर्द या परेशानी का स्थान चुनें (वैकल्पिक)' : 'Tap where it hurts (optional)'}
-          </h3>
-        </div>
+    <div className={`w-full max-w-4xl mx-auto bg-white rounded-[24px] border border-warmgray p-6 sm:p-8 shadow-sm ${className}`}>
+      {/* Header row 1: Badge */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary">
+          {isMr ? 'परस्परसंवादी शरीर नकाशा' : isBn ? 'ইন্টারেক্টিভ বডি ম্যাপ' : isHi ? 'शरीर मानचित्र' : 'Interactive Body Map'}
+        </span>
+      </div>
 
+      {/* Header row 2: Title and View Toggle */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <h3 className="font-display font-bold text-2xl text-charcoal leading-tight max-w-xl">
+          {isMr ? 'डॉक्टरांना तुमची समस्या अधिक चांगल्या प्रकारे समजून घेण्यासाठी त्रास होत असलेले स्थान निवडा' : isBn ? 'ডাক্তারকে আপনার সমস্যাটি আরও ভালোভাবে বুঝতে সাহায্য করতে কোথায় সমস্যা হচ্ছে তা বেছে নিন' : isHi ? 'डॉक्टर को आपकी समस्या बेहतर समझने में मदद करने के लिए दर्द या परेशानी का स्थान चुनें' : 'Tap where it hurts to help the doctor better understand your issue'}
+        </h3>
+        
         {/* View Toggle (Front / Back) */}
-        <div className="flex items-center gap-2 bg-sand p-1 rounded-xl border border-warmgray shrink-0 self-end sm:self-auto">
+        <div className="flex items-center gap-1 bg-sand p-1 rounded-xl border border-warmgray shrink-0">
           <button
             type="button"
             onClick={() => setView('front')}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              view === 'front' ? 'bg-primary text-white shadow-xs' : 'text-muted hover:text-charcoal'
-            }`}
+            className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${view === 'front' ? 'bg-primary text-white shadow-xs' : 'text-muted hover:text-charcoal'}`}
           >
-            {isMr ? 'पुढील दृश्य' : isBn ? 'সামনের দৃশ্য' : isHi ? 'सामने का दृश्य' : 'Front View'}
+            {isMr ? 'पुढील दृश्य' : isBn ? 'সামনের' : isHi ? 'सामने' : 'Front View'}
           </button>
           <button
             type="button"
             onClick={() => setView('back')}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1 ${
-              view === 'back' ? 'bg-primary text-white shadow-xs' : 'text-muted hover:text-charcoal'
-            }`}
+            className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${view === 'back' ? 'bg-primary text-white shadow-xs' : 'text-muted hover:text-charcoal'}`}
           >
-            <RotateCw className="w-3 h-3" />
-            {isMr ? 'मागील दृश्य' : isBn ? 'পিছনের দৃশ্য' : isHi ? 'पीछे का दृश्य (Back)' : 'Back View'}
+            <RotateCw className="w-4 h-4" />
+            {isMr ? 'मागील दृश्य' : isBn ? 'পিছনের' : isHi ? 'पीछे' : 'Back View'}
           </button>
         </div>
       </div>
 
-      {/* SVG Interactive Body Diagram */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-6 py-2">
-        <div className="relative w-full max-w-[240px] aspect-[240/440] flex items-center justify-center bg-sand/30 rounded-2xl border border-warmgray/50 p-2">
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <div className={`relative w-full max-w-[320px] mx-auto md:mx-0 aspect-[240/500] flex items-center justify-center bg-white rounded-[32px] border-2 border-sand p-2 shadow-xs`}>
+          {/* Top-Right Marma Toggle (Visual Reference) */}
+          {ayushMode && <div className="absolute top-4 right-4 flex items-center gap-2">
+             <div className="w-4 h-4 text-charcoal/60">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+             </div>
+             <div className="px-2 py-0.5 rounded-md border border-amber-300 bg-amber-50 text-[10px] font-bold text-amber-600 uppercase tracking-wider">
+               Marma
+             </div>
+          </div>}
+          <div className="absolute top-4 left-4">
+             <span className="text-[10px] font-bold text-charcoal/60">{view === 'front' ? 'Front View' : 'Back View'}</span>
+          </div>
+
           <svg
-            viewBox="0 0 240 440"
-            className="w-full h-full drop-shadow-sm select-none"
+            viewBox="0 0 240 500"
+            className="w-full h-full drop-shadow-sm select-none mt-6"
             role="img"
             aria-label="Human body diagram"
           >
@@ -140,262 +147,124 @@ export const BodyMap: React.FC<BodyMapProps> = ({
             </defs>
 
             {view === 'front' ? (
-              /* ── FRONT VIEW ── */
               <g>
-                {/* Head */}
-                <path
-                  id="region-head"
-                  d="M 120 18 C 102 18 92 36 92 56 C 92 78 106 95 120 95 C 134 95 148 78 148 56 C 148 36 138 18 120 18 Z"
-                  fill={getFill('head')}
-                  stroke={getStroke('head')}
-                  strokeWidth={isSelected('head') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('head')}
-                />
-                <text x="120" y="60" textAnchor="middle" fontSize="10" fontWeight="bold" fill={isSelected('head') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'डोके' : isBn ? 'মাথা' : isHi ? 'सिर' : 'Head'}
-                </text>
+                <path id="region-head" d="M 120 20 C 95 20 95 65 95 75 C 95 95 105 105 120 105 C 135 105 145 95 145 75 C 145 65 145 20 120 20 Z" fill={getFill('head')} stroke={isSelected('head') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('head') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('head')} />
+                <text x="120" y="65" textAnchor="middle" fontSize="10" fontWeight="600" fill={isSelected('head') ? '#0369A1' : '#334155'} pointerEvents="none">Head</text>
+                {ayushMode && <circle cx="120" cy="30" r="3" fill="#FBBF24" pointerEvents="none" />}
 
-                {/* Neck */}
-                <path
-                  id="region-neck"
-                  d="M 112 95 L 128 95 L 132 112 L 108 112 Z"
-                  fill={getFill('neck')}
-                  stroke={getStroke('neck')}
-                  strokeWidth={isSelected('neck') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('neck')}
-                />
+                <path id="region-neck" d="M 108 102 C 108 115 110 120 120 120 C 130 120 132 115 132 102 C 125 107 115 107 108 102 Z" fill={getFill('neck')} stroke={isSelected('neck') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('neck') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('neck')} />
+                <text x="120" y="114" textAnchor="middle" fontSize="7" fontWeight="600" fill={isSelected('neck') ? '#0369A1' : '#334155'} pointerEvents="none">Neck</text>
+                {ayushMode && <circle cx="120" cy="108" r="2.5" fill="#FBBF24" pointerEvents="none" />}
 
-                {/* Chest */}
-                <path
-                  id="region-chest"
-                  d="M 98 112 L 142 112 L 152 165 L 88 165 Z"
-                  fill={getFill('chest')}
-                  stroke={getStroke('chest')}
-                  strokeWidth={isSelected('chest') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('chest')}
-                />
-                <text x="120" y="142" textAnchor="middle" fontSize="11" fontWeight="bold" fill={isSelected('chest') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'छाती' : isBn ? 'বুক' : isHi ? 'छाती' : 'Chest'}
-                </text>
+                <path id="region-chest" d="M 120 120 C 100 120 75 130 75 145 C 75 170 85 190 120 190 C 155 190 165 170 165 145 C 165 130 140 120 120 120 Z" fill={getFill('chest')} stroke={isSelected('chest') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('chest') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('chest')} />
+                <text x="120" y="160" textAnchor="middle" fontSize="11" fontWeight="600" fill={isSelected('chest') ? '#991B1B' : '#334155'} pointerEvents="none">Chest</text>
+                {ayushMode && <circle cx="120" cy="175" r="3" fill="#EF4444" pointerEvents="none" />}
 
-                {/* Upper Abdomen */}
-                <path
-                  id="region-upper-abdomen"
-                  d="M 88 165 L 152 165 L 149 205 L 91 205 Z"
-                  fill={getFill('upper-abdomen')}
-                  stroke={getStroke('upper-abdomen')}
-                  strokeWidth={isSelected('upper-abdomen') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('upper-abdomen')}
-                />
-                <text x="120" y="188" textAnchor="middle" fontSize="9" fontWeight="bold" fill={isSelected('upper-abdomen') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'वरचे पोट' : isBn ? 'উপরের পেট' : isHi ? 'ऊपरी पेट' : 'Upper Abd'}
-                </text>
+                <path id="region-upper-abdomen" d="M 83 190 C 85 220 85 240 120 240 C 155 240 155 220 157 190 C 135 195 105 195 83 190 Z" fill={getFill('upper-abdomen')} stroke={isSelected('upper-abdomen') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('upper-abdomen') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('upper-abdomen')} />
+                <text x="120" y="220" textAnchor="middle" fontSize="10" fontWeight="600" fill={isSelected('upper-abdomen') ? '#0369A1' : '#334155'} pointerEvents="none">Upper Abd</text>
+                {ayushMode && <circle cx="120" cy="205" r="3" fill="#34D399" pointerEvents="none" />}
 
-                {/* Lower Abdomen */}
-                <path
-                  id="region-lower-abdomen"
-                  d="M 91 205 L 149 205 L 146 238 L 94 238 Z"
-                  fill={getFill('lower-abdomen')}
-                  stroke={getStroke('lower-abdomen')}
-                  strokeWidth={isSelected('lower-abdomen') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('lower-abdomen')}
-                />
-                <text x="120" y="224" textAnchor="middle" fontSize="9" fontWeight="bold" fill={isSelected('lower-abdomen') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'खालचे पोट' : isBn ? 'নিচের পেট' : isHi ? 'निचला पेट' : 'Lower Abd'}
-                </text>
+                <path id="region-lower-abdomen" d="M 85 240 C 82 270 88 290 120 290 C 152 290 158 270 155 240 C 140 242 100 242 85 240 Z" fill={getFill('lower-abdomen')} stroke={isSelected('lower-abdomen') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('lower-abdomen') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('lower-abdomen')} />
+                <text x="120" y="270" textAnchor="middle" fontSize="10" fontWeight="600" fill={isSelected('lower-abdomen') ? '#0369A1' : '#334155'} pointerEvents="none">Lower Abd</text>
+                {ayushMode && <circle cx="120" cy="255" r="3" fill="#34D399" pointerEvents="none" />}
 
-                {/* Pelvis */}
-                <path
-                  id="region-pelvis"
-                  d="M 94 238 L 146 238 L 142 270 L 120 280 L 98 270 Z"
-                  fill={getFill('pelvis')}
-                  stroke={getStroke('pelvis')}
-                  strokeWidth={isSelected('pelvis') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('pelvis')}
-                />
-                <text x="120" y="258" textAnchor="middle" fontSize="9" fontWeight="bold" fill={isSelected('pelvis') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'ओटीपोट' : isBn ? 'পেলভিস' : isHi ? 'पेल्विस' : 'Pelvis'}
-                </text>
+                <path id="region-pelvis" d="M 88 290 C 95 320 115 325 120 325 C 125 325 145 320 152 290 C 135 295 105 295 88 290 Z" fill={getFill('pelvis')} stroke={isSelected('pelvis') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('pelvis') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('pelvis')} />
+                <text x="120" y="310" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('pelvis') ? '#0369A1' : '#334155'} pointerEvents="none">Pelvis</text>
+                {ayushMode && <circle cx="120" cy="315" r="3" fill="#34D399" pointerEvents="none" />}
 
-                {/* Right Arm (Viewer left) */}
-                <path
-                  id="region-right-arm"
-                  d="M 88 116 L 62 180 L 52 245 L 66 248 L 76 190 L 96 138 Z"
-                  fill={getFill('right-arm')}
-                  stroke={getStroke('right-arm')}
-                  strokeWidth={isSelected('right-arm') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('right-arm')}
-                />
-                <text x="68" y="195" textAnchor="middle" fontSize="8" fontWeight="bold" fill={isSelected('right-arm') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'उजवा हात' : isBn ? 'ডান হাত' : isHi ? 'दायां' : 'R Arm'}
-                </text>
+                <path id="region-right-arm" d="M 75 145 C 55 155 35 220 35 270 C 35 285 50 285 50 270 C 55 220 65 170 83 190 Z" fill={getFill('right-arm')} stroke={isSelected('right-arm') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('right-arm') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('right-arm')} />
+                <text x="50" y="215" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('right-arm') ? '#0369A1' : '#334155'} pointerEvents="none">R Arm</text>
+                {ayushMode && <circle cx="65" cy="155" r="3" fill="#60A5FA" pointerEvents="none" />}
+                {ayushMode && <circle cx="45" cy="210" r="3" fill="#60A5FA" pointerEvents="none" />}
+                {ayushMode && <circle cx="42" cy="265" r="3" fill="#60A5FA" pointerEvents="none" />}
 
-                {/* Left Arm (Viewer right) */}
-                <path
-                  id="region-left-arm"
-                  d="M 152 116 L 178 180 L 188 245 L 174 248 L 164 190 L 144 138 Z"
-                  fill={getFill('left-arm')}
-                  stroke={getStroke('left-arm')}
-                  strokeWidth={isSelected('left-arm') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('left-arm')}
-                />
-                <text x="172" y="195" textAnchor="middle" fontSize="8" fontWeight="bold" fill={isSelected('left-arm') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'डावा हात' : isBn ? 'বাম হাত' : isHi ? 'बायां' : 'L Arm'}
-                </text>
+                <path id="region-left-arm" d="M 165 145 C 185 155 205 220 205 270 C 205 285 190 285 190 270 C 185 220 175 170 157 190 Z" fill={getFill('left-arm')} stroke={isSelected('left-arm') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('left-arm') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('left-arm')} />
+                <text x="190" y="215" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('left-arm') ? '#0369A1' : '#334155'} pointerEvents="none">L Arm</text>
+                {ayushMode && <circle cx="175" cy="155" r="3" fill="#60A5FA" pointerEvents="none" />}
+                {ayushMode && <circle cx="195" cy="210" r="3" fill="#60A5FA" pointerEvents="none" />}
+                {ayushMode && <circle cx="198" cy="265" r="3" fill="#60A5FA" pointerEvents="none" />}
 
-                {/* Right Leg (Viewer left) */}
-                <path
-                  id="region-right-leg"
-                  d="M 98 270 L 118 280 L 115 365 L 118 420 L 102 420 L 98 365 L 94 300 Z"
-                  fill={getFill('right-leg')}
-                  stroke={getStroke('right-leg')}
-                  strokeWidth={isSelected('right-leg') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('right-leg')}
-                />
-                <text x="108" y="350" textAnchor="middle" fontSize="8" fontWeight="bold" fill={isSelected('right-leg') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'उजवा पाय' : isBn ? 'ডান পা' : isHi ? 'दायां पैर' : 'R Leg'}
-                </text>
+                <path id="region-right-leg" d="M 88 290 C 85 340 75 420 75 460 C 75 475 95 475 95 460 C 105 400 115 340 120 325 Z" fill={getFill('right-leg')} stroke={isSelected('right-leg') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('right-leg') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('right-leg')} />
+                <text x="90" y="395" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('right-leg') ? '#0369A1' : '#334155'} pointerEvents="none">R Leg</text>
+                {ayushMode && <circle cx="95" cy="340" r="3" fill="#34D399" pointerEvents="none" />}
+                {ayushMode && <circle cx="88" cy="410" r="3" fill="#34D399" pointerEvents="none" />}
+                {ayushMode && <circle cx="85" cy="465" r="3" fill="#34D399" pointerEvents="none" />}
 
-                {/* Left Leg (Viewer right) */}
-                <path
-                  id="region-left-leg"
-                  d="M 122 280 L 142 270 L 146 300 L 142 365 L 138 420 L 122 420 L 125 365 Z"
-                  fill={getFill('left-leg')}
-                  stroke={getStroke('left-leg')}
-                  strokeWidth={isSelected('left-leg') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('left-leg')}
-                />
-                <text x="132" y="350" textAnchor="middle" fontSize="8" fontWeight="bold" fill={isSelected('left-leg') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'डावा पाय' : isBn ? 'বাম পা' : isHi ? 'बायां पैर' : 'L Leg'}
-                </text>
+                <path id="region-left-leg" d="M 152 290 C 155 340 165 420 165 460 C 165 475 145 475 145 460 C 135 400 125 340 120 325 Z" fill={getFill('left-leg')} stroke={isSelected('left-leg') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('left-leg') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('left-leg')} />
+                <text x="150" y="395" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('left-leg') ? '#0369A1' : '#334155'} pointerEvents="none">L Leg</text>
+                {ayushMode && <circle cx="145" cy="340" r="3" fill="#34D399" pointerEvents="none" />}
+                {ayushMode && <circle cx="152" cy="410" r="3" fill="#34D399" pointerEvents="none" />}
+                {ayushMode && <circle cx="155" cy="465" r="3" fill="#34D399" pointerEvents="none" />}
               </g>
             ) : (
-              /* ── BACK VIEW ── */
               <g>
-                {/* Back of Head */}
-                <path
-                  id="region-head-back"
-                  d="M 120 18 C 102 18 92 36 92 56 C 92 78 106 95 120 95 C 134 95 148 78 148 56 C 148 36 138 18 120 18 Z"
-                  fill={getFill('head')}
-                  stroke={getStroke('head')}
-                  strokeWidth={isSelected('head') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('head')}
-                />
-                <text x="120" y="60" textAnchor="middle" fontSize="10" fontWeight="bold" fill={isSelected('head') ? '#FFF' : '#475569'} pointerEvents="none">
-                  {isMr ? 'डोके (मागे)' : isBn ? 'মাথা (পিছন)' : isHi ? 'सिर (पीछे)' : 'Head'}
-                </text>
+                <path d="M 120 20 C 95 20 95 65 95 75 C 95 95 105 105 120 105 C 135 105 145 95 145 75 C 145 65 145 20 120 20 Z" fill={getFill('head')} stroke={isSelected('head') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('head') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('head')} />
+                <text x="120" y="65" textAnchor="middle" fontSize="10" fontWeight="600" fill={isSelected('head') ? '#0369A1' : '#334155'} pointerEvents="none">Head</text>
+                {ayushMode && <circle cx="120" cy="30" r="3" fill="#FBBF24" pointerEvents="none" />}
 
-                {/* Back of Neck */}
-                <path
-                  id="region-neck-back"
-                  d="M 112 95 L 128 95 L 132 112 L 108 112 Z"
-                  fill={getFill('neck')}
-                  stroke={getStroke('neck')}
-                  strokeWidth={isSelected('neck') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('neck')}
-                />
+                <path d="M 108 102 C 108 115 110 120 120 120 C 130 120 132 115 132 102 C 125 107 115 107 108 102 Z" fill={getFill('neck')} stroke={isSelected('neck') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('neck') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('neck')} />
+                
+                <path d="M 120 120 C 100 120 75 130 75 145 C 75 170 83 190 85 240 C 88 290 120 325 120 325 C 120 325 152 290 155 240 C 157 190 165 170 165 145 C 165 130 140 120 120 120 Z" fill={getFill('back')} stroke={isSelected('back') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('back') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('back')} />
+                <line x1="120" y1="125" x2="120" y2="300" stroke={isSelected('back') ? '#0284C7' : '#94A3B8'} strokeWidth="1.5" strokeDasharray="4 4" pointerEvents="none" />
+                <text x="120" y="210" textAnchor="middle" fontSize="11" fontWeight="600" fill={isSelected('back') ? '#0369A1' : '#334155'} pointerEvents="none">Back</text>
+                {ayushMode && <circle cx="120" cy="150" r="3" fill="#FBBF24" pointerEvents="none" />}
+                {ayushMode && <circle cx="120" cy="220" r="3" fill="#FBBF24" pointerEvents="none" />}
+                {ayushMode && <circle cx="120" cy="280" r="3" fill="#FBBF24" pointerEvents="none" />}
 
-                {/* Entire Back (Upper + Lower Spine) */}
-                <path
-                  id="region-back"
-                  d="M 98 112 L 142 112 L 146 238 L 94 238 Z"
-                  fill={getFill('back')}
-                  stroke={getStroke('back')}
-                  strokeWidth={isSelected('back') ? 3 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('back')}
-                />
-                {/* Spine line indicator */}
-                <line x1="120" y1="114" x2="120" y2="236" stroke={isSelected('back') ? '#FFFFFF' : '#CBD5E1'} strokeWidth="2" strokeDasharray="3 3" pointerEvents="none" />
-                <text x="120" y="178" textAnchor="middle" fontSize="13" fontWeight="bold" fill={isSelected('back') ? '#FFF' : '#334155'} pointerEvents="none">
-                  {isMr ? 'पाठ' : isBn ? 'পিঠ' : isHi ? 'पीठ (Back)' : 'Back'}
-                </text>
+                <path d="M 75 145 C 55 155 35 220 35 270 C 35 285 50 285 50 270 C 55 220 65 170 83 190 Z" fill={getFill('left-arm')} stroke={isSelected('left-arm') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('left-arm') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('left-arm')} />
+                <text x="50" y="215" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('left-arm') ? '#0369A1' : '#334155'} pointerEvents="none">L Arm</text>
 
-                {/* Pelvis/Gluteal from back */}
-                <path
-                  id="region-pelvis-back"
-                  d="M 94 238 L 146 238 L 142 270 L 120 280 L 98 270 Z"
-                  fill={getFill('pelvis')}
-                  stroke={getStroke('pelvis')}
-                  strokeWidth={isSelected('pelvis') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('pelvis')}
-                />
+                <path d="M 165 145 C 185 155 205 220 205 270 C 205 285 190 285 190 270 C 185 220 175 170 157 190 Z" fill={getFill('right-arm')} stroke={isSelected('right-arm') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('right-arm') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('right-arm')} />
+                <text x="190" y="215" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('right-arm') ? '#0369A1' : '#334155'} pointerEvents="none">R Arm</text>
 
-                {/* Arms & Legs in Back view */}
-                <path
-                  d="M 88 116 L 62 180 L 52 245 L 66 248 L 76 190 L 96 138 Z"
-                  fill={getFill('left-arm')}
-                  stroke={getStroke('left-arm')}
-                  strokeWidth={isSelected('left-arm') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('left-arm')}
-                />
-                <path
-                  d="M 152 116 L 178 180 L 188 245 L 174 248 L 164 190 L 144 138 Z"
-                  fill={getFill('right-arm')}
-                  stroke={getStroke('right-arm')}
-                  strokeWidth={isSelected('right-arm') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('right-arm')}
-                />
-                <path
-                  d="M 98 270 L 118 280 L 115 365 L 118 420 L 102 420 L 98 365 L 94 300 Z"
-                  fill={getFill('left-leg')}
-                  stroke={getStroke('left-leg')}
-                  strokeWidth={isSelected('left-leg') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('left-leg')}
-                />
-                <path
-                  d="M 122 280 L 142 270 L 146 300 L 142 365 L 138 420 L 122 420 L 125 365 Z"
-                  fill={getFill('right-leg')}
-                  stroke={getStroke('right-leg')}
-                  strokeWidth={isSelected('right-leg') ? 2.5 : 1.5}
-                  className="cursor-pointer transition-colors hover:opacity-90"
-                  onClick={() => onToggleRegion('right-leg')}
-                />
+                <path d="M 88 290 C 85 340 75 420 75 460 C 75 475 95 475 95 460 C 105 400 115 340 120 325 Z" fill={getFill('left-leg')} stroke={isSelected('left-leg') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('left-leg') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('left-leg')} />
+                <text x="90" y="395" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('left-leg') ? '#0369A1' : '#334155'} pointerEvents="none">L Leg</text>
+
+                <path d="M 152 290 C 155 340 165 420 165 460 C 165 475 145 475 145 460 C 135 400 125 340 120 325 Z" fill={getFill('right-leg')} stroke={isSelected('right-leg') ? '#0284C7' : '#67E8F9'} strokeWidth={isSelected('right-leg') ? 2.5 : 2} className="cursor-pointer transition-all hover:brightness-95" onClick={() => onToggleRegion('right-leg')} />
+                <text x="150" y="395" textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected('right-leg') ? '#0369A1' : '#334155'} pointerEvents="none">R Leg</text>
               </g>
             )}
           </svg>
         </div>
-
         {/* 12 Regions Pills & Quick Selector */}
         <div className="flex-1 w-full text-left">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2.5">
-            {isMr ? 'सर्व १२ शारीरिक भाग (निवडण्यासाठी टॅप करा)' : isBn ? 'সকল ১২টি শারীরিক অঞ্চল (নির্বাচন করতে ট্যাপ করুন)' : isHi ? 'सभी 12 शारीरिक क्षेत्र (टैप करें)' : 'All 12 Body Regions (Tap to select)'}
+          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-6">
+            {isMr ? 'सर्व शारीरिक भाग (निवडण्यासाठी टॅप करा)' : isBn ? 'সকল শারীরিক অঞ্চল (নির্বাচন করতে ট্যাপ করুন)' : isHi ? 'सभी शारीरिक क्षेत्र (टैप करें)' : 'Body Regions (Tap to select)'}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {BODY_REGIONS.map((region) => {
-              const active = isSelected(region.id);
-              return (
-                <button
-                  key={region.id}
-                  type="button"
-                  onClick={() => onToggleRegion(region.id)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between border-2 transition-all ${
-                    active
-                      ? 'bg-primary text-white border-primary shadow-xs'
-                      : 'bg-sand/60 text-charcoal border-warmgray hover:border-primary/50 hover:bg-white'
-                  }`}
-                >
-                  <span className="truncate">{getRegionName(region)}</span>
-                  {active && <Check className="w-3.5 h-3.5 shrink-0 ml-1 text-white" />}
-                </button>
-              );
-            })}
+          
+          <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            {[
+              { title: 'Head & Neck', ids: ['head', 'neck'] },
+              { title: 'Torso', ids: ['chest', 'upper-abdomen', 'lower-abdomen', 'back', 'pelvis'] },
+              { title: 'Limbs', ids: ['left-arm', 'right-arm', 'left-leg', 'right-leg'] },
+              { title: 'General', ids: ['other'] }
+            ].map(group => (
+              <div key={group.title}>
+                <h4 className="text-[10px] font-bold text-muted/70 uppercase tracking-wider mb-3">{group.title}</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {group.ids.map(id => {
+                    const region = BODY_REGIONS.find(r => r.id === id);
+                    if (!region) return null;
+                    const active = isSelected(region.id);
+                    return (
+                      <button
+                        key={region.id}
+                        type="button"
+                        onClick={() => onToggleRegion(region.id)}
+                        className={`px-4 py-3 rounded-[16px] text-sm font-semibold flex items-center justify-between transition-all border ${
+                          active
+                            ? 'bg-primary/10 text-primary border-primary shadow-xs'
+                            : 'bg-sand/40 text-charcoal border-transparent hover:border-primary/30'
+                        }`}
+                      >
+                        <span className="truncate">{getRegionName(region)}</span>
+                        {active && <Check className="w-4 h-4 shrink-0 ml-1 text-primary" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Selected Summary Pill list */}

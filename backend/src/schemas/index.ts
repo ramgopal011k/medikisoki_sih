@@ -57,7 +57,7 @@ export const ayushAssessmentSchema = z.object({
 });
 
 export const authSchema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1),
   password: z.string().min(3)
 });
 

@@ -748,6 +748,11 @@ export default function DoctorDashboard() {
                 <div
                   key={p.session_id}
                   onClick={() => navigate(`/doctor/triage/${p.session_id}`)}
+                  onMouseEnter={() => {
+                    import('../../lib/triageCache').then(({ prefetchTriage }) => {
+                      prefetchTriage(p.session_id, localStorage.getItem('doctor_token'));
+                    });
+                  }}
                   className={`group relative bg-white rounded-2xl border-2 transition-all duration-200 shadow-sm hover:shadow-lg cursor-pointer flex flex-col gap-0 overflow-hidden
                     ${isUrgent
                       ? 'border-danger/50 hover:border-danger'

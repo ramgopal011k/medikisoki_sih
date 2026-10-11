@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
-import { HeartPulse, Thermometer, Brain, Activity, Wind, CircleHelp, MapPin, Building2, Flower2, Mic, Loader2 } from 'lucide-react';
+import { HeartPulse, Thermometer, Brain, Activity, Wind, CircleHelp, MapPin, Building2, Flower2, Mic, Loader2, Stethoscope, Leaf } from 'lucide-react';
 import { BodyMap, REGION_TO_COMPLAINT_SUGGESTIONS } from '../../components/BodyMap';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { LeafStepIndicator } from '../../components/LeafStepIndicator';
@@ -51,6 +51,7 @@ export default function ConsentFlow() {
   const [userOtp, setUserOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [complaint, setComplaint] = useState('Chest pain');
+  const [complaintTab, setComplaintTab] = useState<'bodymap'|'symptoms'|'ayush'>('bodymap');
   const [patientType, setPatientType] = useState<'existing' | 'new'>('existing');
   const [patientName, setPatientName] = useState('');
   const [patientAge, setPatientAge] = useState('');
@@ -830,10 +831,11 @@ export default function ConsentFlow() {
               <input 
                 type="text" 
                 placeholder="John Doe"
-                className="w-full p-3 min-h-[48px] border-2 border-warmgray rounded-[12px] bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary font-body"
+                className={`w-full p-3 min-h-[48px] border-2 rounded-[12px] bg-white text-charcoal focus:outline-none focus:ring-2 font-body ${/\d/.test(patientName) ? 'border-red-500 focus:ring-red-500' : 'border-warmgray focus:ring-primary'}`}
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
               />
+              {/\d/.test(patientName) && <p className="text-red-500 text-xs mt-1">Name cannot contain numbers</p>}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -841,10 +843,13 @@ export default function ConsentFlow() {
                 <input 
                   type="number" 
                   placeholder="30"
-                  className="w-full p-3 min-h-[48px] border-2 border-warmgray rounded-[12px] bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-primary font-body"
+                  className={`w-full p-3 min-h-[48px] border-2 rounded-[12px] bg-white text-charcoal focus:outline-none focus:ring-2 font-body ${(patientAge !== '' && (parseInt(patientAge) <= 0 || parseInt(patientAge) > 120)) ? 'border-red-500 focus:ring-red-500' : 'border-warmgray focus:ring-primary'}`}
                   value={patientAge}
                   onChange={e => setPatientAge(e.target.value)}
+                  min="1"
+                  max="120"
                 />
+                {(patientAge !== '' && (parseInt(patientAge) <= 0 || parseInt(patientAge) > 120)) && <p className="text-red-500 text-xs mt-1">Age must be between 1 and 120</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-charcoal mb-1">{t('consent.gender')}</label>
@@ -872,7 +877,7 @@ export default function ConsentFlow() {
             </div>
             <Button 
               className="w-full min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body mt-4" 
-              disabled={!patientName || !patientAge || !patientGender}
+              disabled={!patientName || !patientAge || !patientGender || /\d/.test(patientName) || parseInt(patientAge) <= 0 || parseInt(patientAge) > 120}
               onClick={() => goToStep('consent')}
             >
               {t('common.continue')}
@@ -1139,37 +1144,70 @@ export default function ConsentFlow() {
         <div className="w-full max-w-[850px] text-center">
            <div className="mb-6">
              <h1 className="font-display text-3xl lg:text-4xl text-charcoal mb-1">
-               {t('complaint.title')}
+               {isMr ? 'आज तुम्हाला येथे काय आणले आहे?' : isBn ? 'আজ আপনাকে এখানে কী নিয়ে এসেছে?' : isHi ? 'आज आप यहाँ किस परेशानी से आए हैं?' : 'What brings you here today?'}
              </h1>
+             <p className="text-muted text-sm mt-2 max-w-md mx-auto">
+                {isMr ? 'शारीरिक नकाशावर अस्वस्थतेचे क्षेत्र निवडा किंवा सामान्य लक्षणे निवडा.' : isBn ? 'বডি ম্যাপে অসুবিধার জায়গা চিহ্নিত করুন অথবা সাধারণ লক্ষণ বেছে নিন।' : isHi ? 'शारीरिक मानचित्र पर परेशानी के क्षेत्र चुनें या सामान्य लक्षण चुनें।' : 'Pin any areas of discomfort on the anatomical map, or choose common symptoms.'}
+             </p>
            </div>
 
-           {/* Interactive SVG Body Map Diagram */}
-           <div className="mb-6">
-             <BodyMap
-               selectedRegions={selectedRegions}
-               onToggleRegion={handleToggleRegion}
-               language={language}
-             />
+           {/* Top Navigation Tabs */}
+           <div className="flex items-center justify-between w-full max-w-lg mx-auto bg-white rounded-full p-2 mb-6 border border-sand shadow-xs">
+              <button 
+                onClick={() => setComplaintTab('bodymap')} 
+                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'bodymap' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
+                <MapPin className={`w-4 h-4 ${complaintTab === 'bodymap' ? 'text-rose-400' : ''}`} />
+                Body Map
+              </button>
+              <button 
+                onClick={() => setComplaintTab('symptoms')} 
+                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'symptoms' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
+                <Stethoscope className={`w-4 h-4 ${complaintTab === 'symptoms' ? 'text-blue-300' : 'text-blue-500'}`} />
+                Symptoms
+                {complaint && <span className={`${complaintTab === 'symptoms' ? 'bg-white text-[#0B4A3F]' : 'bg-[#0B4A3F] text-white'} text-[10px] w-5 h-5 rounded-full flex items-center justify-center`}>1</span>}
+              </button>
+              <button 
+                onClick={() => setComplaintTab('ayush')} 
+                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'ayush' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
+                <Leaf className={`w-4 h-4 ${complaintTab === 'ayush' ? 'text-green-300' : 'text-green-600'}`} />
+                AYUSH
+                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              </button>
            </div>
 
-           {/* Auto-suggested complaints banner based on selected regions */}
-           {suggestedComplaints.length > 0 && (
-             <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-xs sm:text-sm text-primary font-bold">
-               <span>✨ {t('consent.based_on_selection')}</span>
-               <span className="underline">{suggestedComplaints.join(', ')}</span>
+           {/* Interactive SVG Body Map Diagram (Allopathic or AYUSH) */}
+           {(complaintTab === 'bodymap' || complaintTab === 'ayush') && (
+             <div className="mb-6">
+               <BodyMap
+                 selectedRegions={selectedRegions}
+                 onToggleRegion={handleToggleRegion}
+                 language={language}
+                 ayushMode={complaintTab === 'ayush'}
+               />
              </div>
            )}
 
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 lg:gap-4 mt-2">
-              {[
-                { id: 'chest_pain', en: 'Chest pain', hi: 'छाती में दर्द', mr: 'छातीत दुखणे', bn: 'বুকে ব্যথা', icon: HeartPulse, color: 'text-danger', bg: 'bg-danger/10' },
-                { id: 'fever', en: 'Fever', hi: 'बुखार', mr: 'ताप', bn: 'জ্বর', icon: Thermometer, color: 'text-turmeric', bg: 'bg-turmeric/10' },
-                { id: 'abdominal_pain', en: 'Abdominal pain', hi: 'पेट में दर्द', mr: 'पोटदुखी', bn: 'পেটে ব্যথা', icon: Activity, color: 'text-muted', bg: 'bg-muted/10' },
-                { id: 'headache', en: 'Headache', hi: 'सिरदर्द', mr: 'डोकेदुखी', bn: 'মাথাব্যথা', icon: Brain, color: 'text-lavender', bg: 'bg-lavender/10' },
-                { id: 'back_pain', en: 'Back pain', hi: 'पीठ में दर्द', mr: 'पाठदुखी', bn: 'পিঠে ব্যথা', icon: Activity, color: 'text-terracotta', bg: 'bg-terracotta/10' },
-                { id: 'cough', en: 'Cough', hi: 'खांसी', mr: 'खोकला', bn: 'কাশি', icon: Wind, color: 'text-success', bg: 'bg-success/10' },
-                { id: 'other', en: 'Other', hi: 'अन्य', mr: 'इतर', bn: 'অন্যান্য', icon: CircleHelp, color: 'text-charcoal', bg: 'bg-charcoal/10' }
-              ].map(c => (
+           {/* Symptoms List */}
+           {complaintTab === 'symptoms' && (
+             <>
+               {/* Auto-suggested complaints banner based on selected regions */}
+               {suggestedComplaints.length > 0 && (
+                 <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-xs sm:text-sm text-primary font-bold">
+                   <span>✨ {t('consent.based_on_selection')}</span>
+                   <span className="underline">{suggestedComplaints.join(', ')}</span>
+                 </div>
+               )}
+
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 lg:gap-4 mt-2">
+                 {[
+                   { id: 'chest_pain', en: 'Chest pain', hi: 'छाती में दर्द', mr: 'छातीत दुखणे', bn: 'বুকে ব্যথা', icon: HeartPulse, color: 'text-danger', bg: 'bg-danger/10' },
+                   { id: 'fever', en: 'Fever', hi: 'बुखार', mr: 'ताप', bn: 'জ্বর', icon: Thermometer, color: 'text-turmeric', bg: 'bg-turmeric/10' },
+                   { id: 'abdominal_pain', en: 'Abdominal pain', hi: 'पेट में दर्द', mr: 'पोटदुखी', bn: 'পেটে ব্যথা', icon: Activity, color: 'text-muted', bg: 'bg-muted/10' },
+                   { id: 'headache', en: 'Headache', hi: 'सिरदर्द', mr: 'डोकेदुखी', bn: 'মাথাব্যথা', icon: Brain, color: 'text-lavender', bg: 'bg-lavender/10' },
+                   { id: 'back_pain', en: 'Back pain', hi: 'पीठ में दर्द', mr: 'पाठदुखी', bn: 'পিঠে ব্যথা', icon: Activity, color: 'text-terracotta', bg: 'bg-terracotta/10' },
+                   { id: 'cough', en: 'Cough', hi: 'खांसी', mr: 'खोकला', bn: 'কাশি', icon: Wind, color: 'text-success', bg: 'bg-success/10' },
+                   { id: 'other', en: 'Other', hi: 'अन्य', mr: 'इतर', bn: 'অন্যান্য', icon: CircleHelp, color: 'text-charcoal', bg: 'bg-charcoal/10' }
+                 ].map(c => (
                 <button
                   key={c.id}
                   onClick={() => setComplaint(c.en)}
@@ -1189,6 +1227,8 @@ export default function ConsentFlow() {
                 </button>
               ))}
            </div>
+           </>
+           )}
            
            <div className="mt-6 max-w-sm mx-auto">
              <button

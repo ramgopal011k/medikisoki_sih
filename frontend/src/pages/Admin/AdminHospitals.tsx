@@ -28,7 +28,8 @@ import {
   CheckCircle2,
   SlidersHorizontal,
   ShieldAlert,
-  BarChart3
+  BarChart3,
+  LogOut
 } from 'lucide-react';
 import { API_URL } from '@/lib/api';
 import { loadHospitalsSWR, removeCachedHospital } from '@/lib/hospitalsCache';
@@ -340,6 +341,20 @@ export default function AdminHospitals() {
             >
               <Plus className="w-4 h-4" />
               Register Hospital
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-danger/30 text-danger hover:bg-danger/10 hover:border-danger rounded-xl h-10 px-3.5 gap-2 text-xs font-semibold transition-all"
+              onClick={() => {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_info');
+                navigate('/admin/login');
+              }}
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
             </Button>
           </div>
         </div>

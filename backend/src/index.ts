@@ -60,6 +60,17 @@ if (process.env.NODE_ENV !== 'test') {
     await ensureOllamaRunning().catch((err) => console.warn('[ollama] Notice:', err?.message || err));
     app.listen(Number(port), '0.0.0.0', () => {
       console.log(`Backend server running on port ${port} (all interfaces)`);
+
+      setTimeout(async () => {
+        const t0 = Date.now();
+        await supabase.from('hospitals').select('id').limit(1);
+        console.log(`[warmup] supabase in ${Date.now() - t0}ms`);
+      }, 2000);
+
+      setInterval(() => {
+        supabase.from('hospitals').select('id').limit(1).then(() => {});
+      }, 4 * 60 * 1000);
+
       cleanupStaleSessions().catch((err) => console.warn('[TTL Cleanup] Boot cleanup notice:', err));
       prewarmRag().catch((err) => console.warn('[RAG] Prewarm notice:', err.message));
       preseedCommonAssessments().catch((err) => console.warn('[preseed] Notice:', err.message));
