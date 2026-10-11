@@ -11,7 +11,7 @@ jobs:
       - name: Backend health
         run: |
           curl -sf --max-time 30 \
-            https://medikisoki-production.up.railway.app/api/hospitals \
+            https://medikisoki-sih-backend.onrender.com/api/hospitals \
             -o /dev/null -w "backend: %{http_code} in %{time_total}s\n"
 
       - name: Supabase direct

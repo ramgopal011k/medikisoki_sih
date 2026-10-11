@@ -11,7 +11,7 @@ jobs:
       - name: Backend
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            https://medikisoki-production.up.railway.app/api/hospitals)
+            https://medikisoki-sih-backend.onrender.com/api/hospitals)
           echo "Backend: $STATUS"
           [ "$STATUS" = "200" ] || exit 1
 
