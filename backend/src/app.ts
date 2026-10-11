@@ -244,19 +244,25 @@ app.patch('/api/sessions/:id', async (req: Request, res: Response) => {
 app.get('/api/patient/visits/:abhaId', async (req: Request, res: Response) => {
   try {
     const { abhaId } = req.params;
-    const { data: sessions, error } = await supabase
+    const last4 = (abhaId || '').slice(-4);
+
+    let query = supabase
       .from('sessions')
       .select(`
         id, 
         created_at, 
         hospital_id, 
         patient_name, 
-        chief_complaint, 
         status,
         summaries ( content )
       `)
-      .eq('dummy_aadhaar', abhaId)
       .order('created_at', { ascending: false });
+
+    if (last4) {
+      query = query.ilike('patient_name', `%${last4}%`);
+    }
+
+    const { data: sessions, error } = await query;
 
     if (error) throw error;
     res.json({ data: sessions });
@@ -1389,6 +1395,19 @@ app.post('/history-facts', async (req: Request, res: Response) => {
   }
 
   try {
+    const sessionQuery = supabase.from('sessions').select('id').eq('id', session_id);
+    const { data: sess } = typeof (sessionQuery as any).maybeSingle === 'function'
+      ? await (sessionQuery as any).maybeSingle()
+      : await (sessionQuery as any).single();
+
+    if (!sess) {
+      console.warn(`[history-facts] dropped stale fact for non-existent session ${session_id}`);
+      return res.status(404).json({
+        error: 'session_not_found',
+        message: 'Session no longer exists — dropping fact'
+      });
+    }
+
     const { data, error } = await supabase.from('answers').insert({
       session_id,
       question_id: question_text || question_id,
@@ -1397,6 +1416,13 @@ app.post('/history-facts', async (req: Request, res: Response) => {
     }).select().single();
 
     if (error) {
+      if (error.code === '23503' || error.message?.includes('foreign key constraint')) {
+        console.warn(`[history-facts] dropped stale fact on FK violation: ${error.message}`);
+        return res.status(404).json({
+          error: 'session_not_found',
+          message: 'Session no longer exists — dropping fact'
+        });
+      }
       console.error('History fact answer table insert error:', error.message);
       throw error;
     }
@@ -1417,6 +1443,13 @@ app.post('/history-facts', async (req: Request, res: Response) => {
 
     res.status(201).json({ success: true, data: data || { session_id, question_id } });
   } catch (err: any) {
+    if (err?.code === '23503' || err?.message?.includes('foreign key constraint')) {
+      console.warn(`[history-facts] dropped stale fact on FK error: ${err.message}`);
+      return res.status(404).json({
+        error: 'session_not_found',
+        message: 'Session no longer exists — dropping fact'
+      });
+    }
     console.error('History facts error:', err);
     res.status(500).json({ error: err.message });
   }

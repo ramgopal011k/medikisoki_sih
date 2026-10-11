@@ -27,6 +27,7 @@ interface OfflineFact {
   answer: string;
   answer_value: string;
   red_flag_id?: string;
+  retry_count?: number;
 }
 
 const OFFLINE_QUEUE_KEY = 'medikiosk_offline_facts';
@@ -99,15 +100,38 @@ export default function InterviewFlow() {
     const remainingQueue: OfflineFact[] = [];
 
     for (const fact of queue) {
+      const attempts = (fact.retry_count || 0) + 1;
       try {
         const res = await fetch(`${API_URL}/history-facts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(fact)
         });
-        if (!res.ok) throw new Error('Sync failed');
+
+        // 404: Session no longer exists (stale) -> remove from IndexedDB
+        if (res.status === 404) {
+          console.warn(`[InterviewFlow] Dropping stale fact for non-existent session ${fact.session_id}`);
+          continue;
+        }
+
+        // 200/201: Successfully synced -> remove from queue
+        if (res.ok) {
+          continue;
+        }
+
+        // 5xx: Transient server error -> keep in queue up to 3 attempts
+        if (attempts < 3) {
+          remainingQueue.push({ ...fact, retry_count: attempts });
+        } else {
+          console.warn(`[InterviewFlow] Dropping fact after max 3 retries:`, fact);
+        }
       } catch {
-        remainingQueue.push(fact);
+        // Network failure -> keep in queue up to 3 attempts
+        if (attempts < 3) {
+          remainingQueue.push({ ...fact, retry_count: attempts });
+        } else {
+          console.warn(`[InterviewFlow] Dropping fact after max 3 retries:`, fact);
+        }
       }
     }
 
@@ -181,7 +205,11 @@ export default function InterviewFlow() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Server error');
+      if (res.status === 404) {
+        console.warn(`[InterviewFlow] Session ${session.id} not found — dropping fact`);
+      } else if (!res.ok) {
+        throw new Error('Server error');
+      }
     } catch {
       // Improvement 2: IndexedDB offline fallback
       const queue: OfflineFact[] = (await get(OFFLINE_QUEUE_KEY)) || [];
