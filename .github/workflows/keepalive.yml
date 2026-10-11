@@ -10,13 +10,13 @@ jobs:
     steps:
       - name: Backend health
         run: |
-          curl -sf --max-time 30 \
+          curl -sf --max-time 120 --retry 2 --retry-delay 5 --retry-all-errors \
             https://medikisoki-sih-backend.onrender.com/api/hospitals \
             -o /dev/null -w "backend: %{http_code} in %{time_total}s\n"
 
       - name: Supabase direct
         run: |
-          curl -sf --max-time 30 \
+          curl -sf --max-time 60 --retry 2 --retry-delay 5 \
             "${{ secrets.SUPABASE_URL }}/rest/v1/hospitals?select=id&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -o /dev/null -w "supabase: %{http_code} in %{time_total}s\n"

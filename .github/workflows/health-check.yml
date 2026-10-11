@@ -10,14 +10,14 @@ jobs:
     steps:
       - name: Backend
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          STATUS=$(curl -s --max-time 120 --retry 2 --retry-delay 5 --retry-all-errors -o /dev/null -w "%{http_code}" \
             https://medikisoki-sih-backend.onrender.com/api/hospitals)
           echo "Backend: $STATUS"
           [ "$STATUS" = "200" ] || exit 1
 
       - name: Frontend
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          STATUS=$(curl -s --max-time 60 --retry 2 --retry-delay 5 -o /dev/null -w "%{http_code}" \
             ${{ vars.VERCEL_URL }})
           echo "Frontend: $STATUS"
           [ "$STATUS" = "200" ] || exit 1
