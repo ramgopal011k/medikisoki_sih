@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import cron from 'node-cron';
 import { app } from './app';
 import { supabase } from './supabase';
-import { ensureOllamaRunning } from './services/ollamaBootstrap';
 import { prewarmRag } from './rag/prewarm';
 import { preseedCommonAssessments } from './rag/preseed';
 
@@ -56,29 +55,94 @@ setInterval(() => {
 const port = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV !== 'test') {
-  void (async () => {
-    await ensureOllamaRunning().catch((err) => console.warn('[ollama] Notice:', err?.message || err));
-    app.listen(Number(port), '0.0.0.0', () => {
-      console.log(`Backend server running on port ${port} (all interfaces)`);
+  app.listen(Number(port), '0.0.0.0', () => {
+    console.log(`Backend server running on port ${port} (all interfaces)`);
 
-      setTimeout(async () => {
+    // FIX 7: Startup reachability check (1000ms delay, non-blocking)
+    const reachabilityTimer = setTimeout(async () => {
+      try {
+        const res = await fetch('http://localhost:11434/api/tags', {
+          signal: AbortSignal.timeout(3000)
+        });
+        if (res.ok) {
+          const data = (await res.json()) as any;
+          const models = (data.models || []).map((m: any) => m.name);
+          const hasMedGemma = models.some((m: string) => m.includes('medgemma'));
+          console.log(`[OLLAMA] ✓ REACHABLE — models: ${models.join(', ')}`);
+          console.log(`[OLLAMA]   medgemma present: ${hasMedGemma ? 'yes' : 'NO'}`);
+        } else {
+          console.warn(`[OLLAMA] ✗ /api/tags returned ${res.status}`);
+        }
+      } catch (err: any) {
+        console.warn(`[OLLAMA] ✗ UNREACHABLE — ${err?.message || err}`);
+        console.warn(`[OLLAMA]   Running in Gemini-fallback mode`);
+      }
+    }, 1000);
+    reachabilityTimer.unref();
+
+    // FIX 4: Backend warmup on boot (3000ms delay, non-blocking)
+    const warmupTimer = setTimeout(async () => {
+      try {
         const t0 = Date.now();
-        await supabase.from('hospitals').select('id').limit(1);
-        console.log(`[warmup] supabase in ${Date.now() - t0}ms`);
-      }, 2000);
+        await fetch('http://localhost:11434/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'medgemma1.5:latest',
+            messages: [{ role: 'user', content: 'ping' }],
+            stream: false,
+            keep_alive: '30m',
+            options: { num_predict: 1 }
+          }),
+          signal: AbortSignal.timeout(45000)
+        });
+        console.log(`[OLLAMA] ✓ WARMED in ${Date.now() - t0}ms`);
+      } catch (err: any) {
+        console.warn(`[OLLAMA] warmup failed: ${err?.message || err}`);
+      }
+    }, 3000);
+    warmupTimer.unref();
 
-      setInterval(() => {
-        supabase.from('hospitals').select('id').limit(1).then(() => {});
-      }, 4 * 60 * 1000);
+    // FIX 6: Background heartbeat (10-minute interval, non-blocking)
+    const heartbeatTimer = setInterval(async () => {
+      try {
+        const t0 = Date.now();
+        await fetch('http://localhost:11434/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'medgemma1.5:latest',
+            messages: [{ role: 'user', content: 'ping' }],
+            stream: false,
+            keep_alive: '30m',
+            options: { num_predict: 1 }
+          }),
+          signal: AbortSignal.timeout(45000)
+        });
+        console.log(`[OLLAMA] ♥ HEARTBEAT ok in ${Date.now() - t0}ms`);
+      } catch (err: any) {
+        console.warn(`[OLLAMA] ♥ HEARTBEAT failed: ${err?.message || err}`);
+      }
+    }, 10 * 60 * 1000);
+    heartbeatTimer.unref();
 
-      cleanupStaleSessions().catch((err) => console.warn('[TTL Cleanup] Boot cleanup notice:', err));
-      prewarmRag().catch((err) => console.warn('[RAG] Prewarm notice:', err.message));
-      preseedCommonAssessments().catch((err) => console.warn('[preseed] Notice:', err.message));
-      const medgemmaTimeout = new Promise<void>((_, reject) => setTimeout(() => reject(new Error('MedGemma preseed 45s timeout')), 45000));
-      Promise.race([preseedMedGemma(), medgemmaTimeout])
-        .catch((err) => console.warn('[medgemma-preseed] Notice:', err?.message || err));
-    });
-  })();
+    setTimeout(async () => {
+      const t0 = Date.now();
+      await supabase.from('hospitals').select('id').limit(1);
+      console.log(`[warmup] supabase in ${Date.now() - t0}ms`);
+    }, 2000);
+
+    setInterval(() => {
+      supabase.from('hospitals').select('id').limit(1).then(() => {});
+    }, 4 * 60 * 1000);
+
+    cleanupStaleSessions().catch((err) => console.warn('[TTL Cleanup] Boot cleanup notice:', err));
+    prewarmRag().catch((err) => console.warn('[RAG] Prewarm notice:', err.message));
+    preseedCommonAssessments().catch((err) => console.warn('[preseed] Notice:', err.message));
+    const medgemmaTimeout = new Promise<void>((_, reject) => setTimeout(() => reject(new Error('MedGemma preseed 45s timeout')), 45000));
+    Promise.race([preseedMedGemma(), medgemmaTimeout])
+      .catch((err) => console.warn('[medgemma-preseed] Notice:', err?.message || err));
+  });
 }
 
 export default app;

@@ -12,9 +12,62 @@ export interface OrchestrationEvent {
   success: boolean;
 }
 
+export interface OllamaHealth {
+  reachable: boolean;
+  model: string;
+  model_loaded: boolean;
+  last_successful_call_ms_ago: number | null;
+  last_call_status: 'ok' | 'error' | null;
+  avg_latency_ms: number;
+  total_calls_today: number;
+  failed_calls_today: number;
+}
+
 export const OrchestrationMonitor: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [events, setEvents] = useState<OrchestrationEvent[]>([]);
+  const [ollamaHealth, setOllamaHealth] = useState<OllamaHealth | null>(null);
+
+  useEffect(() => {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const healthUrl = isLocal ? 'http://localhost:3001/health/ollama' : '/health/ollama';
+
+    const fetchHealth = async () => {
+      try {
+        const res = await fetch(healthUrl);
+        if (res.ok) {
+          const data = await res.json();
+          setOllamaHealth(data);
+        } else {
+          setOllamaHealth({
+            reachable: false,
+            model: 'medgemma1.5:latest',
+            model_loaded: false,
+            last_successful_call_ms_ago: null,
+            last_call_status: 'error',
+            avg_latency_ms: 0,
+            total_calls_today: 0,
+            failed_calls_today: 0
+          });
+        }
+      } catch {
+        setOllamaHealth({
+          reachable: false,
+          model: 'medgemma1.5:latest',
+          model_loaded: false,
+          last_successful_call_ms_ago: null,
+          last_call_status: 'error',
+          avg_latency_ms: 0,
+          total_calls_today: 0,
+          failed_calls_today: 0
+        });
+      }
+    };
+
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
@@ -35,6 +88,44 @@ export const OrchestrationMonitor: React.FC = () => {
       eventSource.close();
     };
   }, []);
+
+  const getOllamaPill = () => {
+    if (ollamaHealth === null) {
+      return {
+        label: 'Checking...',
+        color: 'text-slate-400 bg-slate-800 border-slate-700',
+        dot: 'bg-slate-400'
+      };
+    }
+    if (!ollamaHealth.reachable) {
+      return {
+        label: 'Gemini fallback',
+        color: 'text-amber-400 bg-amber-950/60 border-amber-500/50',
+        dot: 'bg-amber-400'
+      };
+    }
+    if (ollamaHealth.last_call_status === 'error') {
+      return {
+        label: 'Ollama',
+        color: 'text-rose-400 bg-rose-950/60 border-rose-500/50',
+        dot: 'bg-rose-400'
+      };
+    }
+    if (ollamaHealth.last_successful_call_ms_ago !== null && ollamaHealth.last_successful_call_ms_ago < 60 * 1000) {
+      return {
+        label: 'Ollama',
+        color: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/50',
+        dot: 'bg-emerald-400'
+      };
+    }
+    return {
+      label: 'Ollama',
+      color: 'text-yellow-400 bg-yellow-950/60 border-yellow-500/50',
+      dot: 'bg-yellow-400'
+    };
+  };
+
+  const pill = getOllamaPill();
 
   const formatTime = (isoStr: string) => {
     try {
@@ -69,6 +160,16 @@ export const OrchestrationMonitor: React.FC = () => {
 
   return (
     <>
+      {/* Floating Ollama Status Pill */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed bottom-8 right-24 z-50 px-3 py-1.5 rounded-full border shadow-2xl flex items-center gap-1.5 cursor-pointer font-mono text-xs backdrop-blur-md transition-all duration-300 hover:scale-105 ${pill.color}`}
+        title="Ollama Provider Status"
+      >
+        <span className={`inline-block w-2 h-2 rounded-full ${pill.dot}`}></span>
+        <span>{pill.label}</span>
+      </button>
+
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -113,6 +214,15 @@ export const OrchestrationMonitor: React.FC = () => {
               <X className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        {/* Ollama Health Status Sub-Header */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/60 font-sans text-xs">
+          <span className="text-slate-400">Local LLM:</span>
+          <span className={`px-2.5 py-0.5 rounded-full border text-[11px] flex items-center gap-1.5 font-mono ${pill.color}`}>
+            <span className={`inline-block w-2 h-2 rounded-full ${pill.dot}`}></span>
+            <span>{pill.label}</span>
+          </span>
         </div>
 
         {/* Events List */}

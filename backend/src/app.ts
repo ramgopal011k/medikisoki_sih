@@ -301,6 +301,7 @@ import hospitalsRouter from './routes/hospitals';
 import documentsRouter from './routes/documents';
 import analyticsRouter from './routes/analytics';
 import aiRouter from './routes/ai';
+import healthRouter from './routes/health';
 
 // Apply Authentication Middleware to doctor/admin routes
 // Anonymous kiosk endpoints (POST /api/sessions, history-facts, answers, medical-history, ayush-assessment, sarvam, gemini, etc.) are public
@@ -340,6 +341,8 @@ app.use('/triage', triageRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/analytics', analyticsRouter);
 app.use('/api/ai', aiRouter);
+app.use('/health', healthRouter);
+app.use('/api/health', healthRouter);
 
 // Doctor authentication endpoint
 // Demo credentials loaded from environment variables (fallback to defaults for dev)
