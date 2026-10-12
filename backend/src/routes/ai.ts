@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { verifyAuth } from '../middleware/auth';
+import { medgemmaReason } from '../orchestration/medgemmaClient';
+import { setLastCallProvider } from '../orchestration/router';
 
 const router = Router();
 
@@ -19,11 +21,18 @@ interface DifferentialDiagnosis {
 
 interface PanelRequestBody {
   chief_complaint?: string;
+  complaint?: string;
+  context?: {
+    complaint?: string;
+    answers?: any;
+    patient_context?: any;
+    fired_flags?: string[];
+  };
   answers?: Array<{
     question_id: string;
-    question_text: string;
+    question_text?: string;
     answer: string;
-  }>;
+  }> | Record<string, any>;
   patient_context?: {
     age?: number | null;
     sex?: 'male' | 'female' | 'other' | null;
@@ -35,11 +44,26 @@ interface PanelRequestBody {
 
 function cleanJsonText(raw: string): string {
   let cleaned = raw.trim();
-  if (cleaned.startsWith('```json')) {
-    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-  } else if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```\s*/i, '').replace(/```\s*$/, '').trim();
+  // Strip thought/reasoning tags from MedGemma/Gemma3/DeepSeek
+  cleaned = cleaned.replace(/<unused94>[\s\S]*?<unused95>/gi, '').trim();
+  cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  // Extract from markdown json code block if present
+  const jsonBlock = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (jsonBlock && jsonBlock[1]) {
+    return jsonBlock[1].trim();
   }
+
+  // Strip leading/trailing code fence markers if any
+  cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+
+  // Find first { and last }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return cleaned.slice(firstBrace, lastBrace + 1).trim();
+  }
+
   return cleaned;
 }
 
@@ -142,46 +166,46 @@ async function callGemini(prompt: string): Promise<string | null> {
 let lastOllamaFailureTime = 0;
 
 async function callMedGemma(prompt: string): Promise<string | null> {
-  if (Date.now() - lastOllamaFailureTime < 30000) return null;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 2000);
   try {
-    const res = await fetch(`${OLLAMA_URL}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'medgemma1.5:latest',
-        messages: [{ role: 'user', content: prompt }],
-        stream: false,
-      }),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      lastOllamaFailureTime = Date.now();
-      return null;
+    const text = await medgemmaReason(prompt, 'differential-panel');
+    if (text) return text;
+  } catch (err: any) {
+    console.warn('[ai/differential-panel] MedGemma attempt 1 error, retrying once...', err?.message || err);
+    try {
+      const text = await medgemmaReason(prompt, 'differential-panel');
+      if (text) return text;
+    } catch (err2: any) {
+      console.warn('[ai/differential-panel] MedGemma attempt 2 error:', err2?.message || err2);
     }
-    const data = (await res.json()) as { message?: { content?: string } };
-    return data.message?.content || null;
-  } catch {
-    lastOllamaFailureTime = Date.now();
-    return null;
-  } finally {
-    clearTimeout(timeoutId);
   }
+  return null;
 }
 
 router.post('/differential-panel', verifyAuth, async (req: Request, res: Response) => {
   const start = Date.now();
   const body: PanelRequestBody = req.body || {};
-  const chiefComplaint = body.chief_complaint || 'unspecified';
-  const answers = body.answers || [];
-  const patientContext = body.patient_context || {
-    age: null,
-    sex: null,
-    comorbidities: [],
-    medications: []
+  const chiefComplaint = body.chief_complaint || body.complaint || body.context?.complaint || 'unspecified';
+
+  const rawAnswers = body.answers || body.context?.answers || [];
+  let answers: Array<{ question_id: string; question_text?: string; answer: string }> = [];
+  if (Array.isArray(rawAnswers)) {
+    answers = rawAnswers;
+  } else if (rawAnswers && typeof rawAnswers === 'object') {
+    answers = Object.entries(rawAnswers).map(([qid, ans]) => ({
+      question_id: qid,
+      question_text: qid,
+      answer: Array.isArray(ans) ? ans.join(', ') : String(ans)
+    }));
+  }
+
+  const rawPatientContext = body.patient_context || body.context?.patient_context || {};
+  const patientContext = {
+    age: rawPatientContext.age ?? null,
+    sex: rawPatientContext.sex ?? null,
+    comorbidities: rawPatientContext.comorbidities || [],
+    medications: rawPatientContext.medications || []
   };
-  const firedFlags = body.fired_flags || [];
+  const firedFlags = body.fired_flags || body.context?.fired_flags || [];
 
   const systemPrompt = `You are an expert clinical triage assistant generating a probability-weighted differential diagnosis panel.
 
@@ -219,8 +243,12 @@ JSON Schema:
   "reasoning": "1-2 sentence clinical justification."
 }`;
 
-  let rawOutput: string | null = null;
-  let provider: 'gemini' | 'medgemma' = 'gemini';
+  const isLocal = process.env.NODE_ENV !== 'production' && !process.env.RENDER;
+  const providers: Array<'medgemma' | 'gemini'> = isLocal
+    ? ['medgemma', 'gemini']
+    : ['gemini'];
+
+  let chosenProvider: 'medgemma' | 'gemini' | null = null;
   let parsedData: { panel?: DifferentialDiagnosis[]; reasoning?: string } | null = null;
 
   if ((body as any).panel !== undefined) {
@@ -229,44 +257,64 @@ JSON Schema:
       panel: Array.isArray(rawPanel) ? rawPanel : [],
       reasoning: (body as any).reasoning || 'Custom test panel provided.'
     };
+    chosenProvider = 'gemini';
+    setLastCallProvider('gemini');
   } else {
-    // Attempt Gemini first
-    try {
-      rawOutput = await callGemini(systemPrompt);
-    } catch (err) {
-      console.warn('[ai/differential-panel] Gemini execution notice:', err);
-    }
+    for (const p of providers) {
+      const pStart = Date.now();
+      let rawOutput: string | null = null;
 
-    // Attempt MedGemma fallback if Gemini did not produce output
-    if (!rawOutput) {
-      try {
+      if (p === 'medgemma') {
         rawOutput = await callMedGemma(systemPrompt);
-        if (rawOutput) provider = 'medgemma';
-      } catch (err) {
-        console.warn('[ai/differential-panel] MedGemma fallback notice:', err);
+      } else if (p === 'gemini') {
+        rawOutput = await callGemini(systemPrompt);
       }
-    }
 
-    if (rawOutput) {
-      try {
-        parsedData = JSON.parse(cleanJsonText(rawOutput));
-      } catch (parseErr) {
-        console.warn('[ai/differential-panel] JSON parse error, falling back to clinical default:', parseErr);
+      if (rawOutput) {
+        try {
+          const parsed = JSON.parse(cleanJsonText(rawOutput));
+          if (parsed && Array.isArray(parsed.panel) && parsed.panel.length > 0) {
+            parsedData = parsed;
+            chosenProvider = p;
+            const pElapsed = Date.now() - pStart;
+            const isFallback = p !== providers[0];
+            const fallbackTag = isFallback ? ' [FALLBACK]' : '';
+            console.log(`[orch] differential-panel → ${p}${fallbackTag} in ${pElapsed}ms`);
+            setLastCallProvider(p);
+            break;
+          }
+        } catch (parseErr) {
+          console.warn(`[ai/differential-panel] ${p} JSON parse error:`, parseErr);
+        }
       }
     }
   }
 
-  // Use clinical fallback if parsing or model calls failed
+  // If all fail → return fail-safe tier='high' with empty panel + safety_override=false + reasoning='LLM unavailable'.
   if (!parsedData || !Array.isArray(parsedData.panel) || parsedData.panel.length === 0) {
-    const fallback = createFallbackPanel(chiefComplaint, firedFlags);
-    parsedData = {
-      panel: fallback.panel,
-      reasoning: fallback.reasoning
-    };
+    setLastCallProvider(null);
+    console.warn(`[orch] differential-panel → fail-safe (all providers failed) in ${Date.now() - start}ms`);
+    return res.json({
+      panel: [],
+      expected_severity: 60,
+      safety_override: false,
+      override_reason: null,
+      tier: 'high',
+      reasoning: 'LLM unavailable',
+      provider: chosenProvider || providers[0],
+      elapsed_ms: Date.now() - start
+    });
   }
 
   // Validate and post-process panel
   let panel = parsedData.panel || [];
+
+  // Normalize numbers if strings returned
+  panel = panel.map(d => ({
+    ...d,
+    severity: typeof d.severity === 'string' ? parseInt(d.severity, 10) : d.severity,
+    probability: typeof d.probability === 'string' ? parseFloat(d.probability) : d.probability,
+  }));
 
   // Filter severities: must be in [95, 75, 50, 25, 10], probability finite non-negative number
   panel = panel.filter(d =>
@@ -355,7 +403,7 @@ JSON Schema:
     override_reason: overrideReason,
     tier,
     reasoning: sanitizedReasoning,
-    provider,
+    provider: chosenProvider || 'gemini',
     elapsed_ms: elapsedMs
   });
 });

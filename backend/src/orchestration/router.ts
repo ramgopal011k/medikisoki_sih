@@ -120,3 +120,22 @@ export async function orchestrate<T>(
     throw err;
   }
 }
+
+// Module-level state tracking for last differential-panel provider call
+let lastCallProvider: 'medgemma' | 'gemini' | null = null;
+let lastCallTimestamp = 0;
+
+export function setLastCallProvider(provider: 'medgemma' | 'gemini' | null): void {
+  lastCallProvider = provider;
+  lastCallTimestamp = Date.now();
+}
+
+export function getLastCallProvider(): {
+  last_call_provider: 'medgemma' | 'gemini' | null;
+  last_call_ms_ago: number | null;
+} {
+  return {
+    last_call_provider: lastCallProvider,
+    last_call_ms_ago: lastCallTimestamp > 0 ? Math.max(0, Date.now() - lastCallTimestamp) : null,
+  };
+}

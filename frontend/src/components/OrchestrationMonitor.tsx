@@ -21,6 +21,8 @@ export interface OllamaHealth {
   avg_latency_ms: number;
   total_calls_today: number;
   failed_calls_today: number;
+  last_call_provider?: 'medgemma' | 'gemini' | null;
+  last_call_ms_ago?: number | null;
 }
 
 export const OrchestrationMonitor: React.FC = () => {
@@ -47,7 +49,9 @@ export const OrchestrationMonitor: React.FC = () => {
             last_call_status: 'error',
             avg_latency_ms: 0,
             total_calls_today: 0,
-            failed_calls_today: 0
+            failed_calls_today: 0,
+            last_call_provider: null,
+            last_call_ms_ago: null
           });
         }
       } catch {
@@ -59,7 +63,9 @@ export const OrchestrationMonitor: React.FC = () => {
           last_call_status: 'error',
           avg_latency_ms: 0,
           total_calls_today: 0,
-          failed_calls_today: 0
+          failed_calls_today: 0,
+          last_call_provider: null,
+          last_call_ms_ago: null
         });
       }
     };
@@ -97,31 +103,31 @@ export const OrchestrationMonitor: React.FC = () => {
         dot: 'bg-slate-400'
       };
     }
-    if (!ollamaHealth.reachable) {
+
+    const provider = ollamaHealth.last_call_provider;
+    const msAgo = ollamaHealth.last_call_ms_ago;
+    const isRecent = msAgo !== null && msAgo !== undefined && msAgo <= 60000;
+
+    if (provider === 'medgemma' && isRecent) {
+      return {
+        label: 'Ollama (MedGemma)',
+        color: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/50',
+        dot: 'bg-emerald-400'
+      };
+    }
+
+    if (provider === 'gemini' && isRecent) {
       return {
         label: 'Gemini fallback',
         color: 'text-amber-400 bg-amber-950/60 border-amber-500/50',
         dot: 'bg-amber-400'
       };
     }
-    if (ollamaHealth.last_call_status === 'error') {
-      return {
-        label: 'Ollama',
-        color: 'text-rose-400 bg-rose-950/60 border-rose-500/50',
-        dot: 'bg-rose-400'
-      };
-    }
-    if (ollamaHealth.last_successful_call_ms_ago !== null && ollamaHealth.last_successful_call_ms_ago < 60 * 1000) {
-      return {
-        label: 'Ollama',
-        color: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/50',
-        dot: 'bg-emerald-400'
-      };
-    }
+
     return {
-      label: 'Ollama',
-      color: 'text-yellow-400 bg-yellow-950/60 border-yellow-500/50',
-      dot: 'bg-yellow-400'
+      label: 'Idle',
+      color: 'text-slate-400 bg-slate-800 border-slate-700',
+      dot: 'bg-slate-400'
     };
   };
 
