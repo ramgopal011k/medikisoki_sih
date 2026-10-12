@@ -16,6 +16,7 @@ interface DifferentialDiagnosis {
   name: string;
   probability: number;
   severity: AllowedSeverity | number;
+  trigger?: string;
   source: string;
 }
 
@@ -181,6 +182,40 @@ async function callMedGemma(prompt: string): Promise<string | null> {
   return null;
 }
 
+const LOW_RISK_TRIGGERS: Record<string, (ctx: { age: number | null; comorbidities: string[]; answers: Array<{ question_id: string; answer: string }> }) => boolean> = {
+  'acute coronary syndrome': (ctx) =>
+    (ctx.age !== null && ctx.age >= 45) ||
+    (ctx.comorbidities || []).some(c => /diabet|hypertens|smok|cholesterol|cad|heart/i.test(c)) ||
+    ctx.answers.some(a => /left arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
+  'myocardial infarction': (ctx) =>
+    (ctx.age !== null && ctx.age >= 45) ||
+    (ctx.comorbidities || []).some(c => /diabet|hypertens|smok|cholesterol|cad|heart/i.test(c)) ||
+    ctx.answers.some(a => /left arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
+  'pulmonary embolism': (ctx) =>
+    ctx.answers.some(a => /surgery|immobil|travel|swelling|ocp|clot|dvt|hemoptysis|blood/i.test(a.answer || '')),
+  'aortic dissection': (ctx) =>
+    ctx.answers.some(a => /tearing|ripping|sudden severe|back/i.test(a.answer || '')),
+  'pneumothorax': (ctx) =>
+    ctx.answers.some(a => /sudden|trauma|shortness|breath/i.test(a.answer || ''))
+};
+
+function matchesTriggerKey(name: string, key: string): boolean {
+  const n = name.toLowerCase();
+  if (key === 'acute coronary syndrome' || key === 'myocardial infarction') {
+    return n.includes('coronary') || n.includes('acs') || n.includes('myocardial') || n.includes('infarct') || n.includes('heart attack');
+  }
+  if (key === 'pulmonary embolism') {
+    return n.includes('pulmonary embolism') || n.includes(' pe') || n === 'pe';
+  }
+  if (key === 'aortic dissection') {
+    return n.includes('aortic dissection') || n.includes('dissection');
+  }
+  if (key === 'pneumothorax') {
+    return n.includes('pneumothorax');
+  }
+  return n.includes(key);
+}
+
 router.post('/differential-panel', verifyAuth, async (req: Request, res: Response) => {
   const start = Date.now();
   const body: PanelRequestBody = req.body || {};
@@ -207,40 +242,75 @@ router.post('/differential-panel', verifyAuth, async (req: Request, res: Respons
   };
   const firedFlags = body.fired_flags || body.context?.fired_flags || [];
 
-  const systemPrompt = `You are an expert clinical triage assistant generating a probability-weighted differential diagnosis panel.
+  const systemPrompt = `You are generating a probability-weighted differential diagnosis panel for a clinical triage kiosk. The panel MUST reflect pre-test probability given the patient's age, sex, and risk factors — NOT a worst-case list.
 
-Given:
-- Chief Complaint: ${chiefComplaint}
-- Patient Profile: Age: ${patientContext.age ?? 'Unknown'}, Sex: ${patientContext.sex ?? 'Unknown'}, Comorbidities: ${(patientContext.comorbidities || []).join(', ') || 'None reported'}, Medications: ${(patientContext.medications || []).join(', ') || 'None reported'}
-- Interview Answers:
+Patient
+Chief Complaint: ${chiefComplaint}
+Age: ${patientContext.age ?? 'Unknown'} | Sex: ${patientContext.sex ?? 'Unknown'}
+Comorbidities: ${(patientContext.comorbidities || []).join(', ') || 'None reported'}
+Medications: ${(patientContext.medications || []).join(', ') || 'None reported'}
+
+Interview answers:
 ${JSON.stringify(answers, null, 2)}
-- Triggered Red Flags: ${firedFlags.join(', ') || 'None'}
 
-STRICT INSTRUCTIONS:
-1. Output JSON ONLY. Absolutely NO prose or commentary before or after.
-2. Panel size must be between 3 and 5 differential diagnoses.
-3. Probabilities MUST be non-negative decimals and sum to 1.0 (within ±0.05 tolerance).
-4. Severity for each diagnosis MUST be an exact integer from this allowed list ONLY: [95, 75, 50, 25, 10]
-   - 95: Resuscitation (e.g. ACS, aortic dissection, severe respiratory failure)
-   - 75: Emergent (e.g. stroke signs, severe asthma, unstable vitals)
-   - 50: Urgent (e.g. cholecystitis, high fever, complicated infection)
-   - 25: Less urgent (e.g. GERD, uncomplicated bronchitis, minor trauma)
-   - 10: Non-urgent (e.g. MSK strain, tension headache, mild URI)
-5. Each item must have a real medical clinical guideline citation (e.g. "AHA/ACC 2023", "ACG 2022").
-6. Provide a 1-2 sentence clinical reasoning summary in the "reasoning" field.
-7. Do NOT output anything patient-facing.
+Red flags triggered: ${firedFlags.join(', ') || 'None'}
 
-JSON Schema:
+CRITICAL RULES
+1. Include at least 2 benign/common differentials in EVERY panel.
+For chest pain, common benign etiologies: Musculoskeletal chest wall pain, GERD/acid reflux, Anxiety/panic, Costochondritis.
+
+2. Severity must reflect the CONDITION's intrinsic danger:
+95 = immediate life threat (cardiac arrest, aortic dissection)
+75 = emergent within minutes (ACS, PE, tension pneumothorax)
+50 = urgent within hours (pneumonia, unstable angina)
+25 = non-urgent (stable angina, uncomplicated UTI)
+10 = benign (MSK, GERD, viral URI, anxiety)
+
+3. Probability must reflect PRE-TEST PROBABILITY for THIS patient:
+- Age < 35 without risk factors: ACS probability < 0.05
+- Age < 35 without PE risk (surgery, OCP, immobility, cancer): PE probability < 0.03
+- Patient with PE risk factors/triggers (recent surgery, immobility, sudden SOB, DVT swelling, hemoptysis): PE probability ≥ 0.25
+- Sharp pain reproducible with movement: MSK > 0.50
+- Burning, post-meal, worse lying down: GERD > 0.50
+
+4. Do NOT include a rare dangerous differential unless the patient has a specific trigger:
+- ACS only if: age > 45, OR diabetes, OR smoker, OR HTN, OR family history of premature CAD, OR radiation to arm/jaw, OR crushing/pressure pain
+- PE only if: recent surgery, immobility, OCP use, active cancer, unilateral leg swelling, or hemoptysis
+- Aortic dissection only if: severe tearing pain, known Marfan, uncontrolled HTN, unequal pulses
+- Pneumothorax only if: sudden onset, tall thin young male, recent trauma, COPD
+
+If the patient has NO trigger for a life-threatening differential, either exclude it OR list it at probability < 0.05 with a trigger: "No specific trigger — excluded by clinical reasoning".
+
+Do NOT default to including ACS/PE/Aortic dissection for every chest pain patient. If you include them without a specific trigger, they will be flagged as hallucination during post-processing.
+
+5. Probabilities must sum to 1.0 ± 0.05.
+6. Severity must be from: [95, 75, 50, 25, 10]. No other values.
+
+7. Reference: HEART Score risk stratification (for chest pain):
+History: slightly suspicious (0), moderately (1), highly (2)
+ECG: (not available in kiosk — treat as normal, 0)
+Age: <45 (0), 45-64 (1), ≥65 (2)
+Risk factors: 0 (0), 1-2 (1), ≥3 or atherosclerosis (2)
+Troponin: (not available — treat as normal, 0)
+
+For a patient with HEART ≤ 3 without other emergency triggers (like PE or dissection) → favor benign differentials at high prob.
+For HEART ≥ 4 → favor cardiac differentials.
+If PE risk triggers are present, PE probability must be ≥ 0.25 regardless of HEART score.
+
+Include HEART score calculation in the "reasoning" field.
+
+Output schema (strict JSON):
 {
   "panel": [
     {
-      "name": "Condition Name",
-      "probability": 0.50,
-      "severity": 25,
-      "source": "Guideline Citation Year"
+      "name": "string",
+      "probability": 0.00,
+      "severity": 95|75|50|25|10,
+      "trigger": "string (why this differential is included for this patient)",
+      "source": "string (guideline citation)"
     }
   ],
-  "reasoning": "1-2 sentence clinical justification."
+  "reasoning": "1-2 sentences including HEART score or equivalent risk calculation"
 }`;
 
   const isLocal = process.env.NODE_ENV !== 'production' && !process.env.RENDER;
@@ -272,7 +342,8 @@ JSON Schema:
 
       if (rawOutput) {
         try {
-          const parsed = JSON.parse(cleanJsonText(rawOutput));
+          const cleaned = cleanJsonText(rawOutput);
+          const parsed = JSON.parse(cleaned);
           if (parsed && Array.isArray(parsed.panel) && parsed.panel.length > 0) {
             parsedData = parsed;
             chosenProvider = p;
@@ -282,9 +353,11 @@ JSON Schema:
             console.log(`[orch] differential-panel → ${p}${fallbackTag} in ${pElapsed}ms`);
             setLastCallProvider(p);
             break;
+          } else {
+            console.warn(`[ai/differential-panel] ${p} invalid panel structure:`, cleaned.slice(0, 300));
           }
         } catch (parseErr) {
-          console.warn(`[ai/differential-panel] ${p} JSON parse error:`, parseErr);
+          console.warn(`[ai/differential-panel] ${p} JSON parse error:`, parseErr, 'Raw output preview:', rawOutput.slice(0, 300));
         }
       }
     }
@@ -331,8 +404,65 @@ JSON Schema:
     panel = createFallbackPanel(chiefComplaint, firedFlags).panel;
   }
 
-  // Trim to max 5 differentials
+  // Phase 2: Deterministic safety net — Cap untriggered catastrophic differentials
+  const contextForTriggers = {
+    age: patientContext.age,
+    comorbidities: patientContext.comorbidities || [],
+    answers: answers
+  };
+
+  panel = panel.map(d => {
+    for (const [key, testFn] of Object.entries(LOW_RISK_TRIGGERS)) {
+      if (matchesTriggerKey(d.name, key)) {
+        const hasTrigger = testFn(contextForTriggers);
+        if (!hasTrigger) {
+          return {
+            ...d,
+            severity: Math.min(d.severity, 50),
+            probability: Math.min(d.probability, 0.05),
+            trigger: (d.trigger ? d.trigger + ' | ' : '') + 'capped: no trigger present'
+          };
+        }
+      }
+    }
+    return d;
+  });
+
+  // Phase 3: Force benign inclusion if fewer than 2 differentials with severity <= 25
+  const benignCount = panel.filter(d => d.severity <= 25).length;
+  if (benignCount < 2) {
+    const currentSum = panel.reduce((s, d) => s + d.probability, 0);
+    const remaining = Math.max(0, 1.0 - currentSum);
+
+    const hasMsk = panel.some(d => /musculoskeletal|msk|costochondritis|wall pain/i.test(d.name));
+    const hasGerd = panel.some(d => /gerd|reflux|acid|dyspepsia/i.test(d.name));
+
+    if (!hasMsk) {
+      const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
+      panel.push({
+        name: 'Musculoskeletal chest wall pain',
+        probability: prob,
+        severity: 10,
+        trigger: 'Enforced benign triage baseline',
+        source: 'AAFP 2020 Guidelines'
+      });
+    }
+
+    if (!hasGerd) {
+      const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
+      panel.push({
+        name: 'GERD / acid reflux',
+        probability: prob,
+        severity: 10,
+        trigger: 'Enforced benign triage baseline',
+        source: 'ACG 2022 Guidelines'
+      });
+    }
+  }
+
+  // Trim to max 5 differentials (prioritizing higher probability items so forced benign items are kept)
   if (panel.length > 5) {
+    panel.sort((a, b) => b.probability - a.probability);
     panel = panel.slice(0, 5);
   }
 
