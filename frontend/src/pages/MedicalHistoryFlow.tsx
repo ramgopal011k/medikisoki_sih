@@ -655,10 +655,10 @@ export default function MedicalHistoryFlow() {
   const stepTitle = getStepTitle();
 
   return (
-    <div className="min-h-screen bg-sand flex flex-col pt-10 p-6 relative overflow-hidden font-body text-charcoal">
+    <div className="min-h-screen bg-sand flex flex-col pt-10 p-4 sm:p-6 pb-28 sm:pb-12 pb-[env(safe-area-inset-bottom,32px)] relative overflow-hidden font-body text-charcoal">
       <MandalaBackground />
       
-      <div className="w-full max-w-[768px] mx-auto flex flex-col gap-5 z-10">
+      <div className="w-full max-w-[768px] mx-auto flex flex-col gap-5 z-10 mb-16 sm:mb-8">
         <div className="w-full flex justify-center pb-1">
            <LeafStepIndicator total={7} current={step} />
         </div>
@@ -725,18 +725,20 @@ export default function MedicalHistoryFlow() {
             )}
           </div>
           
-          <Button
-            id="btn-medical-next"
-            onClick={handleNext}
-            disabled={isNextDisabled() || isSubmitting}
-            className="mt-6 w-full min-h-[58px] text-lg rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary hover:bg-primary/90 transition-colors shadow-xs"
-          >
-            {isSubmitting 
-              ? t('common.loading') 
-              : step === 6 
-                ? t('common.submit') 
-                : t('common.continue')}
-          </Button>
+          <div className="w-full pb-[env(safe-area-inset-bottom,24px)]">
+            <Button
+              id="btn-medical-next"
+              onClick={handleNext}
+              disabled={isNextDisabled() || isSubmitting}
+              className="mt-6 w-full min-h-[56px] sm:min-h-[58px] text-lg rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary hover:bg-primary/90 transition-colors shadow-md"
+            >
+              {isSubmitting 
+                ? t('common.loading') 
+                : step === 6 
+                  ? t('common.submit') 
+                  : t('common.continue')}
+            </Button>
+          </div>
         </div>
       </div>
       <VoiceGuideButton 

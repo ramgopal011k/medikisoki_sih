@@ -670,10 +670,10 @@ export default function DocumentUploadFlow() {
   const allDoneOrSkipped = files.length > 0 && files.every(f => f.status === 'done' || f.status === 'skipped');
 
   return (
-    <div className="min-h-screen bg-sand flex flex-col p-6 relative overflow-hidden font-body text-charcoal">
+    <div className="min-h-screen bg-sand flex flex-col p-4 sm:p-6 pb-28 sm:pb-12 pb-[env(safe-area-inset-bottom,32px)] relative overflow-hidden font-body text-charcoal">
       <MandalaBackground />
       
-      <div className="z-10 w-full max-w-4xl mx-auto mt-8 flex flex-col gap-6">
+      <div className="z-10 w-full max-w-4xl mx-auto mt-8 flex flex-col gap-6 mb-16 sm:mb-8">
         
         {step === 'upload' && (
           <QuestionCard className="text-center p-8 sm:p-12">
@@ -879,17 +879,19 @@ export default function DocumentUploadFlow() {
                   )}
 
                   {/* Continue Button */}
-                  <button
-                    onClick={handleContinue}
-                    disabled={!allDoneOrSkipped}
-                    className={`w-full py-4 font-bold text-lg rounded-xl transition-all shadow-xs ${
-                      allDoneOrSkipped
-                        ? 'bg-primary text-white hover:bg-primary/90 cursor-pointer'
-                        : 'bg-warmgray/40 text-muted cursor-not-allowed border border-warmgray'
-                    }`}
-                  >
-                    {t('common.continue')}
-                  </button>
+                  <div className="w-full pb-[env(safe-area-inset-bottom,24px)]">
+                    <button
+                      onClick={handleContinue}
+                      disabled={!allDoneOrSkipped}
+                      className={`w-full min-h-[56px] py-4 font-bold text-lg rounded-xl transition-all shadow-md ${
+                        allDoneOrSkipped
+                          ? 'bg-primary text-white hover:bg-primary/90 cursor-pointer'
+                          : 'bg-warmgray/40 text-muted cursor-not-allowed border border-warmgray'
+                      }`}
+                    >
+                      {t('common.continue')}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1013,7 +1015,7 @@ export default function DocumentUploadFlow() {
 
                  <button 
                    onClick={handleSave}
-                   className="w-full p-4 mt-4 bg-primary text-white text-lg font-bold rounded-[12px] hover:bg-primary/90 transition-colors shadow-xs"
+                   className="w-full min-h-[56px] p-4 mt-4 bg-primary text-white text-lg font-bold rounded-[12px] hover:bg-primary/90 transition-colors shadow-md"
                  >
                    {isMr ? 'नक्की करा आणि जतन करा' : isBn ? 'নিশ্চিত করুন এবং সংরক্ষণ করুন' : isHi ? 'पुष्टि करें और सहेजें' : 'Confirm & Save (or say "Save")'}
                  </button>

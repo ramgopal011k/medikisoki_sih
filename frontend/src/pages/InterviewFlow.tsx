@@ -441,9 +441,9 @@ export default function InterviewFlow() {
     const continueBtn = isMr ? 'पुढे सुरू ठेवा' : isBn ? 'চালিয়ে যান' : isHi ? 'जारी रखें' : 'Continue';
 
     return (
-      <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-x-hidden">
+      <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-4 sm:p-6 pb-28 sm:pb-12 pb-[env(safe-area-inset-bottom,32px)] relative overflow-x-hidden">
         <MandalaBackground />
-        <QuestionCard className="w-full max-w-2xl text-center z-10 p-8 sm:p-12 box-border">
+        <QuestionCard className="w-full max-w-2xl text-center z-10 p-8 sm:p-12 box-border mb-8 sm:mb-0">
           {redFlagTriggered ? (
             <>
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-danger/10 flex items-center justify-center">
@@ -472,18 +472,20 @@ export default function InterviewFlow() {
               <p className="font-body text-xl text-muted mb-8">
                 {doneMsg}
               </p>
-              <button
-                onClick={() => {
-                  if (sessionStorage.getItem('ayush_mode') === 'true') {
-                    navigate('/ayush-assessment');
-                  } else {
-                    navigate('/records-upload');
-                  }
-                }}
-                className="w-full min-h-[64px] text-xl rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:bg-primary/90 transition-colors"
-              >
-                {continueBtn}
-              </button>
+              <div className="w-full pb-[env(safe-area-inset-bottom,24px)]">
+                <button
+                  onClick={() => {
+                    if (sessionStorage.getItem('ayush_mode') === 'true') {
+                      navigate('/ayush-assessment');
+                    } else {
+                      navigate('/records-upload');
+                    }
+                  }}
+                  className="w-full min-h-[56px] sm:min-h-[64px] text-xl rounded-[12px] bg-primary text-white font-body focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:bg-primary/90 transition-colors shadow-md"
+                >
+                  {continueBtn}
+                </button>
+              </div>
             </>
           )}
           {isSyncing && (
@@ -523,9 +525,9 @@ export default function InterviewFlow() {
     : currentQ.text;
 
   return (
-    <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 relative overflow-x-hidden">
+    <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 pb-28 sm:pb-12 pb-[env(safe-area-inset-bottom,32px)] relative overflow-x-hidden">
       <MandalaBackground />
-      <div className="z-10 w-full box-border">
+      <div className="z-10 w-full box-border mb-16 sm:mb-8">
          {isReplannerEnabled() && (
            <div
              className={`max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold shadow-xs ${

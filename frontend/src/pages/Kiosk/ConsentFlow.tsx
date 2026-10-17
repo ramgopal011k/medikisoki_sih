@@ -543,6 +543,8 @@ export default function ConsentFlow() {
         sessionStorage.setItem('caregiver_mode', 'true');
       }
       if (patientName) sessionStorage.setItem('patient_name', patientName);
+      if (patientAge) sessionStorage.setItem('patient_age', patientAge);
+      if (patientGender) sessionStorage.setItem('patient_gender', patientGender);
       sessionStorage.setItem('patient_complaint', validComplaint);
       sessionStorage.setItem('chief_complaint', chiefKey);
       localStorage.setItem('patient_language', validLang);
@@ -562,6 +564,8 @@ export default function ConsentFlow() {
       sessionStorage.setItem('patient_session', fallbackToken);
       sessionStorage.setItem('session_id', fallbackToken);
       if (patientName) sessionStorage.setItem('patient_name', patientName);
+      if (patientAge) sessionStorage.setItem('patient_age', patientAge);
+      if (patientGender) sessionStorage.setItem('patient_gender', patientGender);
       sessionStorage.setItem('patient_complaint', validComplaint);
       sessionStorage.setItem('chief_complaint', chiefKey);
       localStorage.setItem('patient_language', validLang);
@@ -654,10 +658,10 @@ export default function ConsentFlow() {
   );
 
   return (
-    <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-6 relative overflow-hidden font-body text-charcoal">
+    <div className="min-h-screen bg-sand flex flex-col items-center justify-center p-4 sm:p-6 pb-28 sm:pb-12 pb-[env(safe-area-inset-bottom,32px)] relative overflow-hidden font-body text-charcoal">
       <MandalaBackground />
       
-      <div className="w-full max-w-[768px] z-10 flex flex-col gap-6">
+      <div className="w-full max-w-[768px] z-10 flex flex-col gap-6 mb-16 sm:mb-8">
         
         {step !== 'language' && step !== 'success' && stepHistory.length > 0 && (
           <div className="w-full flex items-center justify-start">
@@ -1252,10 +1256,10 @@ export default function ConsentFlow() {
              </button>
            </div>
            
-           <div className="mt-6 flex justify-center">
+           <div className="mt-6 flex justify-center pb-[env(safe-area-inset-bottom,24px)]">
               <Button 
                 id="btn-start-session"
-                className="w-full max-w-sm min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body focus:outline-none focus:ring-2 focus:ring-warmgray focus:ring-offset-2 disabled:opacity-50" 
+                className="w-full max-w-sm min-h-[56px] sm:min-h-[58px] text-lg rounded-[12px] bg-primary hover:bg-primary/90 text-white font-body focus:outline-none focus:ring-2 focus:ring-warmgray focus:ring-offset-2 disabled:opacity-50 shadow-md" 
                 disabled={isStarting}
                 onClick={startSession}
               >

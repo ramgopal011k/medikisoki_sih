@@ -127,10 +127,10 @@ export default function WelcomeScreen() {
         <button
           type="button"
           onClick={handleVoiceAssist}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-semibold transition-all"
+          className="inline-flex items-center justify-center min-h-[48px] min-w-[48px] gap-2 px-4 py-2.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-semibold transition-all shadow-xs"
           aria-label="Listen to instructions"
         >
-          <Volume2 className="w-4 h-4" />
+          <Volume2 className="w-4 h-4 shrink-0" />
           <span className="hidden sm:inline">Voice Assist</span>
         </button>
         <AccessibilityToggle />
