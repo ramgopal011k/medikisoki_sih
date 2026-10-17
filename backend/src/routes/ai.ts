@@ -639,4 +639,175 @@ Output schema (strict JSON):
   });
 });
 
+interface FollowupRequestBody {
+  chief_complaint?: string;
+  complaint?: string;
+  answers?: Array<{
+    question_id: string;
+    question_text?: string;
+    answer: string;
+  }> | Record<string, any>;
+  patient_context?: {
+    age?: number | null;
+    sex?: 'male' | 'female' | 'other' | null;
+    comorbidities?: string[];
+    medications?: string[];
+  };
+}
+
+router.post('/generate-followups', verifyAuth, async (req: Request, res: Response) => {
+  const body: FollowupRequestBody = req.body || {};
+  const chiefComplaint = body.chief_complaint || body.complaint || 'unspecified';
+
+  const rawAnswers = body.answers || [];
+  let answers: Array<{ question_id: string; question_text?: string; answer: string }> = [];
+  if (Array.isArray(rawAnswers)) {
+    answers = rawAnswers;
+  } else if (rawAnswers && typeof rawAnswers === 'object') {
+    answers = Object.entries(rawAnswers).map(([qid, ans]) => ({
+      question_id: qid,
+      question_text: qid,
+      answer: Array.isArray(ans) ? ans.join(', ') : String(ans)
+    }));
+  }
+
+  const rawPatientContext = body.patient_context || {};
+  const comorbidities: string[] = Array.isArray(rawPatientContext.comorbidities)
+    ? rawPatientContext.comorbidities.map(c => String(c).trim()).filter(Boolean)
+    : [];
+  const medications: string[] = Array.isArray(rawPatientContext.medications)
+    ? rawPatientContext.medications.map(m => String(m).trim()).filter(Boolean)
+    : [];
+
+  const patientContext = {
+    age: rawPatientContext.age ?? null,
+    sex: rawPatientContext.sex ?? null,
+    comorbidities,
+    medications
+  };
+
+  // Rule: If comorbidities is empty and answers don't report cross-complaint comorbidities/symptoms, return empty questions array
+  const hasComorbidityTrigger = comorbidities.length > 0;
+  const answersText = answers.map(a => `${a.question_id} ${a.answer}`).join(' ').toLowerCase();
+  const hasAnswerTrigger = /diabet|sugar|hypertens|bp\b|blood pressure|asthma|copd|kidney|renal|thyroid|cholesterol|heart disease/i.test(answersText);
+
+  if (!hasComorbidityTrigger && !hasAnswerTrigger) {
+    return res.json({ questions: [] });
+  }
+
+  const prompt = `You are a clinical triage assistant reviewing a patient intake interview.
+Review the patient's chief complaint, comorbidities, and interview answers.
+Generate 1 to 2 highly relevant follow-up screening questions that a doctor would ask to assess risk or cross-complaint complications.
+
+Patient Context:
+Chief Complaint: ${chiefComplaint}
+Age: ${patientContext.age ?? 'Unknown'} | Sex: ${patientContext.sex ?? 'Unknown'}
+Comorbidities: ${comorbidities.join(', ') || 'None reported'}
+Medications: ${medications.join(', ') || 'None reported'}
+
+Interview Answers:
+${JSON.stringify(answers, null, 2)}
+
+CRITICAL RULES:
+1. Return MAX 2 questions. If no clinically relevant follow-ups are needed, return "questions": [].
+2. For diabetes: screen for microvascular or neuropathic symptoms (e.g. vision changes, foot numbness or tingling, excessive thirst).
+3. For hypertension: screen for severe headaches, visual disturbances, or chest pressure.
+4. For asthma/COPD: screen for wheezing or worsening shortness of breath.
+5. Do NOT diagnose. Only ask screening questions.
+6. Do NOT generate a question if the patient has already answered something similar.
+7. Options MUST be exactly ["Yes", "No", "Not sure"] in English, and options_hi MUST be ["हाँ", "नहीं", "पता नहीं"] in Hindi.
+8. Output schema (strict JSON):
+{
+  "questions": [
+    {
+      "id": "llm_q_1",
+      "text": "Have you noticed any changes in your vision?",
+      "text_hi": "क्या आपने अपनी दृष्टि में कोई बदलाव देखा है?",
+      "options": ["Yes", "No", "Not sure"],
+      "options_hi": ["हाँ", "नहीं", "पता नहीं"],
+      "reasoning": "Patient has diabetes, which increases risk of retinopathy."
+    }
+  ]
+}`;
+
+  const isLocal = process.env.NODE_ENV !== 'production' && !process.env.RENDER;
+  const providers: Array<'medgemma' | 'gemini'> = isLocal
+    ? ['medgemma', 'gemini']
+    : ['gemini'];
+
+  let parsedQuestions: any[] | null = null;
+
+  for (const p of providers) {
+    let rawOutput: string | null = null;
+    if (p === 'medgemma') {
+      rawOutput = await callMedGemma(prompt);
+    } else if (p === 'gemini') {
+      rawOutput = await callGemini(prompt);
+    }
+
+    if (rawOutput) {
+      try {
+        const cleaned = cleanJsonText(rawOutput);
+        const parsed = JSON.parse(cleaned);
+        if (parsed && Array.isArray(parsed.questions)) {
+          parsedQuestions = parsed.questions;
+          break;
+        }
+      } catch (err) {
+        console.warn(`[ai/generate-followups] ${p} JSON parse error:`, err);
+      }
+    }
+  }
+
+  // Deterministic fallback if LLM returned null / failed / was rate-limited
+  if (!parsedQuestions && hasComorbidityTrigger) {
+    const isDiabetes = comorbidities.some(c => /diabet|sugar/i.test(c)) || /diabet/i.test(answersText);
+    const isHypertension = comorbidities.some(c => /hypertens|bp\b|pressure/i.test(c)) || /hypertens/i.test(answersText);
+
+    if (isDiabetes) {
+      parsedQuestions = [
+        {
+          id: 'llm_q_1',
+          text: 'Have you noticed any changes in your vision or tingling in your feet?',
+          text_hi: 'क्या आपने अपनी दृष्टि में कोई बदलाव या पैरों में झुनझुनी महसूस की है?',
+          options: ['Yes', 'No', 'Not sure'],
+          options_hi: ['हाँ', 'नहीं', 'पता नहीं'],
+          reasoning: 'Patient has diabetes, which increases risk of retinopathy and neuropathy.'
+        }
+      ];
+    } else if (isHypertension) {
+      parsedQuestions = [
+        {
+          id: 'llm_q_1',
+          text: 'Have you experienced any sudden severe headaches or blurred vision?',
+          text_hi: 'क्या आपको अचानक तेज सिरदर्द या धुंधला दिखाई देने की समस्या हुई है?',
+          options: ['Yes', 'No', 'Not sure'],
+          options_hi: ['हाँ', 'नहीं', 'पता नहीं'],
+          reasoning: 'Patient has hypertension, screening for acute target-organ symptoms.'
+        }
+      ];
+    } else {
+      parsedQuestions = [];
+    }
+  }
+
+  if (!parsedQuestions) {
+    parsedQuestions = [];
+  }
+
+  // Post-process questions: ensure ids, options, max 2
+  const finalQuestions = parsedQuestions.slice(0, 2).map((q: any, idx: number) => ({
+    id: `llm_q_${idx + 1}`,
+    text: String(q.text || '').replace(/<[^>]*>/g, '').trim(),
+    text_hi: q.text_hi ? String(q.text_hi).replace(/<[^>]*>/g, '').trim() : undefined,
+    options: ['Yes', 'No', 'Not sure'],
+    options_hi: ['हाँ', 'नहीं', 'पता नहीं'],
+    reasoning: String(q.reasoning || 'Contextual comorbidity risk assessment').replace(/<[^>]*>/g, '').trim()
+  })).filter(q => q.text.length > 0);
+
+  return res.json({
+    questions: finalQuestions
+  });
+});
+
 export default router;

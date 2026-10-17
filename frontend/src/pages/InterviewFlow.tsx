@@ -10,7 +10,7 @@ import { get, set } from 'idb-keyval';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/api';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
-import { isReplannerEnabled, replan, scoreDifferentialPanel } from '../lib/replan';
+import { isReplannerEnabled, replan, scoreDifferentialPanel, fetchLlmFollowups, getDynamicQuestion, resetLlmFollowupCache } from '../lib/replan';
 import type { Tier } from '../lib/expectedSeverity';
 
 interface SessionState {
@@ -28,6 +28,8 @@ interface OfflineFact {
   answer_value: string;
   red_flag_id?: string;
   retry_count?: number;
+  provenance?: string;
+  generated_by?: string;
 }
 
 const OFFLINE_QUEUE_KEY = 'medikiosk_offline_facts';
@@ -83,6 +85,7 @@ export default function InterviewFlow() {
         setCurrentQId(loadedTree.start_question_id);
         sessionStorage.removeItem('current_tier');
         sessionStorage.removeItem('current_es');
+        resetLlmFollowupCache();
         setReplannerTier(null);
         setCurrentEs(null);
         setFiredFlags([]);
@@ -181,13 +184,15 @@ export default function InterviewFlow() {
   const handleAnswer = async (value: string | string[], answerText: string) => {
     if (!currentQId || !tree || !session) return;
 
-    const currentQ = tree.questions[currentQId];
+    const currentQ = tree.questions[currentQId] || getDynamicQuestion(currentQId);
+    if (!currentQ) return;
 
     // Calculate next step first so we know if it's a red flag
     let nextResult = currentQ.next(value);
     const redFlag = isRedFlag(nextResult) ? nextResult : null;
 
     // Prepare fact payload
+    const isLlmQuestion = currentQId.startsWith('llm_q_');
     const payload: OfflineFact = {
       session_id: session.id,
       complaint: session.complaint,
@@ -195,7 +200,8 @@ export default function InterviewFlow() {
       question_text: currentQ.text,
       answer: answerText,
       answer_value: Array.isArray(value) ? value.join(',') : value,
-      ...(redFlag ? { red_flag_id: redFlag.flag_id } : {})
+      ...(redFlag ? { red_flag_id: redFlag.flag_id } : {}),
+      ...(isLlmQuestion ? { provenance: 'patient_reported', generated_by: 'llm' } : {})
     };
 
     // Save fact (try online, fallback to IndexedDB queue)
@@ -272,7 +278,12 @@ export default function InterviewFlow() {
     const updatedAnswers = { ...accumulatedAnswers, [currentQId]: value };
     const updatedHistory = [
       ...answerHistory,
-      { question_id: currentQId, question_text: currentQ.text, answer: answerText }
+      {
+        question_id: currentQId,
+        question_text: currentQ.text,
+        answer: answerText,
+        ...(isLlmQuestion ? { provenance: 'patient_reported', generated_by: 'llm' } : {})
+      }
     ];
     setAccumulatedAnswers(updatedAnswers);
     setAnswerHistory(updatedHistory);
@@ -318,6 +329,27 @@ export default function InterviewFlow() {
       }
     }
 
+    // Trigger dynamic LLM follow-ups once when 2+ answers or comorbidities are present
+    const comorbStorage = sessionStorage.getItem('patient_comorbidities') || sessionStorage.getItem('comorbidities');
+    const patientAge = sessionStorage.getItem('patient_age');
+    const patientGender = sessionStorage.getItem('patient_gender');
+    if (newAnswersCount >= 2 || comorbStorage || Object.values(updatedAnswers).some(a => /diabet|hypertens|sugar|bp/i.test(String(a)))) {
+      try {
+        await fetchLlmFollowups(session.complaint, {
+          currentQId,
+          answers: updatedAnswers,
+          history: updatedHistory,
+          firedFlags: updatedFiredFlags,
+          patientContext: {
+            age: patientAge ? parseInt(patientAge, 10) : null,
+            sex: (patientGender as any) || null
+          }
+        });
+      } catch (llmErr) {
+        console.warn('[InterviewFlow] fetchLlmFollowups error:', llmErr);
+      }
+    }
+
     // 4. If critical tier triggered by ES panel, lock interview immediately
     if (activeTier === 'critical') {
       const critFlag: RedFlagResult = redFlag || { type: 'red_flag', flag_id: 'PANEL_CRITICAL' };
@@ -335,7 +367,11 @@ export default function InterviewFlow() {
         currentQId,
         answers: updatedAnswers,
         history: updatedHistory,
-        firedFlags: updatedFiredFlags
+        firedFlags: updatedFiredFlags,
+        patientContext: {
+          age: patientAge ? parseInt(patientAge, 10) : null,
+          sex: (patientGender as any) || null
+        }
       },
       activeTier || 'low'
     );
@@ -468,7 +504,16 @@ export default function InterviewFlow() {
     );
   }
 
-  const currentQ = tree.questions[currentQId];
+  const currentQ = tree.questions[currentQId] || getDynamicQuestion(currentQId);
+  if (!currentQ) {
+    return (
+      <div className="min-h-screen bg-sand flex items-center justify-center">
+        <p className="text-charcoal font-body text-lg">
+          {isMr ? 'लोड होत आहे...' : isBn ? 'লোড হচ্ছে...' : isHi ? 'लोड हो रहा है...' : 'Loading...'}
+        </p>
+      </div>
+    );
+  }
   const questionPrompt = isMr
     ? (currentQ.text_mr || currentQ.text_hi || currentQ.text)
     : isBn
