@@ -62,6 +62,7 @@ export default function InterviewFlow() {
   const [accumulatedAnswers, setAccumulatedAnswers] = useState<Record<string, string | string[]>>({});
   const [answerHistory, setAnswerHistory] = useState<Array<{ question_id: string; question_text: string; answer: string }>>([]);
   const [panelUnavailable, setPanelUnavailable] = useState(false);
+  const [isPanelLoading, setIsPanelLoading] = useState(false);
   const [answersSinceLastPanel, setAnswersSinceLastPanel] = useState(0);
 
   // Load tree logic
@@ -282,6 +283,7 @@ export default function InterviewFlow() {
 
     // 3. Differential panel refresh (after 2+ answers, red flag, or uninitialized tier)
     if (newAnswersCount >= 2 || redFlag || activeTier === null) {
+      setIsPanelLoading(true);
       try {
         const patientAge = sessionStorage.getItem('patient_age');
         const patientGender = sessionStorage.getItem('patient_gender');
@@ -311,6 +313,8 @@ export default function InterviewFlow() {
       } catch (panelErr) {
         console.warn('[InterviewFlow] panel error fallback:', panelErr);
         setPanelUnavailable(true);
+      } finally {
+        setIsPanelLoading(false);
       }
     }
 
@@ -477,28 +481,67 @@ export default function InterviewFlow() {
     <div className="min-h-screen bg-sand flex flex-col pt-12 p-4 sm:p-6 relative overflow-x-hidden">
       <MandalaBackground />
       <div className="z-10 w-full box-border">
-         {isReplannerEnabled() && replannerTier && (
+         {isReplannerEnabled() && (
            <div
              className={`max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold shadow-xs ${
-               replannerTier === 'critical'
+               isPanelLoading || (!replannerTier && !panelUnavailable && stepCount === 0)
+                 ? 'bg-gray-500/10 border-gray-500/30 text-gray-700'
+                 : panelUnavailable || !replannerTier
+                 ? 'bg-amber-500/10 border-amber-500/30 text-amber-800'
+                 : replannerTier === 'critical'
                  ? 'bg-red-500/10 border-red-500/30 text-red-700'
                  : replannerTier === 'high'
                  ? 'bg-orange-500/10 border-orange-500/30 text-orange-700'
                  : replannerTier === 'moderate'
                  ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-800'
-                 : 'bg-gray-500/10 border-gray-500/30 text-gray-700'
+                 : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800'
              }`}
            >
              <span className="flex items-center gap-1.5">
-               {replannerTier === 'critical' && 'CRITICAL'}
-               {replannerTier === 'high' && 'HIGH PRIORITY'}
-               {replannerTier === 'moderate' && 'MODERATE'}
-               {replannerTier === 'low' && 'LOW'}
-               {currentEs !== null && !isNaN(currentEs) ? ` (ES: ${currentEs.toFixed(1)})` : ''}
+               {isPanelLoading || (!replannerTier && !panelUnavailable && stepCount === 0) ? (
+                 <>
+                   <span className="text-gray-500">●</span>
+                   <span>ES: Analyzing...</span>
+                 </>
+               ) : panelUnavailable || !replannerTier ? (
+                 <>
+                   <span className="text-amber-600">●</span>
+                   <span>ES: Unavailable (LLM Error)</span>
+                 </>
+               ) : (
+                 <>
+                   <span
+                     className={
+                       replannerTier === 'critical'
+                         ? 'text-red-600'
+                         : replannerTier === 'high'
+                         ? 'text-orange-600'
+                         : replannerTier === 'moderate'
+                         ? 'text-yellow-600'
+                         : 'text-emerald-600'
+                     }
+                   >
+                     ●
+                   </span>
+                   <span>
+                     {replannerTier === 'critical' && 'CRITICAL'}
+                     {replannerTier === 'high' && 'HIGH'}
+                     {replannerTier === 'moderate' && 'MODERATE'}
+                     {replannerTier === 'low' && 'LOW'}
+                     {currentEs !== null && !isNaN(currentEs)
+                       ? ` (ES: ${currentEs.toFixed(1)})`
+                       : ''}
+                   </span>
+                 </>
+               )}
              </span>
-             {panelUnavailable && (
-               <span className="text-[11px] text-muted font-normal">Panel unavailable</span>
-             )}
+             <span className="text-[11px] opacity-75 font-normal uppercase tracking-wider">
+               {isPanelLoading || (!replannerTier && !panelUnavailable && stepCount === 0)
+                 ? 'Analyzing'
+                 : panelUnavailable || !replannerTier
+                 ? 'Fallback'
+                 : 'Expected Severity'}
+             </span>
            </div>
          )}
          <InterviewQuestion
