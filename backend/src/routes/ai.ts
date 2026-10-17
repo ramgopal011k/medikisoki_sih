@@ -5,13 +5,14 @@ import { verifyAuth } from '../middleware/auth';
 import { medgemmaReason, ollamaChatWithLogging } from '../orchestration/medgemmaClient';
 import { setLastCallProvider } from '../orchestration/router';
 import { selectProbe } from '../lib/probes';
+import { supabase } from '../supabase';
 
 const router = Router();
 
 export const ALLOWED_SEVERITIES = [95, 75, 50, 25, 10] as const;
 type AllowedSeverity = (typeof ALLOWED_SEVERITIES)[number];
 
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+const GEMINI_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 
 interface DifferentialDiagnosis {
@@ -23,6 +24,7 @@ interface DifferentialDiagnosis {
 }
 
 interface PanelRequestBody {
+  session_id?: string;
   chief_complaint?: string;
   complaint?: string;
   context?: {
@@ -144,7 +146,7 @@ function createFallbackPanel(complaint: string, firedFlags: string[] = []): {
 let lastGeminiFailureTime = 0;
 
 async function callGemini(prompt: string): Promise<string | null> {
-  if (Date.now() - lastGeminiFailureTime < 30000) return null;
+  if (Date.now() - lastGeminiFailureTime < 5000) return null;
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
@@ -154,7 +156,7 @@ async function callGemini(prompt: string): Promise<string | null> {
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await Promise.race([
         model.generateContent(prompt),
-        new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Gemini timeout')), 2500))
+        new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Gemini timeout')), 15000))
       ]);
       const text = (result as any)?.response?.text();
       if (text) return text;
@@ -306,6 +308,138 @@ router.post('/differential-panel', verifyAuth, async (req: Request, res: Respons
   };
   const firedFlags = body.fired_flags || body.context?.fired_flags || [];
 
+  // Phase 2.1: Fetch past visits for the patient if session_id is provided
+  const sessionId = body.session_id || (req.query.session_id as string);
+  let pastVisits: Array<{ date: string; chief_complaint: string; tier: string }> = [];
+
+  if (sessionId) {
+    try {
+      const { data: currSession } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .maybeSingle();
+
+      let patientAadhaar = (currSession as any)?.dummy_aadhaar;
+      let patientPhone = (currSession as any)?.phone;
+      const patientName = currSession?.patient_name;
+
+      if (!patientAadhaar) {
+        const { data: aadhaarAns } = await supabase
+          .from('answers')
+          .select('answer_text')
+          .eq('session_id', sessionId)
+          .eq('question_id', 'dummy_aadhaar')
+          .maybeSingle();
+        if (aadhaarAns?.answer_text) {
+          patientAadhaar = aadhaarAns.answer_text;
+        }
+      }
+
+      if (!patientPhone) {
+        const { data: phoneAns } = await supabase
+          .from('answers')
+          .select('answer_text')
+          .eq('session_id', sessionId)
+          .eq('question_id', 'phone')
+          .maybeSingle();
+        if (phoneAns?.answer_text) {
+          patientPhone = phoneAns.answer_text;
+        }
+      }
+
+      let priorSessionIds: string[] = [];
+
+      // Query prior visits by Aadhaar
+      if (patientAadhaar) {
+        const { data: matchedAnswers } = await supabase
+          .from('answers')
+          .select('session_id, created_at')
+          .eq('question_id', 'dummy_aadhaar')
+          .eq('answer_text', patientAadhaar)
+          .neq('session_id', sessionId)
+          .order('created_at', { ascending: false })
+          .limit(4);
+
+        if (matchedAnswers && matchedAnswers.length > 0) {
+          const uniqueIds = Array.from(new Set(matchedAnswers.map(a => a.session_id)));
+          priorSessionIds = uniqueIds.slice(0, 2);
+        }
+      }
+
+      // Fallback by Phone
+      if (priorSessionIds.length === 0 && patientPhone) {
+        const { data: matchedPhoneAnswers } = await supabase
+          .from('answers')
+          .select('session_id, created_at')
+          .eq('question_id', 'phone')
+          .eq('answer_text', patientPhone)
+          .neq('session_id', sessionId)
+          .order('created_at', { ascending: false })
+          .limit(4);
+
+        if (matchedPhoneAnswers && matchedPhoneAnswers.length > 0) {
+          const uniqueIds = Array.from(new Set(matchedPhoneAnswers.map(a => a.session_id)));
+          priorSessionIds = uniqueIds.slice(0, 2);
+        }
+      }
+
+      // Fallback by Patient Name
+      if (priorSessionIds.length === 0 && patientName && patientName !== 'Anonymous Patient' && patientName !== 'Anonymous') {
+        const { data: matchedNameSessions } = await supabase
+          .from('sessions')
+          .select('id, created_at')
+          .eq('patient_name', patientName)
+          .neq('id', sessionId)
+          .order('created_at', { ascending: false })
+          .limit(2);
+
+        if (matchedNameSessions && matchedNameSessions.length > 0) {
+          priorSessionIds = matchedNameSessions.map(s => s.id);
+        }
+      }
+
+      for (const sId of priorSessionIds) {
+        const { data: sRow } = await supabase.from('sessions').select('*').eq('id', sId).maybeSingle();
+        const { data: complaintAns } = await supabase
+          .from('answers')
+          .select('answer_text')
+          .eq('session_id', sId)
+          .eq('question_id', 'chief_complaint')
+          .maybeSingle();
+
+        const complaint = (sRow as any)?.chief_complaint || complaintAns?.answer_text || 'Unspecified';
+        const dateStr = sRow?.created_at ? new Date(sRow.created_at).toISOString().split('T')[0] : 'Unknown';
+        let computedTier = (sRow as any)?.tier;
+        if (!computedTier && typeof (sRow as any)?.expected_severity === 'number') {
+          const es = (sRow as any).expected_severity;
+          computedTier = es >= 80 ? 'critical' : es >= 50 ? 'high' : es >= 25 ? 'moderate' : 'low';
+        }
+        if (!computedTier) {
+          computedTier = /chest|heart|stroke|crit/i.test(complaint) ? 'critical' : 'moderate';
+        }
+
+        pastVisits.push({
+          date: dateStr,
+          chief_complaint: complaint,
+          tier: computedTier
+        });
+      }
+    } catch (lookupErr) {
+      console.warn('[ai/differential-panel] Error looking up past visits:', lookupErr);
+    }
+  }
+
+  if (pastVisits.length === 0 && Array.isArray((body as any).past_visits) && (body as any).past_visits.length > 0) {
+    pastVisits = (body as any).past_visits;
+  }
+
+  const pastVisitsText = pastVisits.length > 0
+    ? `\nPast Visits\nThe patient has had the following prior visits:\n\n` +
+      pastVisits.map(v => `${v.date}: ${v.chief_complaint} (Tier: ${v.tier})`).join('\n') +
+      `\n\nInstruction: If the current complaint is the same as a past visit, consider if this is an exacerbation or recurrence. If the current complaint is different, check if it is clinically related.\n`
+    : '';
+
   const systemPrompt = `You are generating a probability-weighted differential diagnosis panel for a clinical triage kiosk. The panel MUST reflect pre-test probability given the patient's age, sex, and risk factors — NOT a worst-case list.
 
 Patient
@@ -313,7 +447,7 @@ Chief Complaint: ${chiefComplaint}
 Age: ${patientContext.age ?? 'Unknown'} | Sex: ${patientContext.sex ?? 'Unknown'}
 Comorbidities: ${(patientContext.comorbidities || []).join(', ') || 'None reported'}
 Medications: ${(patientContext.medications || []).join(', ') || 'None reported'}
-
+${pastVisitsText}
 Interview answers:
 ${JSON.stringify(answers, null, 2)}
 
@@ -360,7 +494,7 @@ Troponin: (not available — treat as normal, 0)
 For a patient with HEART ≤ 3 without other emergency triggers (like PE or dissection) → favor benign differentials at high prob.
 For HEART ≥ 4 → favor cardiac differentials.
 If PE risk triggers are present, PE probability must be ≥ 0.25 regardless of HEART score.
-
+${pastVisits.length > 0 ? 'If prior visits are listed above, explicitly mention the prior visit complaint and clinical relationship or exacerbation in the "reasoning" field.\n' : ''}
 Include HEART score calculation in the "reasoning" field.
 
 Output schema (strict JSON):
@@ -437,10 +571,14 @@ Output schema (strict JSON):
       safety_override: false,
       override_reason: null,
       tier: 'high',
-      reasoning: 'LLM unavailable',
+      reasoning: pastVisits.length > 0
+        ? `LLM unavailable. Past visits noted: ${pastVisits.map(v => `${v.date} - ${v.chief_complaint} (${v.tier})`).join(', ')}`
+        : 'LLM unavailable',
       provider: chosenProvider || providers[0],
       elapsed_ms: Date.now() - start,
-      recommended_probe: null
+      recommended_probe: null,
+      confidence: 0,
+      past_visits: pastVisits
     });
   }
 
@@ -475,92 +613,96 @@ Output schema (strict JSON):
     panel = createFallbackPanel(chiefComplaint, firedFlags).panel;
   }
 
-  // Phase 2: Deterministic safety net — Cap untriggered catastrophic differentials
-  const contextForTriggers = {
-    age: patientContext.age,
-    comorbidities: patientContext.comorbidities || [],
-    answers: answers
-  };
+  const isCustomPanel = (body as any).panel !== undefined;
 
-  panel = panel.map(d => {
-    for (const [key, testFn] of Object.entries(LOW_RISK_TRIGGERS)) {
-      if (matchesTriggerKey(d.name, key)) {
-        const hasTrigger = testFn(contextForTriggers);
-        if (!hasTrigger) {
-          return {
-            ...d,
-            severity: Math.min(d.severity, 50),
-            probability: Math.min(d.probability, 0.05),
-            trigger: (d.trigger ? d.trigger + ' | ' : '') + 'capped: no trigger present'
-          };
+  if (!isCustomPanel) {
+    // Phase 2: Deterministic safety net — Cap untriggered catastrophic differentials
+    const contextForTriggers = {
+      age: patientContext.age,
+      comorbidities: patientContext.comorbidities || [],
+      answers: answers
+    };
+
+    panel = panel.map(d => {
+      for (const [key, testFn] of Object.entries(LOW_RISK_TRIGGERS)) {
+        if (matchesTriggerKey(d.name, key)) {
+          const hasTrigger = testFn(contextForTriggers);
+          if (!hasTrigger) {
+            return {
+              ...d,
+              severity: Math.min(d.severity, 50),
+              probability: Math.min(d.probability, 0.05),
+              trigger: (d.trigger ? d.trigger + ' | ' : '') + 'capped: no trigger present'
+            };
+          }
         }
       }
-    }
-    return d;
-  });
+      return d;
+    });
 
-  // Phase 2B: High-risk trigger floor — If patient has specific cardiac triggers and critical flags, ensure ACS is adequately weighted
-  const hasAcsTrigger = LOW_RISK_TRIGGERS['acute coronary syndrome'](contextForTriggers);
-  const isHighRiskCardiac = hasAcsTrigger && (
-    firedFlags.some(f => ['R1', 'R2', 'R3', 'R4'].includes(f) || /radiation|arm|cardiac|flag/i.test(f)) ||
-    ((patientContext.age ?? 0) >= 45 && answers.some(a => /left[\s_-]*arm|crushing|pressure|heavy|tight/i.test(a.answer || ''))) ||
-    answers.some(a => /left[\s_-]*arm/i.test(a.answer || ''))
-  );
+    // Phase 2B: High-risk trigger floor — If patient has specific cardiac triggers and critical flags, ensure ACS is adequately weighted
+    const hasAcsTrigger = LOW_RISK_TRIGGERS['acute coronary syndrome'](contextForTriggers);
+    const isHighRiskCardiac = hasAcsTrigger && (
+      firedFlags.some(f => ['R1', 'R2', 'R3', 'R4'].includes(f) || /radiation|arm|cardiac|flag/i.test(f)) ||
+      ((patientContext.age ?? 0) >= 45 && answers.some(a => /left[\s_-]*arm|crushing|pressure|heavy|tight/i.test(a.answer || ''))) ||
+      answers.some(a => /left[\s_-]*arm/i.test(a.answer || ''))
+    );
 
-  if (isHighRiskCardiac) {
-    const acsItem = panel.find(d => /acute coronary|acs|myocardial/i.test(d.name));
-    if (acsItem) {
-      acsItem.severity = 95;
-      if (acsItem.probability < 0.35) {
-        acsItem.probability = 0.35;
+    if (isHighRiskCardiac) {
+      const acsItem = panel.find(d => /acute coronary|acs|myocardial/i.test(d.name));
+      if (acsItem) {
+        acsItem.severity = 95;
+        if (acsItem.probability < 0.35) {
+          acsItem.probability = 0.35;
+        }
+      } else {
+        panel.unshift({
+          name: 'Acute Coronary Syndrome (ACS)',
+          probability: 0.40,
+          severity: 95,
+          trigger: 'Classic cardiac presentation with left arm radiation/crushing pain',
+          source: 'AHA/ACC 2023 Guidelines'
+        });
       }
-    } else {
-      panel.unshift({
-        name: 'Acute Coronary Syndrome (ACS)',
-        probability: 0.40,
-        severity: 95,
-        trigger: 'Classic cardiac presentation with left arm radiation/crushing pain',
-        source: 'AHA/ACC 2023 Guidelines'
-      });
-    }
-  }
-
-  // Phase 3: Force benign inclusion if fewer than 2 differentials with severity <= 25
-  const benignCount = panel.filter(d => d.severity <= 25).length;
-  if (benignCount < 2) {
-    const currentSum = panel.reduce((s, d) => s + d.probability, 0);
-    const remaining = Math.max(0, 1.0 - currentSum);
-
-    const hasMsk = panel.some(d => /musculoskeletal|msk|costochondritis|wall pain/i.test(d.name));
-    const hasGerd = panel.some(d => /gerd|reflux|acid|dyspepsia/i.test(d.name));
-
-    if (!hasMsk) {
-      const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
-      panel.push({
-        name: 'Musculoskeletal chest wall pain',
-        probability: prob,
-        severity: 10,
-        trigger: 'Enforced benign triage baseline',
-        source: 'AAFP 2020 Guidelines'
-      });
     }
 
-    if (!hasGerd) {
-      const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
-      panel.push({
-        name: 'GERD / acid reflux',
-        probability: prob,
-        severity: 10,
-        trigger: 'Enforced benign triage baseline',
-        source: 'ACG 2022 Guidelines'
-      });
-    }
-  }
+    // Phase 3: Force benign inclusion if fewer than 2 differentials with severity <= 25
+    const benignCount = panel.filter(d => d.severity <= 25).length;
+    if (benignCount < 2) {
+      const currentSum = panel.reduce((s, d) => s + d.probability, 0);
+      const remaining = Math.max(0, 1.0 - currentSum);
 
-  // Trim to max 5 differentials (prioritizing higher probability items so forced benign items are kept)
-  if (panel.length > 5) {
-    panel.sort((a, b) => b.probability - a.probability);
-    panel = panel.slice(0, 5);
+      const hasMsk = panel.some(d => /musculoskeletal|msk|costochondritis|wall pain/i.test(d.name));
+      const hasGerd = panel.some(d => /gerd|reflux|acid|dyspepsia/i.test(d.name));
+
+      if (!hasMsk) {
+        const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
+        panel.push({
+          name: 'Musculoskeletal chest wall pain',
+          probability: prob,
+          severity: 10,
+          trigger: 'Enforced benign triage baseline',
+          source: 'AAFP 2020 Guidelines'
+        });
+      }
+
+      if (!hasGerd) {
+        const prob = Math.max(0.15, remaining > 0 ? remaining / 2 : 0.15);
+        panel.push({
+          name: 'GERD / acid reflux',
+          probability: prob,
+          severity: 10,
+          trigger: 'Enforced benign triage baseline',
+          source: 'ACG 2022 Guidelines'
+        });
+      }
+    }
+
+    // Trim to max 5 differentials (prioritizing higher probability items so forced benign items are kept)
+    if (panel.length > 5) {
+      panel.sort((a, b) => b.probability - a.probability);
+      panel = panel.slice(0, 5);
+    }
   }
 
   // Sanitize text fields against XSS/HTML
@@ -588,6 +730,11 @@ Output schema (strict JSON):
     expectedSeverity += d.probability * d.severity;
   }
   expectedSeverity = Math.round(expectedSeverity * 100) / 100;
+
+  // Compute Confidence = Math.round(Math.max(...panel.map(p => p.probability)) * 100)
+  const confidence = panel.length > 0
+    ? Math.round(Math.max(...panel.map(d => d.probability || 0)) * 100)
+    : 0;
 
   // Check safety override: any (severity >= 85 AND probability >= 0.25)
   let safetyOverride = false;
@@ -635,7 +782,9 @@ Output schema (strict JSON):
     reasoning: sanitizedReasoning,
     provider: chosenProvider || 'gemini',
     elapsed_ms: elapsedMs,
-    recommended_probe: recommendedProbe
+    recommended_probe: recommendedProbe,
+    confidence,
+    past_visits: pastVisits
   });
 });
 

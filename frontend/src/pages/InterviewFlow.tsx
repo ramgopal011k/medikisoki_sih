@@ -60,6 +60,10 @@ export default function InterviewFlow() {
     const saved = sessionStorage.getItem('current_es');
     return saved ? parseFloat(saved) : null;
   });
+  const [currentConfidence, setCurrentConfidence] = useState<number | null>(() => {
+    const saved = sessionStorage.getItem('current_confidence');
+    return saved ? parseInt(saved, 10) : null;
+  });
   const [firedFlags, setFiredFlags] = useState<string[]>([]);
   const [accumulatedAnswers, setAccumulatedAnswers] = useState<Record<string, string | string[]>>({});
   const [answerHistory, setAnswerHistory] = useState<Array<{ question_id: string; question_text: string; answer: string }>>([]);
@@ -85,9 +89,11 @@ export default function InterviewFlow() {
         setCurrentQId(loadedTree.start_question_id);
         sessionStorage.removeItem('current_tier');
         sessionStorage.removeItem('current_es');
+        sessionStorage.removeItem('current_confidence');
         resetLlmFollowupCache();
         setReplannerTier(null);
         setCurrentEs(null);
+        setCurrentConfidence(null);
         setFiredFlags([]);
       }
     } else {
@@ -316,6 +322,10 @@ export default function InterviewFlow() {
           setCurrentEs(panelResult.expected_severity);
           sessionStorage.setItem('current_es', String(panelResult.expected_severity));
           sessionStorage.setItem('current_tier', panelResult.tier);
+          if (typeof panelResult.confidence === 'number') {
+            setCurrentConfidence(panelResult.confidence);
+            sessionStorage.setItem('current_confidence', String(panelResult.confidence));
+          }
           setAnswersSinceLastPanel(0);
           setPanelUnavailable(false);
         } else {
@@ -530,7 +540,7 @@ export default function InterviewFlow() {
       <div className="z-10 w-full box-border mb-16 sm:mb-8">
          {isReplannerEnabled() && (
            <div
-             className={`max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold shadow-xs ${
+             className={`max-w-xl mx-auto mb-3 flex items-center justify-between px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold shadow-xs transition-all ${
                isPanelLoading || (!replannerTier && !panelUnavailable && stepCount === 0)
                  ? 'bg-gray-500/10 border-gray-500/30 text-gray-700'
                  : panelUnavailable || !replannerTier
@@ -542,6 +552,10 @@ export default function InterviewFlow() {
                  : replannerTier === 'moderate'
                  ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-800'
                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800'
+             } ${
+               currentConfidence !== null && currentConfidence < 50
+                 ? 'border-amber-400 border-2'
+                 : ''
              }`}
            >
              <span className="flex items-center gap-1.5">
@@ -576,8 +590,11 @@ export default function InterviewFlow() {
                      {replannerTier === 'moderate' && 'MODERATE'}
                      {replannerTier === 'low' && 'LOW'}
                      {currentEs !== null && !isNaN(currentEs)
-                       ? ` (ES: ${currentEs.toFixed(1)})`
+                       ? ` (ES: ${currentEs.toFixed(1)}${currentConfidence !== null ? ` | ${currentConfidence}% conf` : ''})`
                        : ''}
+                     {currentConfidence !== null && currentConfidence < 50 && (
+                       <span className="ml-1 text-amber-600 font-bold" title="Low certainty">*</span>
+                     )}
                    </span>
                  </>
                )}
@@ -587,6 +604,8 @@ export default function InterviewFlow() {
                  ? 'Analyzing'
                  : panelUnavailable || !replannerTier
                  ? 'Fallback'
+                 : currentConfidence !== null && currentConfidence < 50
+                 ? 'Low Certainty'
                  : 'Expected Severity'}
              </span>
            </div>

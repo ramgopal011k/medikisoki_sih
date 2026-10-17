@@ -36,8 +36,8 @@ export interface ReplanState {
 
 // Module-level timestamp and cache for debouncing panel requests
 let lastPanelCallTimestamp = 0;
-let lastCachedPanelResult: (ExpectedSeverityResult & { recommended_probe?: string | null }) | null = null;
-let pendingPanelPromise: Promise<(ExpectedSeverityResult & { recommended_probe?: string | null }) | null> | null = null;
+let lastCachedPanelResult: (ExpectedSeverityResult & { recommended_probe?: string | null; confidence?: number }) | null = null;
+let pendingPanelPromise: Promise<(ExpectedSeverityResult & { recommended_probe?: string | null; confidence?: number }) | null> | null = null;
 let lastRecommendedProbe: string | null = null;
 
 export interface DynamicLlmQuestion {
@@ -171,7 +171,7 @@ export async function scoreDifferentialPanel(
   chiefComplaint: string,
   state: ReplanState,
   debounceMs: number = 500
-): Promise<ExpectedSeverityResult | null> {
+): Promise<(ExpectedSeverityResult & { recommended_probe?: string | null; confidence?: number }) | null> {
   const now = Date.now();
   if (now - lastPanelCallTimestamp < debounceMs && lastCachedPanelResult) {
     return lastCachedPanelResult;
@@ -181,7 +181,12 @@ export async function scoreDifferentialPanel(
     return pendingPanelPromise;
   }
 
+  const sessionId = typeof sessionStorage !== 'undefined'
+    ? (sessionStorage.getItem('session_id') || sessionStorage.getItem('patient_session') || undefined)
+    : undefined;
+
   const payload = {
+    session_id: sessionId,
     chief_complaint: chiefComplaint,
     answers: state.history || Object.entries(state.answers).map(([qid, ans]) => ({
       question_id: qid,
@@ -229,13 +234,14 @@ export async function scoreDifferentialPanel(
         ? 'high'
         : data.tier;
 
-      const result: ExpectedSeverityResult & { recommended_probe?: string | null } = {
+      const result: ExpectedSeverityResult & { recommended_probe?: string | null; confidence?: number } = {
         expected_severity: data.expected_severity,
         safety_override: data.safety_override,
         override_reason: data.override_reason,
         tier: effectiveTier,
         normalized_panel: data.panel || [],
-        recommended_probe: data.recommended_probe ?? null
+        recommended_probe: data.recommended_probe ?? null,
+        confidence: typeof data.confidence === 'number' ? data.confidence : undefined
       };
 
       lastCachedPanelResult = result;
