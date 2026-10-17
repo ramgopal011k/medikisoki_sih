@@ -189,6 +189,48 @@ export const chestPainTree: InterviewTree = {
         if (answer === 'yes') return { type: 'red_flag', flag_id: 'chest_pain_dizziness' };
         return null; // End of interview
       }
+    },
+    q_chest_worse_exertion: {
+      id: 'q_chest_worse_exertion',
+      text: 'Does the pain get worse with physical activity?',
+      text_hi: 'क्या दर्द शारीरिक गतिविधि से बढ़ता है?',
+      text_mr: 'शारीरिक हालचालीने त्रास वाढतो का?',
+      text_bn: 'শারীরিক পরিশ্রমের সাথে কি ব্যথা বাড়ে?',
+      type: 'single_choice',
+      options: [
+        { value: 'yes', label: 'Yes', label_hi: 'हाँ', label_mr: 'होय', label_bn: 'হ্যাঁ' },
+        { value: 'no', label: 'No', label_hi: 'नहीं', label_mr: 'नाही', label_bn: 'না' },
+        { value: 'unsure', label: "I don't know", label_hi: 'पता नहीं', label_mr: 'माहित नाही', label_bn: 'জানি না' }
+      ],
+      next: () => 'next_after_probe'
+    },
+    q_recent_immobility: {
+      id: 'q_recent_immobility',
+      text: 'Have you had recent surgery, long travel, or leg swelling?',
+      text_hi: 'क्या हाल ही में सर्जरी, लंबी यात्रा, या पैर में सूजन हुई है?',
+      text_mr: 'नुकतीच शस्त्रक्रिया, मोठा प्रवास किंवा पायाला सूज आली आहे का?',
+      text_bn: 'সম্প্রতি কি কোনো সার্জারি, দীর্ঘ ভ্রমণ বা পায়ে ফোলা ভাব হয়েছে?',
+      type: 'single_choice',
+      options: [
+        { value: 'yes', label: 'Yes', label_hi: 'हाँ', label_mr: 'होय', label_bn: 'হ্যাঁ' },
+        { value: 'no', label: 'No', label_hi: 'नहीं', label_mr: 'नाही', label_bn: 'না' },
+        { value: 'unsure', label: "I don't know", label_hi: 'पता नहीं', label_mr: 'माहित नाही', label_bn: 'জানি না' }
+      ],
+      next: () => 'next_after_probe'
+    },
+    q_tearing_character: {
+      id: 'q_tearing_character',
+      text: 'Is the pain tearing or ripping in character?',
+      text_hi: 'क्या दर्द फटने या चीरने जैसा है?',
+      text_mr: 'वेदना फाडल्यासारख्या किंवा चिरल्यासारख्या आहेत का?',
+      text_bn: 'ব্যথা কি ফেটে যাওয়া বা ছিঁড়ে যাওয়ার মতো তীব্র?',
+      type: 'single_choice',
+      options: [
+        { value: 'yes', label: 'Yes', label_hi: 'हाँ', label_mr: 'होय', label_bn: 'হ্যাঁ' },
+        { value: 'no', label: 'No', label_hi: 'नहीं', label_mr: 'नाही', label_bn: 'না' },
+        { value: 'unsure', label: "I don't know", label_hi: 'पता नहीं', label_mr: 'माहित नाही', label_bn: 'জানি না' }
+      ],
+      next: () => 'next_after_probe'
     }
   }
 };

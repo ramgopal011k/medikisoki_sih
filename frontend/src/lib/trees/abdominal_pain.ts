@@ -155,6 +155,20 @@ export const abdominalPainTree: InterviewTree = {
         if (answer === 'coffee_ground') return { type: 'red_flag', flag_id: 'abdominal_hematemesis' };
         return null;
       }
+    },
+    q_rlq_tenderness: {
+      id: 'q_rlq_tenderness',
+      text: 'Does the pain hurt more when you press the lower right abdomen?',
+      text_hi: 'क्या निचले दाएं पेट पर दबाने से दर्द बढ़ता है?',
+      text_mr: 'पोटाच्या उजव्या बाजूला खाली दाबल्यास वेदना जास्त होतात का?',
+      text_bn: 'পেটের নিচের ডান দিকে চাপ দিলে কি ব্যথা বেশি লাগে?',
+      type: 'single_choice',
+      options: [
+        { value: 'yes', label: 'Yes', label_hi: 'हाँ', label_mr: 'होय', label_bn: 'হ্যাঁ' },
+        { value: 'no', label: 'No', label_hi: 'नहीं', label_mr: 'नाही', label_bn: 'না' },
+        { value: 'unsure', label: "I don't know", label_hi: 'पता नहीं', label_mr: 'माहित नाही', label_bn: 'জানি না' }
+      ],
+      next: () => 'next_after_probe'
     }
   }
 };

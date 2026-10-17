@@ -36,8 +36,17 @@ export interface ReplanState {
 
 // Module-level timestamp and cache for debouncing panel requests
 let lastPanelCallTimestamp = 0;
-let lastCachedPanelResult: ExpectedSeverityResult | null = null;
-let pendingPanelPromise: Promise<ExpectedSeverityResult | null> | null = null;
+let lastCachedPanelResult: (ExpectedSeverityResult & { recommended_probe?: string | null }) | null = null;
+let pendingPanelPromise: Promise<(ExpectedSeverityResult & { recommended_probe?: string | null }) | null> | null = null;
+let lastRecommendedProbe: string | null = null;
+
+export function getLastRecommendedProbe(): string | null {
+  return lastRecommendedProbe;
+}
+
+export function setLastRecommendedProbe(probe: string | null): void {
+  lastRecommendedProbe = probe;
+}
 
 /** Rule 1: SKIP — drop questions whose prerequisites are unmet */
 export function isQuestionSkipped(questionId: string, state: ReplanState): boolean {
@@ -174,12 +183,22 @@ export async function scoreDifferentialPanel(
       }
 
       const data = await res.json();
-      const result: ExpectedSeverityResult = {
+      lastRecommendedProbe = data.recommended_probe ?? null;
+
+      const answeredList = state.history?.map(h => h.question_id) || Object.keys(state.answers || {});
+      const hasUnansweredProbe = Boolean(data.recommended_probe && !answeredList.includes(data.recommended_probe));
+
+      const effectiveTier = (data.tier === 'critical' && hasUnansweredProbe)
+        ? 'high'
+        : data.tier;
+
+      const result: ExpectedSeverityResult & { recommended_probe?: string | null } = {
         expected_severity: data.expected_severity,
         safety_override: data.safety_override,
         override_reason: data.override_reason,
-        tier: data.tier,
-        normalized_panel: data.panel || []
+        tier: effectiveTier,
+        normalized_panel: data.panel || [],
+        recommended_probe: data.recommended_probe ?? null
       };
 
       lastCachedPanelResult = result;
@@ -196,13 +215,111 @@ export async function scoreDifferentialPanel(
 }
 
 /**
+ * Resolves the next question in the tree when resuming after a probe question
+ */
+export function normalTreeNext(
+  tree: InterviewTree,
+  state: ReplanState
+): InterviewQuestion | string | null {
+  // 1. If history exists, find the question asked immediately before this probe
+  if (state.history && state.history.length > 0) {
+    for (let i = state.history.length - 1; i >= 0; i--) {
+      const qId = state.history[i].question_id;
+      // Skip probe questions
+      if (tree.questions[qId]) {
+        try {
+          const dummyNext = tree.questions[qId].next('dummy' as any);
+          if (dummyNext === 'next_after_probe') {
+            continue;
+          }
+        } catch {
+          // Ignore
+        }
+      }
+      const prevQ = tree.questions[qId];
+      if (prevQ) {
+        const prevAns = state.answers[qId];
+        const prevNext = prevAns !== undefined ? prevQ.next(prevAns) : null;
+        let contId: string | null = null;
+        if (typeof prevNext === 'string' && prevNext !== 'next_after_probe') {
+          contId = prevNext;
+        } else if (isRedFlag(prevNext) && prevQ.options) {
+          for (const opt of prevQ.options) {
+            const alt = prevQ.next(opt.value);
+            if (typeof alt === 'string' && alt !== 'next_after_probe' && !state.answers[alt]) {
+              contId = alt;
+              break;
+            }
+          }
+        }
+        if (contId && !state.answers[contId]) {
+          return tree.questions[contId] || contId;
+        }
+      }
+    }
+  }
+
+  // 2. Main tree traversal from start_question_id following recorded answers
+  let curr: string | null = tree.start_question_id;
+  const visited = new Set<string>();
+  while (curr && !visited.has(curr)) {
+    visited.add(curr);
+    const ans = state.answers[curr];
+    if (ans === undefined) {
+      return tree.questions[curr] || curr;
+    }
+    const q = tree.questions[curr];
+    if (!q) break;
+    let n: string | RedFlagResult | null = null;
+    try {
+      n = q.next(ans);
+    } catch {
+      n = null;
+    }
+    if (typeof n === 'string' && n !== 'next_after_probe') {
+      curr = n;
+    } else if (isRedFlag(n) && q.options) {
+      let foundAlt = false;
+      for (const opt of q.options) {
+        const alt = q.next(opt.value);
+        if (typeof alt === 'string' && alt !== 'next_after_probe' && !state.answers[alt]) {
+          curr = alt;
+          foundAlt = true;
+          break;
+        }
+      }
+      if (!foundAlt) break;
+    } else {
+      break;
+    }
+  }
+
+  // 3. Fallback to first unasked non-probe question in tree
+  for (const qId of Object.keys(tree.questions)) {
+    const q = tree.questions[qId];
+    if (!state.answers[qId] && qId !== state.currentQId && !isQuestionSkipped(qId, state)) {
+      try {
+        if (q.next('dummy' as any) !== 'next_after_probe') {
+          return q || qId;
+        }
+      } catch {
+        return q || qId;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Main replan() function
  * Returns next question ID, next Question object, RedFlagResult, or null
  */
 export function replan(
   tree: InterviewTree,
   state: ReplanState,
-  tier: Tier
+  tier: Tier,
+  panelResponse?: { recommended_probe?: string | null } | null
 ): InterviewQuestion | string | RedFlagResult | null {
   // If tier is critical, safety override locks/stops interview flow
   if (tier === 'critical') {
@@ -214,6 +331,31 @@ export function replan(
 
   const currentAnswer = state.answers[state.currentQId];
   const standardNext = currentAnswer !== undefined ? currentQ.next(currentAnswer) : null;
+
+  // Handle resume logic after probe:
+  // The `next_after_probe` sentinel maps to the node the tree would have gone to without the probe.
+  if (standardNext === 'next_after_probe') {
+    return normalTreeNext(tree, state);
+  }
+
+  // Before returning standard tree question, check for recommended probe
+  const recommendedProbe = panelResponse !== undefined
+    ? panelResponse?.recommended_probe
+    : lastRecommendedProbe;
+
+  const answeredIds: string[] = (state as any).answered || Object.keys(state.answers || {});
+
+  if (
+    recommendedProbe &&
+    !answeredIds.includes(recommendedProbe) &&
+    tree.questions[recommendedProbe] &&
+    state.currentQId !== recommendedProbe
+  ) {
+    if (lastRecommendedProbe === recommendedProbe) {
+      lastRecommendedProbe = null;
+    }
+    return tree.questions[recommendedProbe];
+  }
 
   // If a red flag was returned by next()
   let nextCandidateId: string | null = null;

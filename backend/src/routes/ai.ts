@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express';
+import http from 'http';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { verifyAuth } from '../middleware/auth';
-import { medgemmaReason } from '../orchestration/medgemmaClient';
+import { medgemmaReason, ollamaChatWithLogging } from '../orchestration/medgemmaClient';
 import { setLastCallProvider } from '../orchestration/router';
+import { selectProbe } from '../lib/probes';
 
 const router = Router();
 
@@ -167,17 +169,79 @@ async function callGemini(prompt: string): Promise<string | null> {
 let lastOllamaFailureTime = 0;
 
 async function callMedGemma(prompt: string): Promise<string | null> {
+  const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
   try {
-    const text = await medgemmaReason(prompt, 'differential-panel');
+    const url = new URL(ollamaUrl);
+    const text = await new Promise<string | null>((resolve) => {
+      const payload = JSON.stringify({
+        model: 'medgemma1.5:latest',
+        messages: [{ role: 'user', content: prompt }],
+        stream: false,
+        format: 'json',
+        options: {
+          temperature: 0.1,
+          num_predict: 500
+        }
+      });
+
+      const req = http.request(
+        {
+          hostname: url.hostname || 'localhost',
+          port: url.port || 11434,
+          path: '/api/chat',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(payload)
+          },
+          timeout: 25000
+        },
+        (res) => {
+          let body = '';
+          res.on('data', chunk => body += chunk);
+          res.on('end', () => {
+            try {
+              const data = JSON.parse(body);
+              if (data.message?.content) {
+                resolve(data.message.content);
+                return;
+              }
+            } catch (e) {
+              console.warn('[ai/differential-panel] MedGemma JSON parse error from HTTP:', e);
+            }
+            resolve(null);
+          });
+        }
+      );
+
+      req.on('timeout', () => {
+        req.destroy();
+        console.warn('[ai/differential-panel] MedGemma HTTP call timeout');
+        resolve(null);
+      });
+
+      req.on('error', (err) => {
+        console.warn('[ai/differential-panel] MedGemma HTTP call error:', err.message);
+        resolve(null);
+      });
+
+      req.write(payload);
+      req.end();
+    });
+
     if (text) return text;
   } catch (err: any) {
-    console.warn('[ai/differential-panel] MedGemma attempt 1 error, retrying once...', err?.message || err);
-    try {
-      const text = await medgemmaReason(prompt, 'differential-panel');
-      if (text) return text;
-    } catch (err2: any) {
-      console.warn('[ai/differential-panel] MedGemma attempt 2 error:', err2?.message || err2);
-    }
+    console.warn('[ai/differential-panel] Direct Ollama HTTP call notice, falling back...', err?.message || err);
+  }
+
+  try {
+    const res = await ollamaChatWithLogging(prompt, 'differential-panel', {
+      temperature: 0.1,
+      num_predict: 500
+    });
+    if (res?.content) return res.content;
+  } catch (err: any) {
+    console.warn('[ai/differential-panel] MedGemma error:', err?.message || err);
   }
   return null;
 }
@@ -186,11 +250,11 @@ const LOW_RISK_TRIGGERS: Record<string, (ctx: { age: number | null; comorbiditie
   'acute coronary syndrome': (ctx) =>
     (ctx.age !== null && ctx.age >= 45) ||
     (ctx.comorbidities || []).some(c => /diabet|hypertens|smok|cholesterol|cad|heart/i.test(c)) ||
-    ctx.answers.some(a => /left arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
+    ctx.answers.some(a => /left[\s_-]*arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
   'myocardial infarction': (ctx) =>
     (ctx.age !== null && ctx.age >= 45) ||
     (ctx.comorbidities || []).some(c => /diabet|hypertens|smok|cholesterol|cad|heart/i.test(c)) ||
-    ctx.answers.some(a => /left arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
+    ctx.answers.some(a => /left[\s_-]*arm|jaw|crushing|pressure|heavy|tight/i.test(a.answer || '')),
   'pulmonary embolism': (ctx) =>
     ctx.answers.some(a => /surgery|immobil|travel|swelling|ocp|clot|dvt|hemoptysis|blood/i.test(a.answer || '')),
   'aortic dissection': (ctx) =>
@@ -375,19 +439,26 @@ Output schema (strict JSON):
       tier: 'high',
       reasoning: 'LLM unavailable',
       provider: chosenProvider || providers[0],
-      elapsed_ms: Date.now() - start
+      elapsed_ms: Date.now() - start,
+      recommended_probe: null
     });
   }
 
   // Validate and post-process panel
   let panel = parsedData.panel || [];
 
-  // Normalize numbers if strings returned
-  panel = panel.map(d => ({
-    ...d,
-    severity: typeof d.severity === 'string' ? parseInt(d.severity, 10) : d.severity,
-    probability: typeof d.probability === 'string' ? parseFloat(d.probability) : d.probability,
-  }));
+  // Normalize numbers if strings returned, and convert percentages (>1) to decimals (0-1)
+  panel = panel.map(d => {
+    let prob = typeof d.probability === 'string' ? parseFloat(d.probability) : d.probability;
+    if (typeof prob === 'number' && !isNaN(prob) && prob > 1.0) {
+      prob = prob / 100.0;
+    }
+    return {
+      ...d,
+      severity: typeof d.severity === 'string' ? parseInt(d.severity, 10) : d.severity,
+      probability: prob,
+    };
+  });
 
   // Filter severities: must be in [95, 75, 50, 25, 10], probability finite non-negative number
   panel = panel.filter(d =>
@@ -427,6 +498,32 @@ Output schema (strict JSON):
     }
     return d;
   });
+
+  // Phase 2B: High-risk trigger floor — If patient has specific cardiac triggers and critical flags, ensure ACS is adequately weighted
+  const hasAcsTrigger = LOW_RISK_TRIGGERS['acute coronary syndrome'](contextForTriggers);
+  const isHighRiskCardiac = hasAcsTrigger && (
+    firedFlags.some(f => ['R1', 'R2', 'R3', 'R4'].includes(f) || /radiation|arm|cardiac|flag/i.test(f)) ||
+    ((patientContext.age ?? 0) >= 45 && answers.some(a => /left[\s_-]*arm|crushing|pressure|heavy|tight/i.test(a.answer || ''))) ||
+    answers.some(a => /left[\s_-]*arm/i.test(a.answer || ''))
+  );
+
+  if (isHighRiskCardiac) {
+    const acsItem = panel.find(d => /acute coronary|acs|myocardial/i.test(d.name));
+    if (acsItem) {
+      acsItem.severity = 95;
+      if (acsItem.probability < 0.35) {
+        acsItem.probability = 0.35;
+      }
+    } else {
+      panel.unshift({
+        name: 'Acute Coronary Syndrome (ACS)',
+        probability: 0.40,
+        severity: 95,
+        trigger: 'Classic cardiac presentation with left arm radiation/crushing pain',
+        source: 'AHA/ACC 2023 Guidelines'
+      });
+    }
+  }
 
   // Phase 3: Force benign inclusion if fewer than 2 differentials with severity <= 25
   const benignCount = panel.filter(d => d.severity <= 25).length;
@@ -526,6 +623,9 @@ Output schema (strict JSON):
     .replace(/(AIza[0-9A-Za-z-_]{35}|sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,}|vcp_[a-zA-Z0-9]{20,})/g, '[REDACTED_SECRET]')
     .replace(/GEMINI_API_KEY/gi, '[REDACTED_KEY]');
 
+  const answeredIds = answers.map(a => a.question_id).filter(Boolean);
+  const recommendedProbe = selectProbe(panel, answeredIds);
+
   return res.json({
     panel,
     expected_severity: expectedSeverity,
@@ -534,7 +634,8 @@ Output schema (strict JSON):
     tier,
     reasoning: sanitizedReasoning,
     provider: chosenProvider || 'gemini',
-    elapsed_ms: elapsedMs
+    elapsed_ms: elapsedMs,
+    recommended_probe: recommendedProbe
   });
 });
 

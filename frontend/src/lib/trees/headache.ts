@@ -122,6 +122,20 @@ export const headacheTree: InterviewTree = {
         if (Array.isArray(answer) && answer.includes('speech')) return { type: 'red_flag', flag_id: 'headache_slurred_speech' };
         return null;
       }
+    },
+    q_thunderclap: {
+      id: 'q_thunderclap',
+      text: 'Did the headache come on suddenly and reach peak intensity within seconds?',
+      text_hi: 'क्या सिरदर्द अचानक शुरू हुआ और कुछ सेकंड में सबसे तेज हो गया?',
+      text_mr: 'डोकेदुखी अचानक सुरू होऊन काही सेकंदात तीव्र झाली का?',
+      text_bn: 'মাথাব্যথা কি হঠাৎ শুরু হয়ে কয়েক সেকেন্ডের মধ্যে তীব্রতম হয়ে উঠেছিল?',
+      type: 'single_choice',
+      options: [
+        { value: 'yes', label: 'Yes', label_hi: 'हाँ', label_mr: 'होय', label_bn: 'হ্যাঁ' },
+        { value: 'no', label: 'No', label_hi: 'नहीं', label_mr: 'नाही', label_bn: 'না' },
+        { value: 'unsure', label: "I don't know", label_hi: 'पता नहीं', label_mr: 'माहित नाही', label_bn: 'জানি না' }
+      ],
+      next: () => 'next_after_probe'
     }
   }
 };
