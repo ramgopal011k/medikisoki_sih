@@ -224,7 +224,7 @@ export function normalTreeNext(
   // 1. If history exists, find the question asked immediately before this probe
   if (state.history && state.history.length > 0) {
     for (let i = state.history.length - 1; i >= 0; i--) {
-      const qId = state.history[i].question_id;
+      const qId: string = state.history[i].question_id;
       // Skip probe questions
       if (tree.questions[qId]) {
         try {
@@ -236,7 +236,7 @@ export function normalTreeNext(
           // Ignore
         }
       }
-      const prevQ = tree.questions[qId];
+      const prevQ: InterviewQuestion | undefined = tree.questions[qId];
       if (prevQ) {
         const prevAns = state.answers[qId];
         const prevNext = prevAns !== undefined ? prevQ.next(prevAns) : null;
@@ -264,11 +264,11 @@ export function normalTreeNext(
   const visited = new Set<string>();
   while (curr && !visited.has(curr)) {
     visited.add(curr);
-    const ans = state.answers[curr];
+    const ans: string | string[] | undefined = state.answers[curr];
     if (ans === undefined) {
       return tree.questions[curr] || curr;
     }
-    const q = tree.questions[curr];
+    const q: InterviewQuestion | undefined = tree.questions[curr];
     if (!q) break;
     let n: string | RedFlagResult | null = null;
     try {
@@ -296,10 +296,10 @@ export function normalTreeNext(
 
   // 3. Fallback to first unasked non-probe question in tree
   for (const qId of Object.keys(tree.questions)) {
-    const q = tree.questions[qId];
+    const q: InterviewQuestion | undefined = tree.questions[qId];
     if (!state.answers[qId] && qId !== state.currentQId && !isQuestionSkipped(qId, state)) {
       try {
-        if (q.next('dummy' as any) !== 'next_after_probe') {
+        if (q && q.next('dummy' as any) !== 'next_after_probe') {
           return q || qId;
         }
       } catch {
@@ -326,7 +326,7 @@ export function replan(
     return null;
   }
 
-  const currentQ = tree.questions[state.currentQId];
+  const currentQ: InterviewQuestion | undefined = tree.questions[state.currentQId];
   if (!currentQ) return null;
 
   const currentAnswer = state.answers[state.currentQId];
