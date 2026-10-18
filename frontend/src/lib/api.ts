@@ -3,9 +3,11 @@ const formattedApi = rawApi.startsWith('http://') || rawApi.startsWith('https://
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
 export const API_URL =
-  isLocalhost || rawApi === 'http://localhost:3001' || rawApi === 'http://localhost:3001/' || rawApi === ''
+  isLocalhost
     ? '' // use relative — proxy handles it
-    : formattedApi.replace(/\/+$/, '');
+    : (rawApi && rawApi !== 'http://localhost:3001' && rawApi !== 'http://localhost:3001/'
+        ? formattedApi.replace(/\/+$/, '')
+        : 'https://medikisoki-sih-backend.onrender.com');
 
 export const DEFAULT_AUTH_TOKEN = 'medikiosk-demo-token';
 

@@ -101,8 +101,8 @@ async function sendAudioToBackend(
   formData.append('audio', blob, `recording.${ext}`);
   formData.append('language_code', sarvamLang);
 
-  // Use the shared API_URL from lib/api — correctly resolves to Railway in production
-  // (VITE_API_URL env var, or https://medikisoki-production.up.railway.app on non-localhost)
+  // Use the shared API_URL from lib/api — correctly resolves to Render in production
+  // (VITE_API_URL env var, or https://medikisoki-sih-backend.onrender.com)
   const response = await fetch(`${API_URL}/api/sarvam/asr`, {
     method: 'POST',
     body: formData,
