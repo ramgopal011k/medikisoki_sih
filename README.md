@@ -5,6 +5,19 @@
 
 ---
 
+## 🚀 Quick Start (Demo)
+
+To launch the entire platform locally with a single click:
+1. Right-click [`start-demo.ps1`](file:///c:/game/pythoncoding/New%20folder/hackathon/start-demo.ps1) and select **"Run with PowerShell"** (or run `.\start-demo.ps1` from a terminal).
+2. The script automatically:
+   - Verifies and starts local Ollama with `medgemma1.5:latest`.
+   - Pre-warms MedGemma into GPU VRAM with a 30-minute keep-alive.
+   - Starts the **Backend API** (port 3001) in a visible terminal with live cinematic model traces.
+   - Starts the **Frontend Kiosk** (port 5173) in a dedicated terminal.
+   - Automatically opens your default browser to `http://localhost:5173`.
+
+---
+
 ## 📌 Project Overview
 
 MediKiosk is an offline-resilient, touch/voice-enabled clinical triage kiosk for Indian hospital OPDs. Patients self-record structured clinical histories in English or Hindi before seeing a physician, using voice input (Web Speech API), touch, or document OCR (Tesseract.js). The system surfaces red-flag emergencies in real-time to a clinician dashboard and records both Allopathic triage and AYUSH Dashavidha Pariksha assessments — all persisted to Supabase with full data provenance tagging.
