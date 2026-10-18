@@ -8,6 +8,14 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: "test-jwt-secret-for-ci"
+      SUPABASE_URL: "https://test.supabase.co"
+      SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key"
+      SUPABASE_ANON_KEY: "test-anon-key"
+      GEMINI_API_KEY: "test-gemini-key"
+      SARVAM_API_KEY: "test-sarvam-key"
+      ALLOW_DEMO_MOCK_AUTH: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

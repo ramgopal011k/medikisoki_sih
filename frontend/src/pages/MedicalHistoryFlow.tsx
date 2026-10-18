@@ -10,7 +10,7 @@ import { useAsr } from '@/hooks/useAsr';
 import { cleanTranscript } from '@/lib/transcriptCleaner';
 import { useAudio } from '@/hooks/useAudio';
 import { cn } from '@/lib/utils';
-import { API_URL } from '@/lib/api';
+import { API_URL, getAuthHeaders } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
 
@@ -146,7 +146,7 @@ export default function MedicalHistoryFlow() {
       try {
         const res = await fetch(`${API_URL}/medical-history`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify(item)
         });
         if (!res.ok) throw new Error('Sync failed');
@@ -367,7 +367,7 @@ export default function MedicalHistoryFlow() {
       if (!navigator.onLine) throw new Error('Offline');
       const res = await fetch(`${API_URL}/medical-history`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Server error');

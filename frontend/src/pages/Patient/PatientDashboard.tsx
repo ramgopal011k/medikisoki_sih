@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Activity, FileJson, Calendar, LogOut } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { MandalaBackground } from '../../components/MandalaBackground';
-import { API_URL } from '@/lib/api';
+import { API_URL, getAuthHeaders } from '@/lib/api';
 import { supabase } from '../../lib/supabase';
 
 export default function PatientDashboard() {
@@ -82,7 +82,10 @@ export default function PatientDashboard() {
   const handleRevokeConsent = async (sessionId: string) => {
     if (!window.confirm('Are you sure you want to revoke consent? This will permanently anonymize this visit record.')) return;
     try {
-      const res = await fetch(`${API_URL}/api/patient/visits/${sessionId}/revoke`, { method: 'POST' });
+      const res = await fetch(`${API_URL}/api/patient/visits/${sessionId}/revoke`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         setVisits(visits.filter(v => v.id !== sessionId));
       }
@@ -91,8 +94,24 @@ export default function PatientDashboard() {
     }
   };
 
-  const handleDownloadFHIR = (sessionId: string) => {
-    window.open(`${API_URL}/api/fhir/${sessionId}`, '_blank');
+  const handleDownloadFHIR = async (sessionId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/fhir/${sessionId}`, {
+        headers: getAuthHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to fetch FHIR bundle');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `fhir-bundle-${sessionId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to download FHIR bundle:', err);
+    }
   };
 
   if (!abhaId) return null;

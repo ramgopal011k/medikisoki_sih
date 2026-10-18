@@ -2,10 +2,11 @@ import { Router } from 'express';
 import { supabase } from '../supabase';
 import { evaluateAnswer } from '../redflags';
 import { historyFactSchema } from '../schemas';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     historyFactSchema.parse(req.body);
   } catch (e: any) {

@@ -60,7 +60,18 @@ if (typeof window !== 'undefined' && !(window as any).__api_fetch_intercepted__)
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     try {
       const url = typeof input === 'string' ? input : (input instanceof URL ? input.toString() : (input as Request).url || '');
-      const isBackend = (Boolean(API_URL) && url.startsWith(API_URL)) || url.startsWith('/api') || url.includes('/api/') || url.startsWith('/auth') || url.startsWith('/ayush-assessment') || url.startsWith('/medical-history');
+      const isBackend =
+        (Boolean(API_URL) && url.startsWith(API_URL)) ||
+        url.startsWith('/api') ||
+        url.includes('/api/') ||
+        url.startsWith('/auth') ||
+        url.startsWith('/ayush-assessment') ||
+        url.startsWith('/medical-history') ||
+        url.startsWith('/history-facts') ||
+        url.startsWith('/answers') ||
+        url.startsWith('/sessions') ||
+        url.startsWith('/documents') ||
+        url.startsWith('/summary');
       if (isBackend) {
         const headers = new Headers(init?.headers || {});
         if (!headers.has('Authorization')) {

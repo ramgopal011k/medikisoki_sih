@@ -8,7 +8,7 @@ import {
   ClipboardList, ArrowRight, User, ChevronDown, ChevronUp,
   Edit2, Check, X, FileText, HeartPulse, Activity, Sparkles, Plus
 } from 'lucide-react';
-import { API_URL } from '@/lib/api';
+import { API_URL, getAuthHeaders } from '@/lib/api';
 
 interface FactItem {
   id?: string;
@@ -204,7 +204,7 @@ export default function PatientPreview() {
       try {
         await fetch(`${API_URL}/api/answers/${fact.id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ answer_text: editFactText })
         });
       } catch (err) {
@@ -230,7 +230,7 @@ export default function PatientPreview() {
       try {
         await fetch(`${API_URL}/medical-history`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({
             session_id: sessionId,
             category: newItem.category,

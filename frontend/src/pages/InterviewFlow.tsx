@@ -8,7 +8,7 @@ import { MandalaBackground } from '../components/MandalaBackground';
 import { QuestionCard } from '../components/QuestionCard';
 import { get, set } from 'idb-keyval';
 import { supabase } from '@/lib/supabase';
-import { API_URL } from '@/lib/api';
+import { API_URL, getAuthHeaders } from '@/lib/api';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
 import { isReplannerEnabled, replan, scoreDifferentialPanel, fetchLlmFollowups, getDynamicQuestion, resetLlmFollowupCache } from '../lib/replan';
 import type { Tier } from '../lib/expectedSeverity';
@@ -114,7 +114,7 @@ export default function InterviewFlow() {
       try {
         const res = await fetch(`${API_URL}/history-facts`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify(fact)
         });
 
@@ -215,7 +215,7 @@ export default function InterviewFlow() {
       if (!navigator.onLine) throw new Error('Offline');
       const res = await fetch(`${API_URL}/history-facts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(payload)
       });
       if (res.status === 404) {

@@ -244,7 +244,7 @@ npm run lint
 - [x] Offline-first IndexedDB buffering with sync-on-reconnect
 - [x] 10-minute session idle timeout with 30-second warning modal
 - [x] bcrypt password hashing for doctor accounts
-- [x] Zod payload validation on all POST/PATCH endpoints
+- [x] Strict Zod validation on core AI routes; full schema validation is on the roadmap.
 - [x] Origin-based CSRF protection
 - [x] Rate limiting on auth and AI routes
 - [x] Patient portal — ABHA-based visit history + FHIR download
