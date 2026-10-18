@@ -57,8 +57,14 @@ export const ayushAssessmentSchema = z.object({
 });
 
 export const authSchema = z.object({
-  email: z.string().min(1),
+  email: z.string().email('Please enter a valid email address').or(z.literal('head')).or(z.literal('superadmin')),
   password: z.string().min(3)
+});
+
+export const patientSignupSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(3),
+  abhaId: z.string().length(14, 'Please enter a valid 14-digit ABHA ID')
 });
 
 export const analyzeRecordsSchema = z.object({

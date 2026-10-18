@@ -8,7 +8,8 @@ import {
   medicalHistorySchema, 
   historyFactSchema, 
   ayushAssessmentSchema,
-  authSchema 
+  authSchema,
+  patientSignupSchema 
 } from './schemas';
 import { reasonAyush } from './ayushReasoning';
 import { reasonAyushWithRag } from './rag/ayushRag';
@@ -17,7 +18,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import zlib from 'zlib';
 import { supabase } from './supabase';
-import { verifyAuth, signJwt } from './middleware/auth';
+import { verifyAuth, signJwt, requireAuth } from './middleware/auth';
 import triageRouter from './routes/triage';
 import { securityHeaders, createRateLimiter, sanitizePromptInput } from './middleware/security';
 import { getDoctorByEmail, saveDoctorAccount } from './services/doctorStore';
@@ -201,11 +202,14 @@ app.post('/api/analyze-records', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/fhir/:sessionId', async (req: Request, res: Response) => {
+app.get('/api/fhir/:sessionId', requireAuth, async (req: Request, res: Response) => {
   try {
     const bundle = await generateFhirBundle(String(req.params.sessionId));
     res.json(bundle);
   } catch (err: any) {
+    if (err.message === 'Session not found') {
+      return res.status(404).json({ error: 'Session not found' });
+    }
     console.error('FHIR Generation Error:', err);
     res.status(500).json({ error: err.message });
   }
@@ -272,7 +276,7 @@ app.get('/api/patient/visits/:abhaId', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/patient/visits/:sessionId/revoke', async (req: Request, res: Response) => {
+app.post('/api/patient/visits/:sessionId/revoke', requireAuth, async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
     
@@ -310,21 +314,17 @@ import aiRouter from './routes/ai';
 import healthRouter from './routes/health';
 
 // Apply Authentication Middleware to doctor/admin routes
-// Anonymous kiosk endpoints (POST /api/sessions, history-facts, answers, medical-history, ayush-assessment, sarvam, gemini, etc.) are public
+// Anonymous kiosk endpoints (POST /api/sessions, ayush-assessment, sarvam, gemini, etc.) are public
 app.use('/api', (req, res, next) => {
   if (req.method === 'POST' && (req.path === '/sessions' || req.path === '/api/sessions')) {
     return next();
   }
   if (
-    req.path.startsWith('/history-facts') ||
-    req.path.startsWith('/medical-history') ||
     req.path.startsWith('/ayush-assessment') ||
-    req.path.startsWith('/answers') ||
     req.path.startsWith('/documents') ||
     req.path.startsWith('/sarvam') ||
     req.path.startsWith('/gemini') ||
     req.path.startsWith('/summary') ||
-    req.path.startsWith('/fhir') ||
     req.path.startsWith('/health') ||
     req.path.startsWith('/auth') ||
     req.path.startsWith('/hospitals')
@@ -338,6 +338,7 @@ app.use('/api', (req, res, next) => {
 app.use('/api/sessions', sessionsRouter);
 app.use('/sessions', sessionsRouter);
 app.use('/api/answers', answersRouter);
+app.use('/answers', answersRouter);
 app.use('/api/summary', summaryRouter);
 app.use('/api/hospitals', hospitalsRouter);
 app.use('/api/documents', documentsRouter);
@@ -543,6 +544,48 @@ app.post('/auth/login', authLimiter, handleLogin);
 app.post('/api/auth/login', authLimiter, handleLogin);
 app.post('/auth/register', authLimiter, handleRegister);
 app.post('/api/auth/register', authLimiter, handleRegister);
+
+// Patient registration endpoint
+const handlePatientSignup = async (req: Request, res: Response) => {
+  try {
+    patientSignupSchema.parse(req.body);
+  } catch (e: any) {
+    return res.status(400).json({ error: e.errors?.[0]?.message || 'Invalid input', details: e.errors });
+  }
+
+  const { email, password, abhaId } = req.body;
+
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      user_metadata: { abha_id: abhaId },
+      email_confirm: true
+    });
+
+    if (error) {
+      if (error.message.includes('already registered') || error.message.includes('unique') || (error as any).status === 422) {
+        return res.status(409).json({ error: 'An account with this email already exists.' });
+      }
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(201).json({
+      success: true,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        abha_id: abhaId
+      }
+    });
+  } catch (err: any) {
+    console.error('Patient signup error:', err);
+    return res.status(500).json({ error: err.message || 'Signup failed' });
+  }
+};
+
+app.post('/auth/signup', authLimiter, handlePatientSignup);
+app.post('/api/auth/signup', authLimiter, handlePatientSignup);
 
 // Triage authentication endpoint
 const handleTriageLogin = async (req: Request, res: Response) => {
@@ -1343,7 +1386,7 @@ app.post('/api/demo/trigger-semantic', async (req: Request, res: Response) => {
 // (Root and health handlers defined above — duplicates removed)
 
 // Medical History Submission Endpoint
-app.post('/medical-history', async (req: Request, res: Response) => {
+app.post('/medical-history', requireAuth, async (req: Request, res: Response) => {
   try {
     medicalHistorySchema.parse(req.body);
   } catch (e: any) {
@@ -1382,7 +1425,7 @@ app.post('/medical-history', async (req: Request, res: Response) => {
 });
 
 // History facts endpoint for dynamic tree facts
-app.post('/history-facts', async (req: Request, res: Response) => {
+app.post('/history-facts', requireAuth, async (req: Request, res: Response) => {
   try {
     historyFactSchema.parse(req.body);
   } catch (e: any) {

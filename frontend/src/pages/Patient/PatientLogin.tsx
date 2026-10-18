@@ -5,6 +5,9 @@ import { MandalaBackground } from '../../components/MandalaBackground';
 import { QuestionCard } from '../../components/QuestionCard';
 import { supabase } from '../../lib/supabase';
 import { prefetchPatientVisits } from '@/lib/prefetch';
+import { API_URL } from '@/lib/api';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function PatientLogin() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,12 +21,24 @@ export default function PatientLogin() {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const cleanEmail = email.trim();
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password || password.length < 3) {
+      setError('Password must be at least 3 characters.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isLogin) {
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
+          email: cleanEmail,
           password
         });
         if (authError) throw authError;
@@ -36,18 +51,49 @@ export default function PatientLogin() {
         if (abhaId.length !== 14) {
           throw new Error('Please enter a valid 14-digit ABHA ID.');
         }
-        
-        const { error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              abha_id: abhaId
-            }
+
+        let signupSuccess = false;
+        try {
+          const res = await fetch(`${API_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: cleanEmail, password, abhaId })
+          });
+          const result = await res.json();
+          if (res.ok || res.status === 409) {
+            signupSuccess = true;
+          } else if (result.error) {
+            console.warn('Backend signup notice:', result.error);
           }
+        } catch (backendErr) {
+          console.warn('Backend signup unreachable, falling back to direct auth:', backendErr);
+        }
+
+        if (!signupSuccess) {
+          const { error: authError } = await supabase.auth.signUp({
+            email: cleanEmail,
+            password,
+            options: {
+              data: {
+                abha_id: abhaId
+              }
+            }
+          });
+          if (authError) throw authError;
+        }
+
+        // Establish active session
+        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password
         });
-        
-        if (authError) throw authError;
+        if (signInErr) {
+          if (signInErr.message.includes('Email not confirmed')) {
+            throw new Error('Registration successful! Please check your email to confirm your account.');
+          }
+          throw signInErr;
+        }
+
         prefetchPatientVisits(abhaId);
         navigate('/patient/dashboard');
       }

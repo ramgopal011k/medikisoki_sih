@@ -1,8 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jose from 'jose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const DEMO_AUTH_TOKEN = process.env.DEMO_AUTH_TOKEN || 'medikiosk-demo-token';
-const JWT_SECRET = process.env.JWT_SECRET || 'medikiosk-jwt-secret-key-2026';
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('Critical Security Error: JWT_SECRET environment variable is required.');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 const secretKey = new TextEncoder().encode(JWT_SECRET);
 
 export type UserRole = 'doctor' | 'triage' | 'admin';
@@ -38,16 +46,15 @@ export async function verifyAuth(req: Request, res: Response, next: NextFunction
     originalUrl.includes('/auth/triage-login') ||
     path === '/auth/register' ||
     originalUrl.includes('/auth/register') ||
+    path === '/auth/signup' ||
+    originalUrl.includes('/auth/signup') ||
     originalUrl.includes('/abdm') ||
     path.startsWith('/abdm') ||
     originalUrl.includes('/match-voice') ||
     path === '/match-voice' ||
     // Kiosk anonymous patient intake endpoints (POST only for sessions)
     (req.method === 'POST' && (path === '/sessions' || path === '/api/sessions' || originalUrl.includes('/sessions'))) ||
-    originalUrl.includes('/history-facts') ||
-    originalUrl.includes('/medical-history') ||
     originalUrl.includes('/ayush-assessment') ||
-    originalUrl.includes('/answers') ||
     originalUrl.includes('/documents') ||
     originalUrl.includes('/ocr') ||
     originalUrl.includes('/ocr-vision') ||
@@ -55,7 +62,6 @@ export async function verifyAuth(req: Request, res: Response, next: NextFunction
     originalUrl.includes('/gemini') ||
     originalUrl.includes('/summary') ||
     originalUrl.includes('/demo') ||
-    originalUrl.includes('/fhir') ||
     path === '/hospitals' ||
     originalUrl.includes('/hospitals');
 
@@ -164,4 +170,7 @@ export function requireDoctorOrAdmin(req: Request, res: Response, next: NextFunc
     checkRole();
   });
 }
+
+export const requireAuth = verifyAuth;
+
 
