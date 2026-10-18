@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import http from 'http';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { verifyAuth } from '../middleware/auth';
-import { medgemmaReason, ollamaChatWithLogging } from '../orchestration/medgemmaClient';
+import { medgemmaReason, ollamaChatWithLogging, logOllamaDecision } from '../orchestration/medgemmaClient';
 import { setLastCallProvider } from '../orchestration/router';
 import { selectProbe } from '../lib/probes';
 import { supabase } from '../supabase';
@@ -13,7 +13,7 @@ export const ALLOWED_SEVERITIES = [95, 75, 50, 25, 10] as const;
 type AllowedSeverity = (typeof ALLOWED_SEVERITIES)[number];
 
 const GEMINI_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 
 interface DifferentialDiagnosis {
   name: string;
@@ -47,7 +47,7 @@ interface PanelRequestBody {
   fired_flags?: string[];
 }
 
-function cleanJsonText(raw: string): string {
+export function cleanJsonText(raw: string): string {
   let cleaned = raw.trim();
   // Strip thought/reasoning tags from MedGemma/Gemma3/DeepSeek
   cleaned = cleaned.replace(/<unused94>[\s\S]*?<unused95>/gi, '').trim();
@@ -56,17 +56,46 @@ function cleanJsonText(raw: string): string {
   // Extract from markdown json code block if present
   const jsonBlock = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   if (jsonBlock && jsonBlock[1]) {
-    return jsonBlock[1].trim();
+    cleaned = jsonBlock[1].trim();
+  } else {
+    // Strip leading/trailing code fence markers if any
+    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
   }
 
-  // Strip leading/trailing code fence markers if any
-  cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-
-  // Find first { and last }
+  // Find first {
   const firstBrace = cleaned.indexOf('{');
-  const lastBrace = cleaned.lastIndexOf('}');
-  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    return cleaned.slice(firstBrace, lastBrace + 1).trim();
+  if (firstBrace !== -1) {
+    cleaned = cleaned.slice(firstBrace).trim();
+  }
+
+  // Try parsing directly
+  try {
+    JSON.parse(cleaned);
+    return cleaned;
+  } catch {
+    // If last closing brace is present, try slicing to last }
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (lastBrace > 0) {
+      const candidate = cleaned.slice(0, lastBrace + 1);
+      try {
+        JSON.parse(candidate);
+        return candidate;
+      } catch {
+        // Fall through to truncation repair
+      }
+    }
+
+    // If truncated inside an array of objects:
+    const lastObjEnd = cleaned.lastIndexOf('}');
+    if (lastObjEnd > 0) {
+      const candidate = cleaned.slice(0, lastObjEnd + 1) + '\n  ]\n}';
+      try {
+        JSON.parse(candidate);
+        return candidate;
+      } catch {
+        // Fall through
+      }
+    }
   }
 
   return cleaned;
@@ -170,80 +199,21 @@ async function callGemini(prompt: string): Promise<string | null> {
 
 let lastOllamaFailureTime = 0;
 
-async function callMedGemma(prompt: string): Promise<string | null> {
-  const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
+async function callMedGemma(prompt: string, pastVisitsCount: number = 0): Promise<string | null> {
   try {
-    const url = new URL(ollamaUrl);
-    const text = await new Promise<string | null>((resolve) => {
-      const payload = JSON.stringify({
-        model: 'medgemma1.5:latest',
-        messages: [{ role: 'user', content: prompt }],
-        stream: false,
-        format: 'json',
-        options: {
-          temperature: 0.1,
-          num_predict: 500
-        }
-      });
-
-      const req = http.request(
-        {
-          hostname: url.hostname || 'localhost',
-          port: url.port || 11434,
-          path: '/api/chat',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload)
-          },
-          timeout: 25000
-        },
-        (res) => {
-          let body = '';
-          res.on('data', chunk => body += chunk);
-          res.on('end', () => {
-            try {
-              const data = JSON.parse(body);
-              if (data.message?.content) {
-                resolve(data.message.content);
-                return;
-              }
-            } catch (e) {
-              console.warn('[ai/differential-panel] MedGemma JSON parse error from HTTP:', e);
-            }
-            resolve(null);
-          });
-        }
-      );
-
-      req.on('timeout', () => {
-        req.destroy();
-        console.warn('[ai/differential-panel] MedGemma HTTP call timeout');
-        resolve(null);
-      });
-
-      req.on('error', (err) => {
-        console.warn('[ai/differential-panel] MedGemma HTTP call error:', err.message);
-        resolve(null);
-      });
-
-      req.write(payload);
-      req.end();
-    });
-
-    if (text) return text;
-  } catch (err: any) {
-    console.warn('[ai/differential-panel] Direct Ollama HTTP call notice, falling back...', err?.message || err);
-  }
-
-  try {
-    const res = await ollamaChatWithLogging(prompt, 'differential-panel', {
-      temperature: 0.1,
-      num_predict: 500
-    });
+    const res = await ollamaChatWithLogging(
+      prompt,
+      'differential-panel',
+      {
+        temperature: 0.1,
+        num_predict: 1000,
+        format: 'json'
+      },
+      { past_visits: pastVisitsCount }
+    );
     if (res?.content) return res.content;
   } catch (err: any) {
-    console.warn('[ai/differential-panel] MedGemma error:', err?.message || err);
+    // Errors are logged cleanly by ollamaChatWithLogging
   }
   return null;
 }
@@ -533,7 +503,7 @@ Output schema (strict JSON):
       let rawOutput: string | null = null;
 
       if (p === 'medgemma') {
-        rawOutput = await callMedGemma(systemPrompt);
+        rawOutput = await callMedGemma(systemPrompt, pastVisits.length);
       } else if (p === 'gemini') {
         rawOutput = await callGemini(systemPrompt);
       }
@@ -548,14 +518,16 @@ Output schema (strict JSON):
             const pElapsed = Date.now() - pStart;
             const isFallback = p !== providers[0];
             const fallbackTag = isFallback ? ' [FALLBACK]' : '';
-            console.log(`[orch] differential-panel → ${p}${fallbackTag} in ${pElapsed}ms`);
+            if (p !== 'medgemma') {
+              console.log(`[orch] differential-panel → ${p}${fallbackTag} in ${pElapsed}ms`);
+            }
             setLastCallProvider(p);
             break;
           } else {
-            console.warn(`[ai/differential-panel] ${p} invalid panel structure:`, cleaned.slice(0, 300));
+            console.warn(`[ai/differential-panel] ${p} invalid panel structure`);
           }
-        } catch (parseErr) {
-          console.warn(`[ai/differential-panel] ${p} JSON parse error:`, parseErr, 'Raw output preview:', rawOutput.slice(0, 300));
+        } catch (parseErr: any) {
+          console.warn(`[ai/differential-panel] ${p} JSON parse error: ${parseErr?.message || parseErr}`);
         }
       }
     }
@@ -772,6 +744,10 @@ Output schema (strict JSON):
 
   const answeredIds = answers.map(a => a.question_id).filter(Boolean);
   const recommendedProbe = selectProbe(panel, answeredIds);
+
+  if (chosenProvider === 'medgemma') {
+    logOllamaDecision(tier, expectedSeverity, confidence);
+  }
 
   return res.json({
     panel,

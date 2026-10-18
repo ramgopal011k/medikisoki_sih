@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import { setTimeout as delay } from 'timers/promises';
 
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 const MEDGEMMA_MODEL = 'medgemma1.5:latest';
 
 async function isOllamaRunning(): Promise<boolean> {

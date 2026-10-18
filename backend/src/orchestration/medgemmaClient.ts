@@ -1,4 +1,4 @@
-export const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+export const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 export const MEDGEMMA_MODEL = process.env.MEDGEMMA_MODEL || 'medgemma1.5:latest';
 
 export const MEDGEMMA_COLD_TIMEOUT_MS = parseInt(process.env.MEDGEMMA_COLD_TIMEOUT_MS || '45000', 10);
@@ -35,12 +35,14 @@ async function executeChatRequest(
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    const { format, past_visits, ...modelOptions } = options || {};
     const payload: Record<string, any> = {
       model: MEDGEMMA_MODEL,
       messages,
       stream: false,
+      format: format || 'json',
       keep_alive: '30m',
-      ...(options ? { options } : {})
+      ...(Object.keys(modelOptions).length > 0 ? { options: modelOptions } : {})
     };
 
     const fetchFn = (typeof (globalThis.fetch as any)?._isMockFunction === 'boolean' || typeof (globalThis.fetch as any)?.mock === 'object')
@@ -55,7 +57,7 @@ async function executeChatRequest(
     });
 
     if (!res.ok) {
-      const errText = await res.text().catch(() => '');
+      const errText = typeof res.text === 'function' ? await res.text().catch(() => '') : '';
       throw new Error(`HTTP ${res.status}: ${errText.slice(0, 100) || res.statusText}`);
     }
 
@@ -66,24 +68,111 @@ async function executeChatRequest(
   }
 }
 
+let pendingDecisionTimer: NodeJS.Timeout | null = null;
+
+export function logOllamaDecision(tier: string, es: number, conf: number) {
+  if (pendingDecisionTimer) {
+    clearTimeout(pendingDecisionTimer);
+    pendingDecisionTimer = null;
+  }
+  console.log(`[OLLAMA] ✓ Tier=${tier} ES=${Number(es).toFixed(1)} Conf=${conf}%`);
+}
+
+function parseDifferentialSummary(content: string): { tier: string; es: number; conf: number } | null {
+  try {
+    let cleaned = content.trim();
+    cleaned = cleaned.replace(/<unused94>[\s\S]*?<unused95>/gi, '').trim();
+    cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    const jsonBlock = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (jsonBlock && jsonBlock[1]) {
+      cleaned = jsonBlock[1].trim();
+    } else {
+      cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    }
+    const firstBrace = cleaned.indexOf('{');
+    if (firstBrace !== -1) {
+      cleaned = cleaned.slice(firstBrace).trim();
+    }
+    let parsed: any = null;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (lastBrace > 0) {
+        try {
+          parsed = JSON.parse(cleaned.slice(0, lastBrace + 1));
+        } catch {}
+      }
+      if (!parsed) {
+        const lastObjEnd = cleaned.lastIndexOf('}');
+        if (lastObjEnd > 0) {
+          try {
+            parsed = JSON.parse(cleaned.slice(0, lastObjEnd + 1) + '\n  ]\n}');
+          } catch {}
+        }
+      }
+    }
+    if (parsed && Array.isArray(parsed.panel) && parsed.panel.length > 0) {
+      let es = 0;
+      let maxProb = 0;
+      let hasSafetyOverride = false;
+      for (const d of parsed.panel) {
+        let p = typeof d.probability === 'number' ? d.probability : parseFloat(d.probability) || 0;
+        if (p > 1.0) p = p / 100.0;
+        const s = typeof d.severity === 'number' ? d.severity : parseInt(d.severity, 10) || 0;
+        es += p * s;
+        if (p > maxProb) maxProb = p;
+        if (s >= 85 && p >= 0.25) hasSafetyOverride = true;
+      }
+      let tier = 'low';
+      if (hasSafetyOverride || es >= 80) tier = 'critical';
+      else if (es >= 50) tier = 'high';
+      else if (es >= 25) tier = 'moderate';
+
+      const conf = Math.round(maxProb > 1 ? maxProb : maxProb * 100);
+      return { tier, es, conf };
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 /**
  * Executes an Ollama chat call with structured logging and 1-attempt retry on timeout
  */
 export async function ollamaChatWithLogging(
   prompt: string,
   task: string = 'differential-panel',
-  options?: Record<string, any>
+  options?: Record<string, any>,
+  contextMeta?: { past_visits?: number }
 ): Promise<{ content: string; raw: any }> {
   totalCallsToday++;
   const promptLen = prompt ? prompt.length : 0;
-  console.log(`[OLLAMA] → REQUEST  task=${task} model=${MEDGEMMA_MODEL} prompt_len=${promptLen}`);
+  console.log(`[OLLAMA] → REQUEST task=${task} prompt_len=${promptLen}`);
+
+  let pastVisitsCount = contextMeta?.past_visits ?? options?.past_visits;
+  if (typeof pastVisitsCount !== 'number' && prompt) {
+    const match = prompt.match(/\b\d{4}-\d{2}-\d{2}:/g);
+    if (match && match.length > 0) {
+      pastVisitsCount = match.length;
+    }
+  }
+  if (typeof pastVisitsCount === 'number' && pastVisitsCount > 0) {
+    console.log(`[OLLAMA] ⓘ CONTEXT past_visits=${pastVisitsCount}`);
+  }
 
   const start = Date.now();
   const timeoutMs = getActiveTimeoutMs();
 
   let attempt = 1;
   while (true) {
+    let thinkingTimer: NodeJS.Timeout | null = null;
     try {
+      thinkingTimer = setTimeout(() => {
+        console.log('[OLLAMA] ⏳ Analyzing (MedGemma is thinking)...');
+      }, 2000);
+
       const data = await executeChatRequest(
         [{ role: 'user', content: prompt }],
         attempt === 1 ? timeoutMs : 60000,
@@ -101,6 +190,15 @@ export async function ollamaChatWithLogging(
       totalLatencyMs += elapsedMs;
 
       console.log(`[OLLAMA] ← RESPONSE task=${task} elapsed_ms=${elapsedMs} tokens=${tokens} status=ok`);
+
+      if (task === 'differential-panel') {
+        const summary = parseDifferentialSummary(data.message?.content || '');
+        if (summary) {
+          pendingDecisionTimer = setTimeout(() => {
+            logOllamaDecision(summary.tier, summary.es, summary.conf);
+          }, 80);
+        }
+      }
 
       return {
         content: data.message?.content || '',
@@ -122,6 +220,11 @@ export async function ollamaChatWithLogging(
       const shortReason = isTimeout ? 'timeout' : (err.message || 'unknown error').slice(0, 40);
       console.warn(`[OLLAMA] ✗ ERROR   task=${task} elapsed_ms=${elapsedMs} reason=${shortReason}`);
       throw err;
+    } finally {
+      if (thinkingTimer) {
+        clearTimeout(thinkingTimer);
+        thinkingTimer = null;
+      }
     }
   }
 }
