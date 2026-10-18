@@ -20,20 +20,20 @@ if (-not $RootDir) {
 Write-Host "[1/5] Checking Ollama status at http://127.0.0.1:11434..." -ForegroundColor Yellow
 $OllamaRunning = $false
 try {
-    $response = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -Method Get -TimeoutSec 3 -ErrorAction Stop
+    $res = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -Method Get -TimeoutSec 3 -ErrorAction Stop
     $OllamaRunning = $true
-    Write-Host "      ✓ Ollama is already running." -ForegroundColor Green
+    Write-Host "      [OK] Ollama is already running." -ForegroundColor Green
 } catch {
-    Write-Host "      ! Ollama is not running. Starting background instance..." -ForegroundColor DarkYellow
+    Write-Host "      [!] Ollama is not running. Starting background instance..." -ForegroundColor Yellow
     Start-Process -FilePath "ollama" -ArgumentList "serve" -WindowStyle Hidden
     
     # Wait up to 15s for Ollama to become available
     for ($i = 1; $i -le 15; $i++) {
         Start-Sleep -Seconds 1
         try {
-            $response = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -Method Get -TimeoutSec 2 -ErrorAction Stop
+            $res = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -Method Get -TimeoutSec 2 -ErrorAction Stop
             $OllamaRunning = $true
-            Write-Host "      ✓ Ollama started successfully in ${i}s." -ForegroundColor Green
+            Write-Host "      [OK] Ollama started successfully in ${i}s." -ForegroundColor Green
             break
         } catch {
             Write-Host "      ... waiting for Ollama (${i}s)" -ForegroundColor DarkGray
@@ -42,7 +42,7 @@ try {
 }
 
 if (-not $OllamaRunning) {
-    Write-Host "      ✗ Failed to connect to Ollama. Please ensure Ollama is installed and run 'ollama serve'." -ForegroundColor Red
+    Write-Host "      [FAIL] Failed to connect to Ollama. Please run 'ollama serve' manually." -ForegroundColor Red
 }
 
 # ------------------------------------------------------------------------------
@@ -63,9 +63,9 @@ try {
     } | ConvertTo-Json -Depth 5
 
     $warmup = Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/chat" -Method Post -Body $WarmupBody -ContentType "application/json" -TimeoutSec 45 -ErrorAction Stop
-    Write-Host "      ✓ MedGemma pre-warmed & pinned in VRAM (keep_alive: 30m)." -ForegroundColor Green
+    Write-Host "      [OK] MedGemma pre-warmed and pinned in VRAM (keep_alive: 30m)." -ForegroundColor Green
 } catch {
-    Write-Host "      ! MedGemma warmup notice: $($_.Exception.Message)" -ForegroundColor DarkYellow
+    Write-Host "      [!] MedGemma warmup notice: $($_.Exception.Message)" -ForegroundColor Yellow
 }
 
 # ------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ try {
 # ------------------------------------------------------------------------------
 Write-Host "[3/5] Launching Backend server in visible terminal..." -ForegroundColor Yellow
 $BackendDir = Join-Path $RootDir "backend"
-$BackendCmd = "cd `"$BackendDir`"; npm run dev"
+$BackendCmd = "cd '$BackendDir'; npm run dev"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $BackendCmd
 
 # ------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $BackendCmd
 # ------------------------------------------------------------------------------
 Write-Host "[4/5] Launching Frontend server in visible terminal..." -ForegroundColor Yellow
 $FrontendDir = Join-Path $RootDir "frontend"
-$FrontendCmd = "cd `"$FrontendDir`"; npm run dev"
+$FrontendCmd = "cd '$FrontendDir'; npm run dev"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $FrontendCmd
 
 # ------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $FrontendCmd
 Write-Host "[5/5] Waiting 3 seconds for dev servers to initialize..." -ForegroundColor Yellow
 Start-Sleep -Seconds 3
 
-Write-Host "      ✓ Opening kiosk demo at http://localhost:5173..." -ForegroundColor Green
+Write-Host "      [OK] Opening kiosk demo at http://localhost:5173..." -ForegroundColor Green
 Start-Process "http://localhost:5173"
 
 Write-Host ""
