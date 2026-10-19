@@ -11,8 +11,13 @@ export interface SpeakOptions {
 export function useVoiceGuidance() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const stop = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -45,6 +50,7 @@ export function useVoiceGuidance() {
 
   const speak = useCallback(
     async (optionsOrText: SpeakOptions | string, langOverride?: string, clipIdParam?: string) => {
+      // Abort previous in-flight request and stop current audio
       stop();
 
       let targetText = '';
@@ -76,6 +82,9 @@ export function useVoiceGuidance() {
         webSpeechLang = 'bn-IN';
       }
 
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       setIsPlaying(true);
 
       // Try Sarvam TTS via backend endpoint
@@ -83,14 +92,22 @@ export function useVoiceGuidance() {
         const response = await fetch(`${API_URL}/api/sarvam/tts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             text: targetText,
             language: sarvamLang
           })
         });
 
+        if (controller.signal.aborted) {
+          return;
+        }
+
         if (response.ok) {
           const data = await response.json();
+          if (controller.signal.aborted) {
+            return;
+          }
           if (data.audios && data.audios[0]) {
             const audioSrc = `data:audio/wav;base64,${data.audios[0]}`;
             const audio = new Audio(audioSrc);
@@ -102,17 +119,28 @@ export function useVoiceGuidance() {
             };
 
             audio.onerror = (e) => {
+              if (controller.signal.aborted) return;
               console.warn('[voiceGuidance] Audio play error, falling back to WebSpeech:', e);
               audioRef.current = null;
               playFallbackWebSpeech(targetText, webSpeechLang);
             };
 
-            await audio.play();
+            if (!controller.signal.aborted) {
+              await audio.play();
+            }
             return;
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.name === 'AbortError' || controller.signal.aborted) {
+          // Explicitly cancelled / aborted, do not fallback to WebSpeech
+          return;
+        }
         console.warn('[voiceGuidance] Sarvam TTS request failed, falling back to WebSpeech:', err);
+      }
+
+      if (controller.signal.aborted) {
+        return;
       }
 
       // Fallback to browser WebSpeech API

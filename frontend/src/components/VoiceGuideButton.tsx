@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Volume2, Loader2, Square } from 'lucide-react';
 import { useVoiceGuidance } from '@/hooks/useVoiceGuidance';
+import { useVoiceGuidanceContext } from '@/contexts/VoiceGuidanceContext';
 
 export interface VoiceGuideButtonProps {
   clipId?: string;
@@ -22,7 +23,10 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
   const [loading, setLoading] = useState(false);
   const [clipPlaying, setClipPlaying] = useState(false);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const lastPlayedKeyRef = useRef<string | null>(null);
+
   const { speak, stop, isPlaying } = useVoiceGuidance();
+  const { isVoiceAssistEnabled, setVoiceAssistEnabled } = useVoiceGuidanceContext();
 
   const isHi = language.startsWith('hi');
   const isMr = language.startsWith('mr');
@@ -31,7 +35,7 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
 
   const isCurrentlyPlaying = isPlaying || clipPlaying;
 
-  const stopAllAudio = () => {
+  const stopAllAudio = useCallback(() => {
     if (activeAudioRef.current) {
       activeAudioRef.current.pause();
       activeAudioRef.current.currentTime = 0;
@@ -39,27 +43,22 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
     }
     stop();
     setClipPlaying(false);
-  };
+  }, [stop]);
 
+  // Clean up on component unmount
   useEffect(() => {
     return () => {
       if (activeAudioRef.current) {
         activeAudioRef.current.pause();
+        activeAudioRef.current.currentTime = 0;
         activeAudioRef.current = null;
       }
+      stop();
     };
-  }, []);
+  }, [stop]);
 
-  const handleToggle = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (loading) return;
-
-    // Toggle behavior: if already playing, stop audio immediately
-    if (isCurrentlyPlaying) {
-      stopAllAudio();
-      return;
-    }
-
+  const playInstructions = useCallback(async () => {
+    if (!targetText && !clipId) return;
     setLoading(true);
     try {
       // Pre-recorded clips exist for hi and en; for mr and bn use direct TTS
@@ -79,7 +78,7 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
             await speak({
               clipId,
               fallbackText: targetText,
-              language
+              language,
             });
           };
 
@@ -95,11 +94,39 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
       await speak({
         clipId,
         fallbackText: targetText,
-        language
+        language,
       });
     } finally {
       setLoading(false);
     }
+  }, [clipId, targetText, isHi, isMr, isBn, language, speak]);
+
+  // Global persistence: when a new page loads (or step/clipId changes), if voice assist is enabled, auto-play
+  useEffect(() => {
+    const key = `${clipId || ''}_${targetText || ''}_${language || ''}`;
+    if (isVoiceAssistEnabled && key && lastPlayedKeyRef.current !== key) {
+      lastPlayedKeyRef.current = key;
+      const timer = setTimeout(() => {
+        playInstructions().catch(() => {});
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isVoiceAssistEnabled, clipId, targetText, language, playInstructions]);
+
+  const handleToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (loading) return;
+
+    // Toggle behavior: if already playing, stop audio and turn off global persistence
+    if (isCurrentlyPlaying) {
+      stopAllAudio();
+      setVoiceAssistEnabled(false);
+      return;
+    }
+
+    // Turn ON global Voice Assist persistence and speak
+    setVoiceAssistEnabled(true);
+    await playInstructions();
   };
 
   if (variant === 'inline') {
@@ -111,6 +138,8 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
         className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] gap-2 px-3.5 py-2 rounded-full border text-xs font-semibold transition-all shadow-xs hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
           isCurrentlyPlaying
             ? 'bg-terracotta text-white border-terracotta/40'
+            : isVoiceAssistEnabled
+            ? 'bg-primary/20 text-primary border-primary/40 shadow-xs'
             : 'bg-primary/10 hover:bg-primary/20 text-primary border-primary/20'
         } ${className}`}
         title={isCurrentlyPlaying ? 'Stop instructions' : 'Listen to instructions'}
@@ -126,6 +155,8 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
         <span>
           {isCurrentlyPlaying
             ? (isMr ? 'थांबवा' : isBn ? 'থামুন' : isHi ? 'रोकें' : 'Stop')
+            : isVoiceAssistEnabled
+            ? (isMr ? 'आवाज (सुरू)' : isBn ? 'ভয়েস (চালু)' : isHi ? 'आवाज (चालू)' : 'Voice Assist (ON)')
             : (isMr ? 'सूचना ऐका' : isBn ? 'নির্দেশনা শুনুন' : isHi ? 'निर्देश सुनें' : 'Listen')}
         </span>
       </button>
@@ -140,6 +171,8 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
       className={`group fixed top-3 right-3 sm:top-4 sm:right-4 z-40 min-h-[40px] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full border shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
         isCurrentlyPlaying
           ? 'bg-terracotta text-white border-terracotta/40 shadow-lg shadow-terracotta/20 animate-pulse'
+          : isVoiceAssistEnabled
+          ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
           : 'bg-white/95 backdrop-blur-sm text-charcoal border-warmgray/80 hover:border-primary/40 hover:bg-white shadow-xs'
       } ${className}`}
       title={isCurrentlyPlaying ? 'Stop voice instructions' : 'Listen to page instructions'}
@@ -155,6 +188,8 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
       <span className="text-xs font-semibold font-body tracking-wide whitespace-nowrap">
         {isCurrentlyPlaying
           ? (isMr ? 'थांबवा' : isBn ? 'থামুন' : isHi ? 'रोकें' : 'Stop')
+          : isVoiceAssistEnabled
+          ? (isMr ? 'आवाज (सुरू)' : isBn ? 'ভয়েস (चालু)' : isHi ? 'आवाज (चालू)' : 'Voice Assist (ON)')
           : (isMr ? 'आवाज (Voice)' : isBn ? 'ভয়েস (Voice)' : isHi ? 'आवाज (Voice)' : 'Voice Assist')}
       </span>
     </button>

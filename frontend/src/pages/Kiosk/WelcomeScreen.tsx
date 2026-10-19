@@ -6,6 +6,7 @@ import { MediKioskLogo } from '../../components/MediKioskLogo';
 import { AccessibilityToggle } from '../../components/AccessibilityToggle';
 import { useAsr } from '../../hooks/useAsr';
 import { useVoiceGuidance } from '../../hooks/useVoiceGuidance';
+import { useVoiceGuidanceContext } from '../../contexts/VoiceGuidanceContext';
 import { Mic, Volume2 } from 'lucide-react';
 
 const WELCOME_TTS = {
@@ -19,27 +20,53 @@ export default function WelcomeScreen() {
   const navigate = useNavigate();
   const { hospitalId } = useParams();
   const { isListening, transcript, startListening, stopListening } = useAsr();
-  const { speak } = useVoiceGuidance();
+  const { speak, stop } = useVoiceGuidance();
+  const { isVoiceAssistEnabled, toggleVoiceAssist } = useVoiceGuidanceContext();
 
   const [voiceFailCount, setVoiceFailCount] = React.useState(0);
   const prevListeningRef = React.useRef(false);
   const hasAutoPlayedRef = React.useRef(false);
+  const welcomeAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
-  // Auto-play multilingual welcome greeting once on mount
+  const stopWelcomeAudio = React.useCallback(() => {
+    if (welcomeAudioRef.current) {
+      welcomeAudioRef.current.pause();
+      welcomeAudioRef.current.currentTime = 0;
+      welcomeAudioRef.current = null;
+    }
+    stop();
+  }, [stop]);
+
+  const playInstantWelcomeAudio = React.useCallback((lang = 'en') => {
+    stopWelcomeAudio();
+    const audioLang = lang.startsWith('hi') ? 'hi' : 'en';
+    const audio = new Audio(`/audio/v1/${audioLang}/welcome.mp3`);
+    welcomeAudioRef.current = audio;
+    audio.play().catch(err => {
+      console.log('[WelcomeScreen] Autoplay prevented or audio failed:', err);
+    });
+  }, [stopWelcomeAudio]);
+
+  // Task 1: Play instant local welcome audio immediately on mount (no 800ms delay)
   useEffect(() => {
     if (hasAutoPlayedRef.current) return;
     hasAutoPlayedRef.current = true;
-    const timer = setTimeout(() => {
-      const muted =
-        localStorage.getItem('voice_muted') === 'true' ||
-        localStorage.getItem('kiosk_muted') === 'true' ||
-        localStorage.getItem('voice_assist_muted') === 'true';
-      if (!muted) {
-        speak({ fallbackText: WELCOME_TTS.en, language: 'en-IN' }).catch(() => {});
-      }
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [speak]);
+    const muted =
+      localStorage.getItem('voice_muted') === 'true' ||
+      localStorage.getItem('kiosk_muted') === 'true' ||
+      localStorage.getItem('voice_assist_muted') === 'true';
+    if (!muted) {
+      const lang = localStorage.getItem('patient_language') || 'en';
+      playInstantWelcomeAudio(lang);
+    }
+  }, [playInstantWelcomeAudio]);
+
+  // Task 2: Immediate audio cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopWelcomeAudio();
+    };
+  }, [stopWelcomeAudio]);
 
   // Voice language selection on WelcomeScreen — match on interim transcripts
   useEffect(() => {
@@ -105,6 +132,7 @@ export default function WelcomeScreen() {
   }, []);
 
   const handleStart = (lang: string) => {
+    stopWelcomeAudio();
     localStorage.setItem('patient_language', lang);
     if (hospitalId) {
       navigate(`/hospital/${hospitalId}/notice?lang=${lang}`);
@@ -114,8 +142,13 @@ export default function WelcomeScreen() {
   };
 
   const handleVoiceAssist = () => {
-    // Play a combined multilingual greeting
-    speak({ fallbackText: WELCOME_TTS.en, language: 'en-IN' }).catch(() => {});
+    const nextState = toggleVoiceAssist();
+    if (nextState) {
+      const lang = localStorage.getItem('patient_language') || 'en';
+      playInstantWelcomeAudio(lang);
+    } else {
+      stopWelcomeAudio();
+    }
   };
 
   return (
@@ -127,11 +160,17 @@ export default function WelcomeScreen() {
         <button
           type="button"
           onClick={handleVoiceAssist}
-          className="inline-flex items-center justify-center min-h-[48px] min-w-[48px] gap-2 px-4 py-2.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-semibold transition-all shadow-xs"
+          className={`inline-flex items-center justify-center min-h-[48px] min-w-[48px] gap-2 px-4 py-2.5 rounded-full border text-xs font-semibold transition-all shadow-xs ${
+            isVoiceAssistEnabled
+              ? 'bg-primary/20 text-primary border-primary/40 shadow-xs'
+              : 'bg-primary/10 hover:bg-primary/20 text-primary border-primary/20'
+          }`}
           aria-label="Listen to instructions"
         >
           <Volume2 className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline">Voice Assist</span>
+          <span className="hidden sm:inline">
+            {isVoiceAssistEnabled ? 'Voice Assist (ON)' : 'Voice Assist'}
+          </span>
         </button>
         <AccessibilityToggle />
       </div>

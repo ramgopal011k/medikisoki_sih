@@ -9,6 +9,7 @@ import { QuestionCard } from '../../components/QuestionCard';
 import { VoiceGuideButton } from '../../components/VoiceGuideButton';
 import { useAsr } from '@/hooks/useAsr';
 import { useAudio } from '@/hooks/useAudio';
+import { useVoiceGuidance } from '@/hooks/useVoiceGuidance';
 import { API_URL } from '@/lib/api';
 import { loadHospitalsSWR } from '@/lib/hospitalsCache';
 import { extractDigitsFromSpokenText, matchSpokenLanguage } from '@/lib/speechUtils';
@@ -22,6 +23,7 @@ type Step = 'language' | 'hospital' | 'patient_type' | 'new_patient' | 'identity
 export default function ConsentFlow() {
   const { hospitalId: urlHospitalId } = useParams();
   const [searchParams] = useSearchParams();
+
   const urlLang = searchParams.get('lang');
   const savedLang = localStorage.getItem('patient_language') || urlLang || '';
   const [step, setStep] = useState<Step>(savedLang ? (urlHospitalId ? 'patient_type' : 'hospital') : 'language');
@@ -72,6 +74,13 @@ export default function ConsentFlow() {
 
   const { isListening, isProcessing, transcript, startListening, stopListening, clearTranscript, setTranscript } = useAsr();
   const { speak, stop } = useAudio();
+
+  // Task 2: Immediate audio cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
 
   const baseAbhaIdRef = useRef('');
 

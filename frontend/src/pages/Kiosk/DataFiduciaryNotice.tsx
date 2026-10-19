@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Shield, CheckCircle, Clock, AlertTriangle, FileText, User, ArrowLeft } from 'lucide-react';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { VoiceGuideButton } from '../../components/VoiceGuideButton';
 import { useTranslation, type Language } from '../../lib/i18n';
+import { useVoiceGuidance } from '../../hooks/useVoiceGuidance';
 
 export default function DataFiduciaryNotice() {
   const navigate = useNavigate();
   const { hospitalId } = useParams();
   const [searchParams] = useSearchParams();
+  const { stop } = useVoiceGuidance();
 
   const urlLang = searchParams.get('lang') as Language;
   const savedLang = (localStorage.getItem('patient_language') || urlLang || 'en') as Language;
@@ -17,7 +19,15 @@ export default function DataFiduciaryNotice() {
   const { t } = useTranslation(activeLang);
   const ttsLang = activeLang === 'hi' ? 'hi-IN' : activeLang === 'mr' ? 'mr-IN' : activeLang === 'bn' ? 'bn-IN' : 'en-IN';
 
+  // Task 2: Immediate audio cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
+
   const handleBack = () => {
+    stop();
     if (hospitalId) {
       navigate(`/hospital/${hospitalId}/kiosk`);
     } else {
@@ -26,6 +36,7 @@ export default function DataFiduciaryNotice() {
   };
 
   const handleConsent = () => {
+    stop();
     sessionStorage.setItem('seen_data_fiduciary_notice', 'true');
     const langQuery = activeLang ? `?lang=${activeLang}` : '';
     if (hospitalId) {

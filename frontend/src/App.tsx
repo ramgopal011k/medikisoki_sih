@@ -24,6 +24,7 @@ import TriageDashboard from './pages/Triage/TriageDashboard';
 import AnalyticsDashboard from './pages/Admin/AnalyticsDashboard';
 import LandingPage from './pages/LandingPage';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
+import { VoiceGuidanceProvider } from './contexts/VoiceGuidanceContext';
 import { AccessibilityToggle } from './components/AccessibilityToggle';
 import OrchestrationMonitor from './components/OrchestrationMonitor';
 import { prefetchHospitals } from './lib/prefetch';
@@ -206,10 +207,12 @@ function AppRoutes() {
 function App() {
   return (
     <AccessibilityProvider>
-      <Router>
-        <AppRoutes />
-        <AccessibilityToggle />
-      </Router>
+      <VoiceGuidanceProvider>
+        <Router>
+          <AppRoutes />
+          <AccessibilityToggle />
+        </Router>
+      </VoiceGuidanceProvider>
     </AccessibilityProvider>
   );
 }
