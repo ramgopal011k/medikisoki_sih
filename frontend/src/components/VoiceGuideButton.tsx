@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Volume2, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Volume2, Loader2, Square } from 'lucide-react';
 import { useVoiceGuidance } from '@/hooks/useVoiceGuidance';
 
 export interface VoiceGuideButtonProps {
@@ -20,28 +20,78 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
   variant = 'floating',
 }) => {
   const [loading, setLoading] = useState(false);
-  const { speak } = useVoiceGuidance();
+  const [clipPlaying, setClipPlaying] = useState(false);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const { speak, stop, isPlaying } = useVoiceGuidance();
 
   const isHi = language.startsWith('hi');
   const isMr = language.startsWith('mr');
   const isBn = language.startsWith('bn');
   const targetText = fallbackText || text || '';
 
-  const handleListen = async (e: React.MouseEvent) => {
+  const isCurrentlyPlaying = isPlaying || clipPlaying;
+
+  const stopAllAudio = () => {
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.currentTime = 0;
+      activeAudioRef.current = null;
+    }
+    stop();
+    setClipPlaying(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (activeAudioRef.current) {
+        activeAudioRef.current.pause();
+        activeAudioRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (loading) return;
+
+    // Toggle behavior: if already playing, stop audio immediately
+    if (isCurrentlyPlaying) {
+      stopAllAudio();
+      return;
+    }
+
     setLoading(true);
     try {
       // Pre-recorded clips exist for hi and en; for mr and bn use direct TTS
       if (clipId && (isHi || (!isMr && !isBn))) {
         try {
           const audio = new Audio(`/audio/v1/${isHi ? 'hi' : 'en'}/${clipId}.mp3`);
+          activeAudioRef.current = audio;
+          setClipPlaying(true);
+
+          audio.onended = () => {
+            setClipPlaying(false);
+            activeAudioRef.current = null;
+          };
+          audio.onerror = async () => {
+            setClipPlaying(false);
+            activeAudioRef.current = null;
+            await speak({
+              clipId,
+              fallbackText: targetText,
+              language
+            });
+          };
+
           await audio.play();
           return;
         } catch {
+          setClipPlaying(false);
+          activeAudioRef.current = null;
           // fallback to tts
         }
       }
+
       await speak({
         clipId,
         fallbackText: targetText,
@@ -56,14 +106,28 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
     return (
       <button
         type="button"
-        onClick={handleListen}
+        onClick={handleToggle}
         disabled={loading}
-        className={`inline-flex items-center justify-center min-h-[48px] min-w-[48px] gap-2 px-4 py-2.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-semibold transition-all shadow-xs hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${className}`}
-        title="Listen to instructions"
-        aria-label="Listen to instructions"
+        className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] gap-2 px-3.5 py-2 rounded-full border text-xs font-semibold transition-all shadow-xs hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
+          isCurrentlyPlaying
+            ? 'bg-terracotta text-white border-terracotta/40'
+            : 'bg-primary/10 hover:bg-primary/20 text-primary border-primary/20'
+        } ${className}`}
+        title={isCurrentlyPlaying ? 'Stop instructions' : 'Listen to instructions'}
+        aria-label={isCurrentlyPlaying ? 'Stop instructions' : 'Listen to instructions'}
       >
-        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4 shrink-0" />}
-        <span>{isMr ? 'सूचना ऐका' : isBn ? 'নির্দেশনা শুনুন' : isHi ? 'निर्देश सुनें' : 'Listen'}</span>
+        {loading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : isCurrentlyPlaying ? (
+          <Square className="w-3.5 h-3.5 fill-current shrink-0" />
+        ) : (
+          <Volume2 className="w-4 h-4 shrink-0" />
+        )}
+        <span>
+          {isCurrentlyPlaying
+            ? (isMr ? 'थांबवा' : isBn ? 'থামুন' : isHi ? 'रोकें' : 'Stop')
+            : (isMr ? 'सूचना ऐका' : isBn ? 'নির্দেশনা শুনুন' : isHi ? 'निर्देश सुनें' : 'Listen')}
+        </span>
       </button>
     );
   }
@@ -71,15 +135,27 @@ export const VoiceGuideButton: React.FC<VoiceGuideButtonProps> = ({
   return (
     <button
       type="button"
-      onClick={handleListen}
+      onClick={handleToggle}
       disabled={loading}
-      className={`fixed bottom-24 sm:bottom-6 left-4 sm:left-6 z-[9999] min-w-[48px] min-h-[48px] px-4 py-3 rounded-full bg-primary text-white shadow-2xl shadow-primary/30 border border-white/20 hover:bg-primary/90 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${className}`}
-      title="Listen to page instructions"
-      aria-label="Listen to page instructions"
+      className={`group fixed top-3 right-3 sm:top-4 sm:right-4 z-40 min-h-[40px] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full border shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
+        isCurrentlyPlaying
+          ? 'bg-terracotta text-white border-terracotta/40 shadow-lg shadow-terracotta/20 animate-pulse'
+          : 'bg-white/95 backdrop-blur-sm text-charcoal border-warmgray/80 hover:border-primary/40 hover:bg-white shadow-xs'
+      } ${className}`}
+      title={isCurrentlyPlaying ? 'Stop voice instructions' : 'Listen to page instructions'}
+      aria-label={isCurrentlyPlaying ? 'Stop voice instructions' : 'Listen to page instructions'}
     >
-      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5 shrink-0" />}
-      <span className="text-xs font-bold font-body tracking-wide whitespace-nowrap">
-        {isMr ? 'सूचना ऐका (Voice Assist)' : isBn ? 'নির্দেশনা শুনুন (Voice Assist)' : isHi ? 'निर्देश सुनें (Voice Assist)' : 'Voice Assist'}
+      {loading ? (
+        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+      ) : isCurrentlyPlaying ? (
+        <Square className="w-3.5 h-3.5 fill-current shrink-0" />
+      ) : (
+        <Volume2 className="w-4 h-4 text-primary group-hover:scale-110 transition-transform shrink-0" />
+      )}
+      <span className="text-xs font-semibold font-body tracking-wide whitespace-nowrap">
+        {isCurrentlyPlaying
+          ? (isMr ? 'थांबवा' : isBn ? 'থামুন' : isHi ? 'रोकें' : 'Stop')
+          : (isMr ? 'आवाज (Voice)' : isBn ? 'ভয়েস (Voice)' : isHi ? 'आवाज (Voice)' : 'Voice Assist')}
       </span>
     </button>
   );

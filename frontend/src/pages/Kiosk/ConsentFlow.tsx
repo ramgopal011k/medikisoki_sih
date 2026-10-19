@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
-import { HeartPulse, Thermometer, Brain, Activity, Wind, CircleHelp, MapPin, Building2, Flower2, Mic, Loader2, Stethoscope, Leaf } from 'lucide-react';
+import { HeartPulse, Thermometer, Brain, Activity, Wind, CircleHelp, MapPin, Building2, Mic, Loader2, Stethoscope, Leaf } from 'lucide-react';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { LeafStepIndicator } from '../../components/LeafStepIndicator';
 import { AudioExplanationButton } from '../../components/AudioExplanationButton';
@@ -1167,28 +1167,6 @@ export default function ConsentFlow() {
            </div>
            </>
            )}
-           
-           <div className="mt-6 max-w-sm mx-auto">
-             <button
-                onClick={() => setAyushMode(!ayushMode)}
-                className={`w-full p-3.5 rounded-[12px] border-2 flex items-center justify-between transition-all duration-300 ${ayushMode ? 'bg-terracotta/10 border-terracotta text-terracotta' : 'bg-white border-warmgray text-muted hover:border-terracotta/50'}`}
-             >
-                <div className="flex items-center gap-3">
-                   <Flower2 className={`w-5 h-5 ${ayushMode ? 'text-terracotta' : 'text-muted'}`} />
-                   <div className="text-left">
-                     <div className={`font-body font-semibold text-base ${ayushMode ? 'text-terracotta' : 'text-charcoal'}`}>
-                       {t('consent.ayush_toggle')}
-                     </div>
-                     <div className="text-xs font-body opacity-80">
-                        {t('consent.ayush_desc')}
-                     </div>
-                   </div>
-                </div>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${ayushMode ? 'border-terracotta bg-terracotta' : 'border-warmgray'}`}>
-                   {ayushMode && <div className="w-2 h-2 bg-white rounded-full" />}
-                </div>
-             </button>
-           </div>
            
            <div className="mt-6 flex justify-center pb-[env(safe-area-inset-bottom,24px)]">
               <Button 
