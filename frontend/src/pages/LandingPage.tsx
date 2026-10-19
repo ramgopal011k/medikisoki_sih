@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, User, ShieldCheck, ArrowRight, Activity, Sparkles, Building2, Globe2, Mic } from 'lucide-react';
+import { Stethoscope, User, ShieldCheck, ArrowRight, Activity, Sparkles, Building2, Globe2 } from 'lucide-react';
 import { MediKioskLogo } from '../components/MediKioskLogo';
 import { MandalaBackground } from '../components/MandalaBackground';
 import { AccessibilityToggle } from '../components/AccessibilityToggle';
@@ -69,23 +69,15 @@ export default function LandingPage() {
             मरीज़ किओस्क • रुग्ण कियोस्क • রোগী কিওস্ক
           </p>
 
-          {/* Secondary Row: Doctor + Voice */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          {/* Secondary: Doctor Login */}
+          <div className="w-full">
             <button
               onClick={() => navigate('/doctor/login')}
-              className="group min-h-[52px] sm:min-h-[58px] px-4 sm:px-6 py-3 bg-white/90 hover:bg-white text-charcoal hover:text-primary rounded-2xl font-semibold text-base sm:text-lg shadow-md hover:shadow-lg border-2 border-warmgray hover:border-primary/40 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-4 focus:ring-primary/20 active:scale-95"
+              className="group w-full min-h-[52px] sm:min-h-[58px] px-4 sm:px-6 py-3 bg-white/90 hover:bg-white text-charcoal hover:text-primary rounded-2xl font-semibold text-base sm:text-lg shadow-md hover:shadow-lg border-2 border-warmgray hover:border-primary/40 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-4 focus:ring-primary/20 active:scale-95"
               aria-label="Doctor Login"
             >
               <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-primary group-hover:rotate-12 transition-transform" />
               <span className="text-sm sm:text-base">Doctor</span>
-            </button>
-            <button
-              onClick={() => navigate('/hospital/demo/kiosk')}
-              className="group min-h-[52px] sm:min-h-[58px] px-4 sm:px-6 py-3 bg-white/90 hover:bg-white text-charcoal hover:text-primary rounded-2xl font-semibold text-base sm:text-lg shadow-md hover:shadow-lg border-2 border-warmgray hover:border-terracotta/40 transition-all duration-300 flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-terracotta/20 active:scale-95"
-              aria-label="Voice Kiosk Entry"
-            >
-              <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-terracotta group-hover:scale-110 transition-transform" />
-              <span className="text-sm sm:text-base">Voice</span>
             </button>
           </div>
         </div>

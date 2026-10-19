@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { HeartPulse, Thermometer, Brain, Activity, Wind, CircleHelp, MapPin, Building2, Flower2, Mic, Loader2, Stethoscope, Leaf } from 'lucide-react';
-import { BodyMap, REGION_TO_COMPLAINT_SUGGESTIONS } from '../../components/BodyMap';
 import { MandalaBackground } from '../../components/MandalaBackground';
 import { LeafStepIndicator } from '../../components/LeafStepIndicator';
 import { AudioExplanationButton } from '../../components/AudioExplanationButton';
@@ -51,7 +50,7 @@ export default function ConsentFlow() {
   const [userOtp, setUserOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [complaint, setComplaint] = useState('Chest pain');
-  const [complaintTab, setComplaintTab] = useState<'bodymap'|'symptoms'|'ayush'>('bodymap');
+  const [complaintTab, setComplaintTab] = useState<'symptoms'|'ayush'>('symptoms');
   const [patientType, setPatientType] = useState<'existing' | 'new'>('existing');
   const [patientName, setPatientName] = useState('');
   const [patientAge, setPatientAge] = useState('');
@@ -65,34 +64,9 @@ export default function ConsentFlow() {
   const [pastVisits, setPastVisits] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // Body map regions state persisted to sessionStorage 'kiosk.body_regions'
-  const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
-    try {
-      const raw = sessionStorage.getItem('kiosk.body_regions');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const handleToggleRegion = (regionId: string) => {
-    setSelectedRegions((prev) => {
-      const next = prev.includes(regionId) ? prev.filter((r) => r !== regionId) : [...prev, regionId];
-      sessionStorage.setItem('kiosk.body_regions', JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const suggestedComplaints = useMemo(() => {
-    const suggestions = new Set<string>();
-    selectedRegions.forEach((r) => {
-      const list = REGION_TO_COMPLAINT_SUGGESTIONS[r];
-      if (list) {
-        list.forEach((c) => suggestions.add(c));
-      }
-    });
-    return Array.from(suggestions);
-  }, [selectedRegions]);
+  // Legacy selectedRegions state (defaults to empty without BodyMap)
+  const [selectedRegions] = useState<string[]>(() => []);
+  const suggestedComplaints = useMemo<string[]>(() => [], []);
 
   const { isListening, isProcessing, transcript, startListening, stopListening, setTranscript } = useAsr();
   const { speak, stop } = useAudio();
@@ -1156,43 +1130,35 @@ export default function ConsentFlow() {
            </div>
 
            {/* Top Navigation Tabs */}
-           <div className="flex items-center justify-between w-full max-w-lg mx-auto bg-white rounded-full p-2 mb-6 border border-sand shadow-xs">
+           <div className="flex items-center justify-between w-full max-w-sm mx-auto bg-white rounded-full p-1.5 mb-6 border border-sand shadow-xs">
               <button 
-                onClick={() => setComplaintTab('bodymap')} 
-                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'bodymap' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
-                <MapPin className={`w-4 h-4 ${complaintTab === 'bodymap' ? 'text-rose-400' : ''}`} />
-                Body Map
-              </button>
-              <button 
-                onClick={() => setComplaintTab('symptoms')} 
-                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'symptoms' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
+                onClick={() => { setComplaintTab('symptoms'); setAyushMode(false); }} 
+                className={`flex-1 py-2.5 px-3 sm:px-4 rounded-full text-sm font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'symptoms' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
                 <Stethoscope className={`w-4 h-4 ${complaintTab === 'symptoms' ? 'text-blue-300' : 'text-blue-500'}`} />
                 Symptoms
                 {complaint && <span className={`${complaintTab === 'symptoms' ? 'bg-white text-[#0B4A3F]' : 'bg-[#0B4A3F] text-white'} text-[10px] w-5 h-5 rounded-full flex items-center justify-center`}>1</span>}
               </button>
               <button 
-                onClick={() => setComplaintTab('ayush')} 
-                className={`flex-1 py-3 px-2 sm:px-4 rounded-full text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'ayush' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
+                onClick={() => { setComplaintTab('ayush'); setAyushMode(true); }} 
+                className={`flex-1 py-2.5 px-3 sm:px-4 rounded-full text-sm font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all ${complaintTab === 'ayush' ? 'bg-[#0B4A3F] text-white shadow-md' : 'bg-transparent text-muted hover:bg-sand/30'}`}>
                 <Leaf className={`w-4 h-4 ${complaintTab === 'ayush' ? 'text-green-300' : 'text-green-600'}`} />
                 AYUSH
                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
               </button>
            </div>
 
-           {/* Interactive SVG Body Map Diagram (Allopathic or AYUSH) */}
-           {(complaintTab === 'bodymap' || complaintTab === 'ayush') && (
-             <div className="mb-6">
-               <BodyMap
-                 selectedRegions={selectedRegions}
-                 onToggleRegion={handleToggleRegion}
-                 language={language}
-                 ayushMode={complaintTab === 'ayush'}
-               />
+           {/* AYUSH Info Banner */}
+           {complaintTab === 'ayush' && (
+             <div className="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2">
+               <Leaf className="w-5 h-5 text-emerald-600 shrink-0" />
+               <div>
+                 <span className="font-bold">{t('consent.ayush_toggle')}:</span> {t('consent.ayush_desc')}
+               </div>
              </div>
            )}
 
            {/* Symptoms List */}
-           {complaintTab === 'symptoms' && (
+           {(complaintTab === 'symptoms' || complaintTab === 'ayush') && (
              <>
                {/* Auto-suggested complaints banner based on selected regions */}
                {suggestedComplaints.length > 0 && (
