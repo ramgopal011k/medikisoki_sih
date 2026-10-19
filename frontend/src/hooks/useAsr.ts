@@ -101,28 +101,39 @@ async function sendAudioToBackend(
   formData.append('audio', blob, `recording.${ext}`);
   formData.append('language_code', sarvamLang);
 
-  // Use the shared API_URL from lib/api — correctly resolves to Render in production
-  // (VITE_API_URL env var, or https://medikisoki-sih-backend.onrender.com)
-  const response = await fetch(`${API_URL}/api/sarvam/asr`, {
-    method: 'POST',
-    body: formData,
-    // NOTE: No auth token for this endpoint — it is explicitly public (see auth middleware)
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
-  if (!response.ok) {
-    const errText = await response.text().catch(() => '');
-    throw new Error(`ASR backend returned ${response.status}: ${errText}`);
-  }
+  try {
+    const response = await fetch(`${API_URL}/api/sarvam/asr`, {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal,
+    });
 
-  const data = await response.json();
-  // Both Sarvam and Gemini fallback return { transcript: "..." }
-  const text: string = data?.transcript || data?.text || '';
-  if (!text) throw new Error('Empty transcript from backend ASR');
-  // Guard against any fake or mock fallback transcripts
-  if (text.toLowerCase().includes('fallback asr') || text.toLowerCase().includes('mock asr transcript')) {
-    throw new Error('Voice unavailable, please tap.');
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      throw new Error(`ASR backend returned ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    // Both Sarvam and Gemini fallback return { transcript: "..." }
+    const text: string = data?.transcript || data?.text || '';
+    if (!text) throw new Error('Empty transcript from backend ASR');
+    // Guard against any fake or mock fallback transcripts
+    if (text.toLowerCase().includes('fallback asr') || text.toLowerCase().includes('mock asr transcript')) {
+      throw new Error('Voice unavailable, please tap.');
+    }
+    return text.trim();
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('ASR backend request timed out after 12s');
+    }
+    throw err;
   }
-  return text.trim();
 }
 
 function startVad(stream: MediaStream, onSilence: () => void): () => void {
@@ -219,6 +230,7 @@ export function useAsr() {
   const timeoutRef       = useRef<any>(null);
   const isMountedRef     = useRef(true);
   const vadCleanupRef    = useRef<(() => void) | null>(null);
+  const backendAsrFailedRef = useRef(false);
 
   const onResultCallbackRef = useRef<((text: string) => void) | undefined>(undefined);
   const onEndCallbackRef    = useRef<(() => void) | undefined>(undefined);
@@ -509,6 +521,7 @@ export function useAsr() {
 
       try {
         const text = await sendAudioToBackend(chunks, effectiveMime, sarvamLang);
+        backendAsrFailedRef.current = false;
         if (!isMountedRef.current) return;
         setTranscript(text);
         finalTranscriptRef.current = text;
@@ -519,6 +532,26 @@ export function useAsr() {
       } catch (err: any) {
         console.warn('[MediKiosk ASR] Backend ASR failed:', err.message);
         setLastAsrError(err.message);
+        backendAsrFailedRef.current = true;
+
+        // Emergency fallback: gracefully fallback to browser native SpeechRecognition (WebSpeech)
+        const hasNative = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+        if (hasNative && isMountedRef.current) {
+          console.warn('[MediKiosk ASR] Backend ASR failed. Gracefully falling back to native WebSpeech as emergency fallback.');
+          strategyRef.current = 'native';
+          setIsProcessing(false);
+          setIsListening(true);
+          setStatus('listening');
+          setError(null);
+          const bcpLang = getBcpTag();
+          try {
+            startNativeSpeech(bcpLang, 6000);
+            return;
+          } catch (nativeErr: any) {
+            console.warn('[MediKiosk ASR] Emergency native WebSpeech fallback start failed:', nativeErr);
+          }
+        }
+
         if (isMountedRef.current) {
           setTranscript('');
           finalTranscriptRef.current = '';
@@ -596,7 +629,10 @@ export function useAsr() {
       return;
     }
 
-    const strategy = selectAsrStrategy();
+    const hasNativeSpeech = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+    const strategy = (backendAsrFailedRef.current && hasNativeSpeech)
+      ? 'native'
+      : selectAsrStrategy();
     strategyRef.current = strategy;
 
     if (strategy === 'none') {

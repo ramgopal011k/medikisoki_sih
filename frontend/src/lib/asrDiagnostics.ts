@@ -138,12 +138,12 @@ export function selectAsrStrategy(): 'native' | 'mediarecorder' | 'none' {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) || (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches);
 
-  // Prioritize native WebSpeech API on BOTH desktop and mobile if supported (e.g. Chrome, Android Chrome, Edge)
-  // This bypasses cloud ASR completely and uses the device's free, built-in speech recognition.
-  if (hasNative) return 'native';
-
-  // Fallback to MediaRecorder + Backend ASR for browsers lacking native speech (e.g. Firefox, Safari, iOS Chrome)
+  // Primary strategy: MediaRecorder + Backend ASR (Sarvam primary → Gemini fallback)
+  // Handles multi-lingual and code-mixed speech (e.g. Hinglish "Mera chest pain hai")
   if (hasMR && hasGUM) return 'mediarecorder';
+
+  // Emergency fallback: Only return 'native' (WebSpeech) if mediarecorder is completely unavailable
+  if (hasNative) return 'native';
 
   return 'none';
 }
