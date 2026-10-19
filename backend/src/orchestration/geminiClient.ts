@@ -41,13 +41,13 @@ export async function transcribeAudioWithGemini(
   audioBuffer: Buffer,
   mimeType = 'audio/webm'
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY || '';
-  if (!apiKey) {
-    console.warn('[transcribeAudioWithGemini] GEMINI_API_KEY is not set.');
-    throw new Error('GEMINI_API_KEY not configured for audio transcription');
+  const asrKey = process.env.GEMINI_ASR_API_KEY || process.env.GEMINI_API_KEY || '';
+  if (!asrKey) {
+    console.warn('[transcribeAudioWithGemini] Neither GEMINI_ASR_API_KEY nor GEMINI_API_KEY is set.');
+    throw new Error('GEMINI_ASR_API_KEY not configured for audio transcription');
   }
 
-  const genAI = new GoogleGenerativeAI(apiKey);
+  const genAI = new GoogleGenerativeAI(asrKey);
   const audioModels = ['gemini-1.5-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
   const effectiveMime = (mimeType || 'audio/webm').split(';')[0].trim();
 
