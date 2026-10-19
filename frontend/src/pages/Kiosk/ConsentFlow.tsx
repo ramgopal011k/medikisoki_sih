@@ -1125,7 +1125,7 @@ export default function ConsentFlow() {
                {isMr ? 'आज तुम्हाला येथे काय आणले आहे?' : isBn ? 'আজ আপনাকে এখানে কী নিয়ে এসেছে?' : isHi ? 'आज आप यहाँ किस परेशानी से आए हैं?' : 'What brings you here today?'}
              </h1>
              <p className="text-muted text-sm mt-2 max-w-md mx-auto">
-                {isMr ? 'शारीरिक नकाशावर अस्वस्थतेचे क्षेत्र निवडा किंवा सामान्य लक्षणे निवडा.' : isBn ? 'বডি ম্যাপে অসুবিধার জায়গা চিহ্নিত করুন অথবা সাধারণ লক্ষণ বেছে নিন।' : isHi ? 'शारीरिक मानचित्र पर परेशानी के क्षेत्र चुनें या सामान्य लक्षण चुनें।' : 'Pin any areas of discomfort on the anatomical map, or choose common symptoms.'}
+                {isMr ? 'आजची तुमची मुख्य समस्या किंवा सामान्य लक्षणे निवडा.' : isBn ? 'আজ আপনার প্রধান সমস্যা বা সাধারণ লক্ষণ বেছে নিন।' : isHi ? 'आज की अपनी मुख्य परेशानी या सामान्य लक्षण चुनें।' : 'Choose your primary symptom or reason for visit today.'}
              </p>
            </div>
 
