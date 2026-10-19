@@ -138,18 +138,13 @@ export function selectAsrStrategy(): 'native' | 'mediarecorder' | 'none' {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua) || (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches);
 
-  // All Mobile browsers (iOS & Android): Google SpeechRecognition on Android mobile frequently returns
-  // 'service-not-allowed' or conflicts with getUserMedia mic locks.
-  // Prefer MediaRecorder + Sarvam backend for all mobile devices for 100% deterministic reliability.
-  if (isMobile) {
-    if (hasMR && hasGUM) return 'mediarecorder';
-    if (hasNative) return 'native';
-    return 'none';
-  }
-
-  // Desktop browsers (Desktop Chrome, Edge, Brave): Use native WebSpeech API
+  // Prioritize native WebSpeech API on BOTH desktop and mobile if supported (e.g. Chrome, Android Chrome, Edge)
+  // This bypasses cloud ASR completely and uses the device's free, built-in speech recognition.
   if (hasNative) return 'native';
+
+  // Fallback to MediaRecorder + Backend ASR for browsers lacking native speech (e.g. Firefox, Safari, iOS Chrome)
   if (hasMR && hasGUM) return 'mediarecorder';
+
   return 'none';
 }
 

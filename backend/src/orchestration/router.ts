@@ -20,15 +20,28 @@ export async function orchestrate<T>(
 
     switch (task) {
       case 'asr': {
-        const result = (await sarvam.transcribe(
-          payload.audio,
-          payload.language,
-          payload.mimeType || 'audio/webm',
-          payload.originalName || 'audio.webm'
-        )) as T;
-        finalProvider = 'sarvam';
-        wasFallback = false;
-        resultObj = { result, provider: finalProvider, wasFallback, latencyMs: Date.now() - start };
+        try {
+          const result = (await sarvam.transcribe(
+            payload.audio,
+            payload.language,
+            payload.mimeType || 'audio/webm',
+            payload.originalName || 'audio.webm'
+          )) as T;
+          finalProvider = 'sarvam';
+          wasFallback = false;
+          resultObj = { result, provider: finalProvider, wasFallback, latencyMs: Date.now() - start };
+        } catch (sarvamErr: any) {
+          console.warn('[orch] ASR → gemini [FALLBACK]:', sarvamErr?.message || sarvamErr);
+          const buf = typeof payload.audio === 'string' ? Buffer.from(payload.audio) : payload.audio;
+          const transcript = await gemini.transcribeAudioWithGemini(
+            buf,
+            payload.mimeType || 'audio/webm'
+          );
+          finalProvider = 'gemini';
+          wasFallback = true;
+          const result = { transcript } as T;
+          resultObj = { result, provider: finalProvider, wasFallback, latencyMs: Date.now() - start };
+        }
         break;
       }
 

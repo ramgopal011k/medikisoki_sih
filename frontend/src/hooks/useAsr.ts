@@ -608,7 +608,7 @@ export function useAsr() {
     const bcpLang = getBcpTag(options);
     const duration = (options?.maxDurationSeconds || 6) * 1000;
 
-    // Desktop Native Path: execute SpeechRecognition.start() synchronously inside user gesture handler
+    // Native WebSpeech Path (Desktop & Mobile Chrome/Edge): execute SpeechRecognition.start() synchronously inside user gesture handler
     if (strategy === 'native') {
       setIsListening(true);
       setStatus('listening');
@@ -616,7 +616,7 @@ export function useAsr() {
       return;
     }
 
-    // Mobile / MediaRecorder Path: request mic and start MediaRecorder
+    // Fallback MediaRecorder Path: request mic and start MediaRecorder (Firefox, Safari, etc.)
     setIsListening(true);
     setStatus('listening');
 

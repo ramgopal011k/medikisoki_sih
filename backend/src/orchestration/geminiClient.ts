@@ -36,3 +36,45 @@ export async function matchVoice(transcript: string, options: string[]): Promise
     return null;
   }
 }
+
+export async function transcribeAudioWithGemini(
+  audioBuffer: Buffer,
+  mimeType = 'audio/webm'
+): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY || '';
+  if (!apiKey) {
+    console.warn('[transcribeAudioWithGemini] GEMINI_API_KEY is not set.');
+    throw new Error('GEMINI_API_KEY not configured for audio transcription');
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const audioModels = ['gemini-1.5-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
+  const effectiveMime = (mimeType || 'audio/webm').split(';')[0].trim();
+
+  const audioPart = {
+    inlineData: {
+      data: audioBuffer.toString('base64'),
+      mimeType: effectiveMime,
+    },
+  };
+
+  for (const modelName of audioModels) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent([
+        'Transcribe this audio exactly. Return only the text.',
+        audioPart,
+      ]);
+      const res = await result.response;
+      const text = res.text();
+      if (text && text.trim()) {
+        return text.trim();
+      }
+    } catch (err: any) {
+      console.warn(`[transcribeAudioWithGemini] Model ${modelName} failed (${err?.status || err?.message}), trying fallback...`);
+    }
+  }
+
+  throw new Error('Gemini audio transcription failed across all candidate models');
+}
+

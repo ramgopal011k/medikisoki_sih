@@ -1715,8 +1715,8 @@ app.post('/api/sarvam/asr', upload.any(), async (req: Request, res: Response) =>
   // Patch req.file so the rest of the handler continues to work unchanged
   (req as any).file = file;
 
-  // 1. Try Sarvam AI Speech-to-Text via orchestration layer (saaras:v2 → saaras:v3)
-  if (process.env.SARVAM_API_KEY) {
+  // 1. Try Sarvam AI Speech-to-Text via orchestration layer with Gemini Audio fallback
+  if (process.env.SARVAM_API_KEY || process.env.GEMINI_API_KEY) {
     try {
       const incomingMime = (file.mimetype || 'audio/webm').split(';')[0].trim();
       let fileExt = 'webm';
