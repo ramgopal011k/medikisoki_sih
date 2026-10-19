@@ -12,7 +12,9 @@ import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
 import { loadHospitalsSWR } from '@/lib/hospitalsCache';
 import { extractDigitsFromSpokenText, matchSpokenLanguage } from '@/lib/speechUtils';
-import { cleanTranscript } from '@/lib/transcriptCleaner';
+import { cleanTranscript, extractName } from '@/lib/transcriptCleaner';
+
+export { extractName };
 import { useTranslation, type Language } from '@/lib/i18n';
 
 type Step = 'language' | 'hospital' | 'patient_type' | 'new_patient' | 'identity' | 'otp' | 'history' | 'consent' | 'complaint' | 'success';
@@ -229,17 +231,9 @@ export default function ConsentFlow() {
       else if (isMale) setPatientGender('Male');
       else if (isOther) setPatientGender('Other');
 
-      // Extract spoken name if transcript is not pure age or gender
-      const ignoreWords = [
-        'new', 'patient', 'continue', 'next', 'male', 'female', 'other', 'yes', 'no',
-        'आभा', 'आगे', 'पुरुष', 'महिला', 'मरीज', 'नया',
-        'आভা', 'नवीन', 'रुग्ण', 'पुढे', 'इतर',
-        'নতুন', 'রোগী', 'পরবর্তী', 'অন্যান্য'
-      ];
-      const nameWords = matchTranscript.trim().split(/\s+/).filter(w => !ignoreWords.includes(w.toLowerCase()) && !/^\d+$/.test(w));
-      const spokenName = nameWords.join(' ');
-
-      if (spokenName.length >= 2) {
+      // Extract spoken name using context-aware extraction
+      const spokenName = extractName(transcript);
+      if (spokenName && spokenName.length >= 2) {
         setPatientName(spokenName);
       }
     } else if (step === 'identity') {

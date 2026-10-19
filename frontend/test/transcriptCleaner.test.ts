@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cleanTranscript } from '../src/lib/transcriptCleaner';
+import { cleanTranscript, extractName } from '../src/lib/transcriptCleaner';
 
 describe('Universal ASR Transcript Cleaner', () => {
   describe('English speech cleaning', () => {
@@ -15,10 +15,16 @@ describe('Universal ASR Transcript Cleaner', () => {
       expect(result).toBe('I feel dizzy and nauseous');
     });
 
-    it('removes stutter word repetitions', () => {
+    it('removes single and multi-word stutter repetitions', () => {
       const raw = 'I I have severe severe back pain';
       const result = cleanTranscript(raw, { language: 'en' });
       expect(result).toBe('I have severe back pain');
+    });
+
+    it('collapses multi-word consecutive stutters (1-4 words)', () => {
+      expect(cleanTranscript('I am I am I am Raju')).toBe('I am Raju');
+      expect(cleanTranscript('my name is my name is Raju')).toBe('my name is Raju');
+      expect(cleanTranscript('I have chest pain chest pain since morning')).toBe('I have chest pain since morning');
     });
 
     it('handles all-filler English sentence by returning empty string', () => {
@@ -47,10 +53,42 @@ describe('Universal ASR Transcript Cleaner', () => {
       expect(result).toBe('दर्द बहुत तेज है');
     });
 
+    it('collapses Hindi multi-word stutter repetitions', () => {
+      const raw = 'मेरा नाम मेरा नाम राहुल है';
+      const result = cleanTranscript(raw, { language: 'hi' });
+      expect(result).toBe('मेरा नाम राहुल है');
+    });
+
     it('handles all-filler Hindi sentence by returning empty string', () => {
       const raw = 'हाँ तो मतलब वो ठीक है अच्छा';
       const result = cleanTranscript(raw, { language: 'hi' });
       expect(result).toBe('');
+    });
+  });
+
+  describe('Context-Aware Patient Name Extraction (extractName)', () => {
+    it('extracts name while stripping prefixes and age info', () => {
+      expect(extractName('I am Raju age 30')).toBe('Raju');
+      expect(extractName('my name is Priya')).toBe('Priya');
+      expect(extractName('I am I am I am Raju')).toBe('Raju');
+      expect(extractName('this is Suresh age 25 years old')).toBe('Suresh');
+      expect(extractName('mera naam Amit hai')).toBe('Amit');
+      expect(extractName('main Rahul hoon age 40')).toBe('Rahul');
+      expect(extractName('my name is Anita Kumar 35 years old')).toBe('Anita Kumar');
+      expect(extractName('Raju')).toBe('Raju');
+      expect(extractName('Priya Sharma')).toBe('Priya Sharma');
+    });
+
+    it('ignores isolated command keywords or age digits', () => {
+      expect(extractName('Male')).toBe('');
+      expect(extractName('Female')).toBe('');
+      expect(extractName('30')).toBe('');
+      expect(extractName('continue')).toBe('');
+    });
+
+    it('falls back to cleaned transcript if extraction has no prefix or suffix', () => {
+      expect(extractName('Arun')).toBe('Arun');
+      expect(extractName('')).toBe('');
     });
   });
 
