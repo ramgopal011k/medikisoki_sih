@@ -36,7 +36,7 @@ function AppRoutes() {
   const [countdown, setCountdown] = useState(30);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const showMonitor = location.pathname !== '/' && !location.pathname.startsWith('/admin');
+  const showMonitor = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     let warningTimeoutId: ReturnType<typeof setTimeout>;

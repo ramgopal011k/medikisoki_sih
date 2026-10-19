@@ -95,6 +95,16 @@ export const OrchestrationMonitor: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'o') {
+        setIsOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const getOllamaPill = () => {
     if (ollamaHealth === null) {
       return {
@@ -166,32 +176,6 @@ export const OrchestrationMonitor: React.FC = () => {
 
   return (
     <>
-      {/* Floating Ollama Status Pill */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-8 right-24 z-50 px-3 py-1.5 rounded-full border shadow-2xl flex items-center gap-1.5 cursor-pointer font-mono text-xs backdrop-blur-md transition-all duration-300 hover:scale-105 ${pill.color}`}
-        title="Ollama Provider Status"
-      >
-        <span className={`inline-block w-2 h-2 rounded-full ${pill.dot}`}></span>
-        <span>{pill.label}</span>
-      </button>
-
-      {/* Floating Toggle Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 shadow-2xl flex items-center justify-center transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-        title="Toggle Orchestration Monitor"
-        aria-label="Toggle Orchestration Monitor"
-      >
-        <Activity className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
-        {events.length > 0 && (
-          <span className="absolute top-1 right-1 flex h-3.5 w-3.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-slate-900"></span>
-          </span>
-        )}
-      </button>
-
       {/* Slide-out Panel */}
       <aside 
         className={`fixed top-0 right-0 h-screen w-[380px] bg-slate-950/95 border-l border-slate-800/80 text-slate-100 shadow-2xl z-[9999] flex flex-col backdrop-blur-md font-mono text-xs overflow-hidden transition-transform duration-300 ease-in-out ${
