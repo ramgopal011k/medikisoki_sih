@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cleanTranscript, extractName } from '../src/lib/transcriptCleaner';
+import { cleanTranscript, extractName, parseDemographics } from '../src/lib/transcriptCleaner';
 
 describe('Universal ASR Transcript Cleaner', () => {
   describe('English speech cleaning', () => {
@@ -108,6 +108,55 @@ describe('Universal ASR Transcript Cleaner', () => {
     it('defaults to English when language is unspecified', () => {
       const raw = 'Uh I have a headache';
       expect(cleanTranscript(raw)).toBe('I have a headache');
+    });
+  });
+
+  describe('parseDemographics', () => {
+    it('extracts name, age, and gender from natural conversation', () => {
+      expect(parseDemographics('I am Raju, age 30, male')).toEqual({
+        name: 'Raju',
+        age: '30',
+        gender: 'Male',
+      });
+      expect(parseDemographics('Mera naam Priya hai, 25 saal, female')).toEqual({
+        name: 'Priya',
+        age: '25',
+        gender: 'Female',
+      });
+      expect(parseDemographics('I am Ramesh')).toEqual({
+        name: 'Ramesh',
+        age: null,
+        gender: null,
+      });
+    });
+
+    it('extracts name with fallback when only name is provided', () => {
+      expect(parseDemographics('Suresh')).toEqual({
+        name: 'Suresh',
+        age: null,
+        gender: null,
+      });
+    });
+
+    it('returns null name when only gender or age is spoken', () => {
+      expect(parseDemographics('Male, 30 years old')).toEqual({
+        name: null,
+        age: '30',
+        gender: 'Male',
+      });
+      expect(parseDemographics('Female')).toEqual({
+        name: null,
+        age: null,
+        gender: 'Female',
+      });
+    });
+
+    it('handles natural phrasing with other gender', () => {
+      expect(parseDemographics('My name is Alex, age 28, other')).toEqual({
+        name: 'Alex',
+        age: '28',
+        gender: 'Other',
+      });
     });
   });
 });

@@ -12,9 +12,9 @@ import { useAudio } from '@/hooks/useAudio';
 import { API_URL } from '@/lib/api';
 import { loadHospitalsSWR } from '@/lib/hospitalsCache';
 import { extractDigitsFromSpokenText, matchSpokenLanguage } from '@/lib/speechUtils';
-import { cleanTranscript, extractName } from '@/lib/transcriptCleaner';
+import { cleanTranscript, extractName, parseDemographics } from '@/lib/transcriptCleaner';
 
-export { extractName };
+export { extractName, parseDemographics };
 import { useTranslation, type Language } from '@/lib/i18n';
 
 type Step = 'language' | 'hospital' | 'patient_type' | 'new_patient' | 'identity' | 'otp' | 'history' | 'consent' | 'complaint' | 'success';
@@ -70,7 +70,7 @@ export default function ConsentFlow() {
   const [selectedRegions] = useState<string[]>(() => []);
   const suggestedComplaints = useMemo<string[]>(() => [], []);
 
-  const { isListening, isProcessing, transcript, startListening, stopListening, setTranscript } = useAsr();
+  const { isListening, isProcessing, transcript, startListening, stopListening, clearTranscript, setTranscript } = useAsr();
   const { speak, stop } = useAudio();
 
   const baseAbhaIdRef = useRef('');
@@ -86,9 +86,9 @@ export default function ConsentFlow() {
   const prevListeningRef = useRef(false);
 
   useEffect(() => {
-    setTranscript('');
+    clearTranscript();
     setVoiceFailCount(0);
-  }, [step, setTranscript]);
+  }, [step, clearTranscript]);
 
   useEffect(() => {
     if (prevListeningRef.current && !isListening) {
@@ -199,42 +199,16 @@ export default function ConsentFlow() {
         }
       }
 
-      // Check numeric age in transcript
-      const digits = extractDigitsFromSpokenText(transcript) || transcript.replace(/[^0-9]/g, '');
-      const parsedAge = digits ? parseInt(digits, 10) : 0;
-      if (parsedAge > 0 && parsedAge < 130) {
-        setPatientAge(digits);
+      // Extract structured demographics (Name, Age, Gender) from natural conversation
+      const demo = parseDemographics(transcript);
+      if (demo.name && demo.name.length >= 2) {
+        setPatientName(demo.name);
       }
-
-      // Check gender in transcript
-      const isFemale =
-        lower.includes('female') ||
-        lower.includes('महिला') ||
-        lower.includes('स्त्री') ||
-        lower.includes('लड़की') ||
-        lower.includes('मुलगी') ||
-        lower.includes('নারী') ||
-        lower.includes('মেয়ে');
-      const isMale =
-        lower.includes('male') ||
-        lower.includes('पुरुष') ||
-        lower.includes('लड़का') ||
-        lower.includes('आदमी') ||
-        lower.includes('मुलगा') ||
-        lower.includes('ছেলে');
-      const isOther =
-        lower.includes('other') ||
-        lower.includes('अन्य') ||
-        lower.includes('इतर') ||
-        lower.includes('অন্যান্য');
-      if (isFemale) setPatientGender('Female');
-      else if (isMale) setPatientGender('Male');
-      else if (isOther) setPatientGender('Other');
-
-      // Extract spoken name using context-aware extraction
-      const spokenName = extractName(transcript);
-      if (spokenName && spokenName.length >= 2) {
-        setPatientName(spokenName);
+      if (demo.age) {
+        setPatientAge(demo.age);
+      }
+      if (demo.gender) {
+        setPatientGender(demo.gender);
       }
     } else if (step === 'identity') {
       // Extract digits from spoken numbers (handles words like "one two", "एक दो", Devanagari/Bengali numerals, etc.)

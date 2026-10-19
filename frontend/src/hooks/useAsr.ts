@@ -273,6 +273,16 @@ export function useAsr() {
   }, [cleanupMedia]);
 
   // ──────────────────────────────────────────────────────
+  // CLEAR TRANSCRIPT
+  // ──────────────────────────────────────────────────────
+  const clearTranscript = useCallback(() => {
+    setTranscript('');
+    finalTranscriptRef.current = '';
+    audioChunksRef.current = [];
+  }, []);
+
+
+  // ──────────────────────────────────────────────────────
   // STOP
   // ──────────────────────────────────────────────────────
   const stopListening = useCallback(() => {
@@ -711,6 +721,7 @@ export function useAsr() {
     reason,
     startListening,
     stopListening,
+    clearTranscript,
     setTranscript,
   };
 }

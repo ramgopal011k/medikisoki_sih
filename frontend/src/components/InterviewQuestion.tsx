@@ -36,10 +36,18 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   onAnswer,
   language = 'en'
 }) => {
-  const { isListening, isProcessing, transcript, status, mode, startListening, stopListening, setTranscript } = useAsr();
+  const { isListening, isProcessing, transcript, status, mode, startListening, stopListening, clearTranscript, setTranscript } = useAsr();
   const [textInput, setTextInput] = useState('');
   const [selectedMulti, setSelectedMulti] = useState<string[]>([]);
   const [voiceFailCount, setVoiceFailCount] = useState(0);
+
+  useEffect(() => {
+    stopListening();
+    clearTranscript();
+    setTextInput('');
+    setSelectedMulti([]);
+    setVoiceFailCount(0);
+  }, [question.id, stopListening, clearTranscript]);
   const pendingMatchRef = useRef<{ value: string; label: string } | null>(null);
   const isHi = language === 'hi';
   const isMr = language === 'mr';

@@ -208,3 +208,110 @@ export function extractName(rawTranscript: string): string {
 
   return capitalized || cleaned;
 }
+
+export interface Demographics {
+  name: string | null;
+  age: string | null;
+  gender: string | null;
+}
+
+/**
+ * Context-aware Demographics parser for Registration flows.
+ * Extracts Name, Age, and Gender from natural speech.
+ */
+export function parseDemographics(rawTranscript: string): Demographics {
+  if (!rawTranscript || typeof rawTranscript !== 'string') {
+    return { name: null, age: null, gender: null };
+  }
+
+  const cleaned = cleanTranscript(rawTranscript);
+  if (!cleaned) return { name: null, age: null, gender: null };
+
+  let age: string | null = null;
+  let gender: string | null = null;
+  let name: string | null = null;
+
+  // 1. Gender Extraction (English and Hindi keywords)
+  const femalePattern = /\b(female|woman|ladki|mahila|girl|stree|aurat|महिला|लड़की|स्त्री)\b/i;
+  const malePattern = /\b(male|man|ladka|purush|boy|aadmi|पुरुष|लड़का|आदमी)\b/i;
+  const otherPattern = /\b(other|transgender|nonbinary|अन्य|इतर)\b/i;
+
+  if (femalePattern.test(cleaned)) {
+    gender = 'Female';
+  } else if (malePattern.test(cleaned)) {
+    gender = 'Male';
+  } else if (otherPattern.test(cleaned)) {
+    gender = 'Other';
+  }
+
+  // 2. Age Extraction (Numbers 1-120 with age indicators or standalone)
+  const agePatterns = [
+    /(?:age|umar|aayu|उम्र|वय)\s*(?:is|hai|ahe)?\s*(\d{1,3})/i,
+    /(\d{1,3})\s*(?:years?\s*(?:old)?|yrs?\s*(?:old)?|saal|varsh|साल|वर्ष)/i,
+    /\b(?:i am|i'm|main|is)\s+(\d{1,3})\b/i,
+  ];
+
+  for (const pattern of agePatterns) {
+    const match = cleaned.match(pattern);
+    if (match && match[1]) {
+      const val = parseInt(match[1], 10);
+      if (val >= 1 && val <= 120) {
+        age = String(val);
+        break;
+      }
+    }
+  }
+
+  // Fallback: any standalone number between 1 and 120
+  if (!age) {
+    const digitMatch = cleaned.match(/\b([1-9][0-9]?|1[01][0-9]|120)\b/);
+    if (digitMatch && digitMatch[1]) {
+      const val = parseInt(digitMatch[1], 10);
+      if (val >= 1 && val <= 120) {
+        age = String(val);
+      }
+    }
+  }
+
+  // 3. Name Extraction
+  const nonNameWords = new Set([
+    'i', 'am', 'my', 'name', 'is', 'this', 'here', 'and', 'the', 'a', 'an',
+    'mera', 'naam', 'nam', 'hai', 'hoon', 'hun', 'main', 'mai', 'ki', 'ka', 'ke',
+    'maze', 'majhe', 'naav', 'nav', 'aahe', 'ahe', 'amar', 'ami',
+    'age', 'years', 'year', 'old', 'yrs', 'yr', 'saal', 'varsh', 'umar', 'aayu',
+    'male', 'female', 'other', 'man', 'woman', 'boy', 'girl', 'ladka', 'ladki',
+    'purush', 'mahila', 'stree', 'aadmi', 'aurat', 'patient', 'new', 'registration',
+    'yes', 'no', 'continue', 'next', 'ok', 'okay'
+  ]);
+
+  // Primary: Match common prefixes: (?:my name is|i am|this is|mera naam|main)\s+([a-zA-Z\p{L}]+(?:\s+[a-zA-Z\p{L}]+)?)
+  const prefixRegex = /(?:my\s+name\s+is|i\s+am|i'm|this\s+is|name\s+is|mera\s+naam(?:\s+hai)?|mera\s+nam(?:\s+hai)?|mera\s+name(?:\s+is)?|main\s+hoon|main|mai\s+hoon|mai|maze\s+naav|majhe\s+naav|amar\s+naam|ami)\s+([a-zA-Z\p{L}]+(?:\s+[a-zA-Z\p{L}]+)?)/iu;
+  const prefixMatch = cleaned.match(prefixRegex);
+
+  if (prefixMatch && prefixMatch[1]) {
+    const words = prefixMatch[1]
+      .trim()
+      .split(/\s+/)
+      .filter(w => !nonNameWords.has(w.toLowerCase()) && !/^\d+$/.test(w));
+    if (words.length > 0) {
+      name = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    }
+  }
+
+  // Fallback: take first word that is not a number, gender, or age keyword
+  if (!name) {
+    const tokens = cleaned.replace(/[,;:.!?]/g, ' ').split(/\s+/);
+    for (const token of tokens) {
+      const cleanToken = token.trim();
+      if (!cleanToken) continue;
+      const lower = cleanToken.toLowerCase();
+      if (!nonNameWords.has(lower) && !/^\d+$/.test(cleanToken) && cleanToken.length >= 2) {
+        name = cleanToken.charAt(0).toUpperCase() + cleanToken.slice(1).toLowerCase();
+        break;
+      }
+    }
+  }
+
+  return { name, age, gender };
+}
+

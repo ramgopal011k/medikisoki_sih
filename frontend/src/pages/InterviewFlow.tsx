@@ -10,6 +10,7 @@ import { get, set } from 'idb-keyval';
 import { supabase } from '@/lib/supabase';
 import { API_URL, getAuthHeaders } from '@/lib/api';
 import { VoiceGuideButton } from '../components/VoiceGuideButton';
+import { useAsr } from '@/hooks/useAsr';
 import { isReplannerEnabled, replan, scoreDifferentialPanel, fetchLlmFollowups, getDynamicQuestion, resetLlmFollowupCache } from '../lib/replan';
 import type { Tier } from '../lib/expectedSeverity';
 
@@ -48,6 +49,15 @@ export default function InterviewFlow() {
 
   const [tree, setTree] = useState<InterviewTree | null>(null);
   const [currentQId, setCurrentQId] = useState<string | null>(null);
+  const { stopListening, clearTranscript } = useAsr();
+
+  useEffect(() => {
+    if (currentQId) {
+      stopListening();
+      clearTranscript();
+    }
+  }, [currentQId, stopListening, clearTranscript]);
+
   const [stepCount, setStepCount] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [redFlagTriggered, setRedFlagTriggered] = useState<RedFlagResult | null>(null);
@@ -611,6 +621,7 @@ export default function InterviewFlow() {
            </div>
          )}
          <InterviewQuestion
+           key={currentQ.id}
            question={currentQ}
            totalSteps={Object.keys(tree.questions).length}
            currentStep={stepCount}
