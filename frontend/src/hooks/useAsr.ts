@@ -118,6 +118,10 @@ async function sendAudioToBackend(
   // Both Sarvam and Gemini fallback return { transcript: "..." }
   const text: string = data?.transcript || data?.text || '';
   if (!text) throw new Error('Empty transcript from backend ASR');
+  // Guard against any fake or mock fallback transcripts
+  if (text.toLowerCase().includes('fallback asr') || text.toLowerCase().includes('mock asr transcript')) {
+    throw new Error('Voice unavailable, please tap.');
+  }
   return text.trim();
 }
 
@@ -516,9 +520,11 @@ export function useAsr() {
         console.warn('[MediKiosk ASR] Backend ASR failed:', err.message);
         setLastAsrError(err.message);
         if (isMountedRef.current) {
+          setTranscript('');
+          finalTranscriptRef.current = '';
           setIsProcessing(false);
           setStatus('error');
-          setError('Could not process voice. Please tap your answer instead.');
+          setError('Voice unavailable, please tap.');
           if (onEndCallbackRef.current) onEndCallbackRef.current();
         }
       }

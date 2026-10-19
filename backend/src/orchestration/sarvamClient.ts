@@ -12,8 +12,8 @@ export async function transcribe(
 ) {
   const apiKey = getApiKey();
   if (!apiKey) {
-    console.warn('[Sarvam ASR] SARVAM_API_KEY not configured. Returning mock transcript.');
-    return { transcript: 'सीने में दर्द और सांस लेने में तकलीफ (Mock ASR Transcript)' };
+    console.warn('[Sarvam ASR] SARVAM_API_KEY not configured.');
+    throw new Error('SARVAM_API_KEY not configured');
   }
   try {
     const form = new FormData();
@@ -40,8 +40,8 @@ export async function transcribe(
     if (!res.ok) throw new Error(`Sarvam ASR failed: ${res.status}`);
     return await res.json();
   } catch (err) {
-    console.warn('[Sarvam ASR] Falling back to mock transcription:', err);
-    return { transcript: 'Chest pain and breathlessness (Fallback ASR)' };
+    console.warn('[Sarvam ASR] Transcription failed:', err);
+    throw err;
   }
 }
 

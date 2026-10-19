@@ -58,6 +58,17 @@ if (process.env.CORS_EXTRA_ORIGINS) {
   allowedOrigins.push(...extra);
 }
 
+// Explicit production Vercel frontend origins
+const explicitVercelOrigins = [
+  'https://medikisoki-sih-fln1.vercel.app',
+  'https://medikisoki-sih.vercel.app',
+];
+for (const origin of explicitVercelOrigins) {
+  if (!allowedOrigins.includes(origin)) {
+    allowedOrigins.push(origin);
+  }
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
